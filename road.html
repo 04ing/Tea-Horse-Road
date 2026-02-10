@@ -1,0 +1,3025 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>茶马古道路线信息</title>
+    <link href="style.css" rel="stylesheet">
+    <!-- 引入高德地图API加载器 -->
+    <!-- 注意：请在页面中的JavaScript代码里替换为您自己的高德地图API密钥 -->
+    <script src="https://webapi.amap.com/loader.js"></script>
+</head>
+<body>
+    <!-- 加载界面 -->
+    <div id="loading" class="loading">
+        <div class="loading-spinner"></div>
+        <h3>正在初始化三维地图...</h3>
+        <p>请稍候，正在加载茶马古道历史数据</p>
+    </div>
+
+    <!-- 三维地球容器 -->
+    <div id="mapContainer"></div>
+
+    <!-- 城市和路径数据显示层 -->
+    <div class="header">
+        <div class="search-container">
+            <input type="text" id="city-search" placeholder="搜索城市...">
+            <div id="search-results" class="search-results"></div>
+        </div>
+        
+        <!-- 右上角页面跳转按钮 -->
+        <div class="header-nav-buttons">
+            <a href="timeline.html" class="header-nav-btn">时间轴</a>
+            <a href="model.html" class="header-nav-btn">古道模型</a>
+            <a href="historical-culture.html" class="header-nav-btn">历史文化</a>
+            <a href="elevation_map.html" class="header-nav-btn">地形剖面</a>
+            <a href="tourism_significance.html" class="header-nav-btn">旅游</a>
+        </div>
+        
+        <h1>茶马古道历史路线信息</h1>
+        <p>茶马古道是中国历史上重要的商贸通道，兴起于唐宋，繁荣于明清，连接中国西南与南亚、东南亚。这条古道以马帮运输茶叶、盐、糖等商品而闻名，促进了经济文化交流。</p>
+        <div class="toolbar-toggle-buttons">
+            <button id="toggle-controls" class="toolbar-toggle">显示/隐藏功能列表</button>
+            <button id="toggle-stats" class="toolbar-toggle">显示/隐藏信息栏</button>
+            <button id="toggle-cities-list" class="toolbar-toggle">显示/隐藏城市列表</button>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>功能列表</h2>
+        </div>
+        
+        
+
+        <!-- 地图控制按钮 -->
+        <div class="btn-group">
+            <button id="toggleLabels">加载唐朝城市</button>
+            <button id="loadDynamicRoute">动态显示路径</button>
+            <button id="loadSongCities">加载宋代城市</button>
+            <button id="loadSongRoute">加载宋代路径</button>
+            <button id="loadMingCities">加载明代城市</button>
+            <button id="loadMingRoute">加载明代路径</button>
+            <button id="loadQingCities">加载清代城市</button>
+            <button id="loadQingRoute">加载清代路径</button>
+            <button id="loadSpreadNodes">加载茶叶传播节点</button>
+            <button id="loadOverseaRoutes">加载海外传播路径</button>
+            <button id="toggleCitiesList" class="full-width-btn">清除所有城市和路径</button>
+        </div>
+        
+        <div class="info-panel">
+            <h3>图例</h3>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color route-color"></div>
+                    <span>茶马古道路线</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color point-color"></div>
+                    <span>主要驿站/城市</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color start-color"></div>
+                    <span>起点</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color end-color"></div>
+                    <span>终点</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stats">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="visibility: hidden;"><h3>信息栏</h3></div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-value" id="route-length">约3,000 km</div>
+                <div class="stat-label">路线全长</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="historical-span">1,200+ 年</div>
+                <div class="stat-label">历史跨度</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="main-stations">100余个</div>
+                <div class="stat-label">主要驿站</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="max-altitude">5800 m</div>
+                <div class="stat-label">最高海拔</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="cities-list" class="cities-container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>主要城市与驿站</h2>
+        </div>
+        <div id="cities-content" class="cities-list">
+            <p>加载中...</p>
+        </div>
+    </div>
+    
+    <!-- 提示信息 -->
+    <div id="historicalNote" class="historical-note" style="display: none;">
+        <button id="closeNote" class="close-btn">×</button>
+          <h3>茶马古道历史文化</h3>
+          <p>茶马古道不仅是一条商贸通道，更是一条文化交流之路。通过这条古道，汉族与藏族等少数民族之间建立了深深的经济文化联系，促进了各民族的融合与发展。茶叶、马匹等商品的交换，不仅满足了双方的物资需求，也带来了技术、艺术和宗教的交流。</p>
+    </div>
+
+    <div class="footer">
+        <p>茶马古道历史文化研究 | © 2025 历史地理信息系统</p>
+    </div>
+
+    <script>
+        // 全局变量
+        let map = null;
+        let citiesData = [];
+        let pathsData = [];
+        let cityMarkers = [];
+        let pathLines = [];
+        let labelsVisible = true;
+        // 挂起数据变量，用于处理数据加载和地图初始化顺序问题
+        let pendingCitiesData = null;
+        let pendingPathsData = null;
+        
+        // 初始化地图
+        function initMap() {
+            console.log('开始初始化高德地图三维地球...');
+            
+            // 显示API密钥提示
+            showApiKeyWarning();
+            
+            // 设置地图容器样式
+            const mapContainer = document.getElementById('mapContainer');
+            mapContainer.style.position = 'absolute';
+            mapContainer.style.top = '0';
+            mapContainer.style.left = '0';
+            mapContainer.style.width = '100%';
+            mapContainer.style.height = '100%';
+            mapContainer.style.zIndex = '1';
+            
+            // 配置高德地图加载器
+            AMapLoader.load({
+                key: 'fe4e50125495ae9967861058e720c5dd', // 请替换为您的高德地图API密钥（必须）
+                version: '2.0',
+                plugins: ['AMap.Globe', 'AMap.Geocoder', 'AMap.MarkerClusterer'],
+                AMapUI: {
+                    version: '1.1',
+                    plugins: ['overlay/SimpleMarker']
+                }
+            }).then(() => {
+                console.log('高德地图API加载成功');
+                
+                try {
+                    // 设置默认中心点坐标
+                    let defaultCenter = [101.878981, 36.623178]; // 青海省附近
+                    
+                    // 验证中心点坐标
+                    if (!Array.isArray(defaultCenter) || defaultCenter.length !== 2 ||
+                        isNaN(defaultCenter[0]) || isNaN(defaultCenter[1]) ||
+                        defaultCenter[0] < -180 || defaultCenter[0] > 180 ||
+                        defaultCenter[1] < -90 || defaultCenter[1] > 90) {
+                        console.warn('默认中心点坐标无效，使用备用坐标');
+                        defaultCenter = [100, 35]; // 备用中心点
+                    }
+                    
+                    // 创建三维地球实例
+                        map = new AMap.Map('mapContainer', {
+                            center: defaultCenter,
+                            zoom: 4, // 初始缩放级别
+                            viewMode: '3D', // 3D视图
+                            pitch: 60, // 俯视角
+                            rotation: 0, // 旋转角度
+                            mapStyle: 'amap://styles/light', // 浅色风格地图
+                            terrain: true, // 启用地形
+                            features: ['road', 'point', 'bg', 'building3d'], // 显示的地图要素
+                            layers: [
+                                new AMap.TileLayer.Satellite(), // 卫星图层
+                                new AMap.TileLayer.RoadNet() // 路网图层
+                            ],
+                            // 三维地图配置
+                            expandZoomRange: true, // 启用放大级别扩展
+                            maxZoom: 18, // 最大缩放级别
+                            showBuildingBlock: true, // 显示建筑物
+                            showLabel: true, // 显示标签
+                            showIndoorMap: false // 不显示室内地图
+                        });
+                        
+                        // 添加地图控制组件
+                        AMap.plugin(['AMap.ToolBar', 'AMap.Scale', 'AMap.HawkEye', 'AMap.Geolocation'], function() {
+                            // 添加工具栏，包含缩放按钮
+                            map.addControl(new AMap.ToolBar({
+                                position: 'LB',
+                                offset: [20, 20],
+                                showZoomNum: true,
+                                ruler: true,
+                                autoPosition: true
+                            }));
+                            
+                            // 添加比例尺
+                            map.addControl(new AMap.Scale({
+                                position: 'RB'
+                            }));
+                        });
+                        
+                        // 设置地图交互控制
+                        map.setStatus({
+                            dragEnable: true,
+                            scrollWheelZoom: true,
+                            rotateEnable: true,
+                            doubleClickZoom: true,
+                            keyboardEnable: true
+                        });
+                        
+                        // 启用地图事件响应
+                        map.on('click', function(e) {
+                            console.log('地图被点击，坐标：', e.lnglat);
+                        });
+                    
+                    // 显示地图加载完成信息
+                    console.log('三维地图初始化完成');
+                    
+                    // 加载城市和路径数据
+                    loadAndDisplayData();
+                    
+                    // 设置城市搜索功能
+                    setupCitySearch();
+                    
+                    // 处理挂起的数据
+                    if (pendingCitiesData && pendingPathsData) {
+                        console.log('地图初始化完成，开始显示挂起的数据...');
+                        
+                        // 在地图上显示城市点
+                        displayCitiesOnMap(pendingCitiesData);
+                        
+                        // 在地图上显示路径
+                        displayPathsOnMap(pendingPathsData);
+                        
+                        // 显示加载完成通知
+                        showLoadCompleteMessage();
+                        
+                        // 清除挂起的数据
+                        pendingCitiesData = null;
+                        pendingPathsData = null;
+                    }
+                } catch (error) {
+                    console.error('地图初始化失败:', error);
+                    showErrorMessage('三维地图初始化失败，请刷新页面重试。');
+                }
+            }).catch(error => {
+                console.error('高德地图API加载失败:', error);
+                showErrorMessage('地图加载失败，请刷新页面重试');
+            });
+        }
+        
+        // 加载JSON文件函数
+        async function loadJSONFile(filePath) {
+            try {
+                console.log(`[DEBUG] 尝试加载JSON文件: ${filePath}`);
+                const response = await fetch(filePath);
+                console.log(`[DEBUG] fetch响应状态: ${response.status}, ${response.statusText}, 路径: ${filePath}`);
+                
+                if (!response.ok) {
+                    console.error(`[ERROR] HTTP错误! 状态码: ${response.status}, 路径: ${filePath}`);
+                    // 尝试获取详细错误信息
+                    const errorText = await response.text();
+                    console.error(`[ERROR] 错误详情: ${errorText}`);
+                    throw new Error(`无法加载文件 ${filePath}: ${response.status} - ${errorText}`);
+                }
+                
+                const data = await response.json();
+                console.log(`[SUCCESS] 成功加载JSON文件: ${filePath}`);
+                console.log(`[DEBUG] 数据类型: ${typeof data}`);
+                if (data && typeof data === 'object') {
+                    console.log(`[DEBUG] 数据结构: ${Object.keys(data).join(', ')}`);
+                    if (data.features) {
+                        console.log(`[DEBUG] features数量: ${data.features.length}`);
+                    }
+                }
+                
+                return data;
+            } catch (error) {
+                console.error(`[ERROR] 加载文件失败: ${error.message}`);
+                console.error(`[ERROR] 完整错误对象:`, error);
+                console.error(`[ERROR] 尝试加载的文件路径: ${filePath}`);
+                return null;
+            }
+        }
+        
+        // 加载并显示城市和路径数据
+        async function loadAndDisplayData() {
+            console.log('开始加载城市和路径数据...');
+            
+            // 重置搜索数据库
+            allCities = [];
+            
+            // 并行加载两个JSON文件
+            const [cities, paths] = await Promise.all([
+                loadJSONFile('json/City_Tang.json'),
+                loadJSONFile('json/CostPath_Tang.json')
+            ]);
+            
+            // 收集所有城市数据
+            if (cities && cities.features) {
+                cities.features.forEach(city => {
+                    if (city.geometry && city.attributes) {
+                        const name = city.attributes.城市 || `城市`;
+                        const coordinates = [city.geometry.x, city.geometry.y];
+                        allCities.push({ name, coordinates });
+                    }
+                });
+            }
+            
+            // 隐藏加载界面
+            const loadingElement = document.getElementById('loading');
+            if (loadingElement) {
+                loadingElement.style.opacity = '0';
+                setTimeout(() => {
+                    loadingElement.style.display = 'none';
+                }, 500);
+            }
+            
+            // 处理城市数据
+            if (cities && cities.features && cities.features.length > 0) {
+                citiesData = cities.features;
+                console.log(`成功加载城市数据，共 ${citiesData.length} 个城市`);
+                displayCitiesOnMap(citiesData);
+                displayCitiesList(citiesData);
+            } else {
+                console.warn('未加载到有效的城市数据');
+                document.getElementById('cities-content').innerHTML = '<p>无法加载城市数据</p>';
+            }
+            
+            // 处理路径数据，但不立即显示
+            if (paths && paths.features && paths.features.length > 0) {
+                pathsData = paths.features;
+                console.log(`成功加载路径数据，共 ${pathsData.length} 条路径`);
+            } else {
+                console.warn('未加载到有效的路径数据');
+            }
+            
+            // 显示加载完成通知
+            showLoadCompleteMessage();
+            
+            // 确保在数据加载完成后用户能收到通知
+            setTimeout(showLoadCompleteMessage, 1000);
+        }
+        
+        // 在地图上显示城市点
+        function displayCitiesOnMap(cities) {
+            console.log('开始在地图上显示城市点...');
+            
+            cities.forEach((city, index) => {
+                try {
+                    // 检查城市数据对象的完整性（适配Esri格式）
+                    if (!city || !city.geometry || !city.attributes) {
+                        console.warn(`跳过不完整的城市数据对象，索引: ${index}`);
+                        return;
+                    }
+                    
+                    // 从Esri格式中提取数据
+                    const x = city.geometry.x;
+                    const y = city.geometry.y;
+                    const attributes = city.attributes;
+                    const name = attributes.城市 || '';
+                    const coordinates = [x, y];
+                    
+                    // 检查坐标是否有效（非NaN且在合理范围内）
+                    if (!coordinates || coordinates.length !== 2 || 
+                        isNaN(coordinates[0]) || isNaN(coordinates[1]) ||
+                        coordinates[0] < -180 || coordinates[0] > 180 ||
+                        coordinates[1] < -90 || coordinates[1] > 90) {
+                        console.warn(`跳过无效坐标点 ${name}: ${coordinates}`);
+                        return;
+                    }
+                    
+                    // 确定点的类型（是否是起点或终点）
+                    let iconColor = '#A0522D'; // 默认途经城市颜色
+                    let iconSize = [30, 30];
+                    
+                    if (index === 0) {
+                        iconColor = '#4CAF50'; // 起点颜色
+                        iconSize = [40, 40];
+                    } else if (index === cities.length - 1) {
+                        iconColor = '#F5D020'; // 终点颜色
+                        iconSize = [40, 40];
+                    }
+                    
+                    // 创建自定义标记图标
+                    let iconSvg = '';
+                    if (index === 0) {
+                        // 起点图标 - 绿色旗帜
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <path d="M20 5L30 25H5z" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                            <path d="M20 5v30" stroke="#F5F5DC" stroke-width="3"/>
+                        </svg>`;
+                    } else if (index === cities.length - 1) {
+                        // 终点图标 - 金色地标
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <circle cx="20" cy="15" r="10" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                            <polygon points="20 25 10 35 30 35" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                        </svg>`;
+                    } else {
+                        // 途经城市图标 - 位置标记
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                            <path d="M15 5c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10-4.5-10-10-10zm0 15c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5zm0-8c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z" fill="${iconColor}" stroke="#F5F5DC" stroke-width="1.5"/>
+                        </svg>`;
+                    }
+                    
+                    // 创建自定义标记
+                    const marker = new AMap.Marker({
+                        position: coordinates,
+                        title: name,
+                        icon: new AMap.Icon({
+                            size: iconSize,
+                            image: `data:image/svg+xml;utf-8,${encodeURIComponent(iconSvg)}`,
+                            imageSize: iconSize
+                        }),
+                        extData: {
+                            name: name,
+                            type: index === 0 ? 'start' : (index === cities.length - 1 ? 'end' : 'normal')
+                        }
+                    });
+                    
+                    // 添加标记到地图
+                    marker.setMap(map);
+                    cityMarkers.push(marker);
+                    
+                    // 添加点击事件
+                    marker.on('click', function() {
+                        showCityInfo(name, coordinates);
+                    });
+                    
+                    // 添加标签
+                    if (labelsVisible) {
+                        addMarkerLabel(marker, name);
+                    }
+                    
+                    // 添加标签
+                    if (labelsVisible) {
+                        addMarkerLabel(marker, name);
+                    }
+                    
+
+                    
+                    // 添加标签
+                    if (labelsVisible) {
+                        addMarkerLabel(marker, name);
+                    }
+                    
+                    // 添加标签
+                    if (labelsVisible) {
+                        addMarkerLabel(marker, name);
+                    }
+                    
+                    // 添加标签
+                    if (labelsVisible) {
+                        addMarkerLabel(marker, name);
+                    }
+                } catch (error) {
+                    console.error(`处理城市点数据时出错: ${error}`);
+                }
+            });
+            
+            console.log('城市点显示完成');
+        }
+        
+        // 为标记添加标签
+        function addMarkerLabel(marker, name) {
+            try {
+                // 检查marker是否有效
+                if (!marker || !marker.setLabel || typeof AMap === 'undefined' || typeof AMap.Pixel !== 'function') {
+                    console.warn('无法为标记添加标签：标记对象或AMap.Pixel未定义');
+                    return;
+                }
+                
+                // 安全地创建标签
+                marker.setLabel({
+                    content: `<div style="background-color: rgba(139, 69, 19, 0.8); color: #F5F5DC; padding: 3px 8px; border-radius: 4px; font-size: 12px; border: 1px solid rgba(245, 214, 155, 0.5);">${name}</div>`,
+                    offset: new AMap.Pixel(0, -30)
+                });
+            } catch (error) {
+                console.error('添加标签时出错：', error);
+            }
+        }
+        
+        // UTM坐标转换为经纬度坐标（EPSG:32648转WGS84）
+        function utmToLatLon(utmX, utmY, zoneNumber = 48, northernHemisphere = true) {
+            try {
+                // 简化的UTM转经纬度算法
+                // 注意：这是一个近似算法，适用于一般用途，精确转换可能需要更复杂的公式
+                
+                const a = 6378137.0; // 地球椭球体长半轴
+                const e = 0.081819190842622; // 偏心率
+                const eSquared = e * e;
+                const k0 = 0.9996; // 缩放因子
+                
+                // 计算e1 - 修复变量作用域问题
+                const e1 = (1 - Math.sqrt(1 - eSquared)) / (1 + Math.sqrt(1 - eSquared));
+                
+                let x = utmX - 500000.0; // 调整东偏移
+                let y = northernHemisphere ? utmY : utmY - 10000000.0;
+                
+                const arcLengthOfMeridian = (M) => {
+                    const mu = M / (a * (1 - eSquared / 4 - 3 * eSquared * eSquared / 64 - 5 * Math.pow(eSquared, 3) / 256));
+                    const J1 = 3 * e1 / 2 - 27 * Math.pow(e1, 3) / 32;
+                    const J2 = 21 * eSquared / 16 - 55 * Math.pow(eSquared, 3) / 32;
+                    const J3 = 151 * Math.pow(eSquared, 3) / 96;
+                    return a * (mu + J1 * Math.sin(2 * mu) + J2 * Math.sin(4 * mu) + J3 * Math.sin(6 * mu));
+                };
+                
+                const M = y / k0;
+                const mu = M / (a * (1 - eSquared / 4 - 3 * eSquared * eSquared / 64 - 5 * Math.pow(eSquared, 3) / 256));
+                
+                const phi1Rad = mu + (3 * e1 / 2 - 27 * Math.pow(e1, 3) / 32) * Math.sin(2 * mu)
+                    + (21 * eSquared / 16 - 55 * Math.pow(eSquared, 3) / 32) * Math.sin(4 * mu)
+                    + (151 * Math.pow(eSquared, 3) / 96) * Math.sin(6 * mu);
+                
+                const N1 = a / Math.sqrt(1 - eSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad));
+                const T1 = Math.tan(phi1Rad) * Math.tan(phi1Rad);
+                const C1 = eSquared * Math.cos(phi1Rad) * Math.cos(phi1Rad);
+                const R1 = a * (1 - eSquared) / Math.pow(1 - eSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad), 1.5);
+                const D = x / (N1 * k0);
+            
+            const lat = phi1Rad - (N1 * Math.tan(phi1Rad) / R1) * (D * D / 2 - (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * eSquared) * Math.pow(D, 4) / 24
+                + (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * eSquared - 3 * C1 * C1) * Math.pow(D, 6) / 720);
+            
+            const lon = ((zoneNumber - 1) * 6 - 180 + 3) * Math.PI / 180 + (D - (1 + 2 * T1 + C1) * Math.pow(D, 3) / 6
+                + (5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * eSquared + 24 * T1 * T1) * Math.pow(D, 5) / 120) / Math.cos(phi1Rad);
+            
+            // 转换为度数
+            const longitude = lon * 180 / Math.PI;
+            const latitude = lat * 180 / Math.PI;
+            
+            // 对坐标进行微调，确保在有效范围内
+            const adjustedLon = Math.max(-179.9999, Math.min(179.9999, longitude));
+            const adjustedLat = Math.max(-89.9999, Math.min(89.9999, latitude));
+            
+            if (!isNaN(adjustedLon) && !isNaN(adjustedLat)) {
+                return [adjustedLon, adjustedLat];
+            } else {
+                console.error('转换后得到无效坐标:', longitude, latitude);
+                return null;
+            }
+        } catch (error) {
+            console.error('UTM坐标转换错误:', error, '坐标:', utmX, utmY);
+            return null;
+        }
+        }
+        
+        // 在地图上显示路径
+        function displayPathsOnMap(paths) {
+            console.log('开始在地图上显示路径...');
+            
+            paths.forEach((path, index) => {
+                try {
+                    // 注意：CostPath_Tang.json中的坐标格式是EPSG:32648 (UTM投影)，需要转换为WGS84经纬度
+                    const coordinates = path.geometry.coordinates;
+                    
+                    // 检查坐标格式并转换
+                    let pathCoordinates = [];
+                    if (coordinates && coordinates.length > 0) {
+                        // 检查第一个元素是否为数组（确保是坐标对数组）
+                        if (Array.isArray(coordinates[0])) {
+                            // 转换UTM坐标为经纬度
+                            pathCoordinates = coordinates.map(utmCoord => {
+                                // UTM坐标格式为 [x, y]，需要转换为 [longitude, latitude]
+                                try {
+                                    const [lon, lat] = utmToLatLon(utmCoord[0], utmCoord[1], 48, true);
+                                    
+                                    // 检查转换后的经纬度是否有效
+                                    if (isNaN(lon) || isNaN(lat) || 
+                                        lon < -180 || lon > 180 || 
+                                        lat < -90 || lat > 90) {
+                                        console.warn(`转换后得到无效坐标: [${lon}, ${lat}]`);
+                                        return null;
+                                    }
+                                    
+                                    // 对坐标进行微调，确保在有效范围内
+                                    const adjustedLon = Math.max(-179.9999, Math.min(179.9999, lon));
+                                    const adjustedLat = Math.max(-89.9999, Math.min(89.9999, lat));
+                                    
+                                    return [adjustedLon, adjustedLat];
+                                } catch (error) {
+                                    console.warn(`转换坐标时出错: ${error}`);
+                                    return null; // 转换失败的坐标点
+                                }
+                            }).filter(coord => coord !== null); // 过滤掉转换失败的点
+                        } else {
+                            // 格式不正确，跳过该路径
+                            console.warn(`路径${index}的坐标格式不正确`);
+                            return;
+                        }
+                    }
+                    
+                    // 只创建有有效坐标的路径
+                    if (pathCoordinates.length > 1) {
+                        // 创建路径线
+                        const polyline = new AMap.Polyline({
+                            path: pathCoordinates,
+                            strokeColor: '#F5D020',
+                            strokeWeight: 4,
+                            strokeOpacity: 0.8,
+                            strokeStyle: 'solid',
+                            lineJoin: 'round',
+                            lineCap: 'round',
+                            zIndex: 50
+                        });
+                        
+                        // 直接添加路径到地图
+                        polyline.setMap(map);
+                        pathLines.push(polyline);
+                    } else {
+                        console.warn(`路径${index}没有足够的有效坐标点进行显示`);
+                    }
+                } catch (error) {
+                    console.error(`处理路径数据时出错: ${error}`);
+                }
+            });
+            
+            console.log('路径显示完成');
+        }
+        
+        // 显示城市信息
+        function showCityInfo(name, coordinates) {
+            console.log(`显示城市信息: ${name}，坐标: ${coordinates}`);
+
+            // 获取城市的作用和节点角信息
+            // 这里我们需要根据实际数据结构调整，以下为示例实现
+            let cityRole = '暂无信息';
+            let nodeAngle = '暂无信息';
+            
+            // 尝试根据城市名称推断一些基本信息
+            if (name === '西安') {
+                cityRole = '起点城市，中原文化中心';
+                nodeAngle = '重要交通枢纽';
+            } else if (name === '雅安' || name === '普洱') {
+                cityRole = '茶叶产地，贸易起点';
+                nodeAngle = '商品供应节点';
+            } else if (name === '拉萨') {
+                cityRole = '终点城市，文化交流中心';
+                nodeAngle = '文化传播节点';
+            } else if (name === '乌兰察布') {
+                cityRole = '草原贸易中心';
+                nodeAngle = '北方贸易节点';
+            } else if (name === '密支那') {
+                cityRole = '边境贸易城市';
+                nodeAngle = '国际商贸节点';
+            } else if (name === '武夷山') {
+                cityRole = '重要茶产区';
+                nodeAngle = '茶叶供应节点';
+            }
+
+            // 创建信息窗口，使用复古棕色配色方案
+            const infoWindow = new AMap.InfoWindow({
+                content: `
+                    <div style="padding: 15px; background-color: #f5e6d3; border-radius: 8px; box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3); border: 2px solid #8B4513;">
+                        <h3 style="margin: 0 0 10px 0; color: #8B4513; font-size: 18px; font-weight: bold; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); border-bottom: 1px solid #d2b48c; padding-bottom: 5px;">${name}</h3>
+                        <p style="margin: 8px 0; font-size: 15px; color: #5d4037;">经度: ${coordinates[0].toFixed(4)}</p>
+                        <p style="margin: 8px 0; font-size: 15px; color: #5d4037;">纬度: ${coordinates[1].toFixed(4)}</p>
+                        <p style="margin: 8px 0; font-size: 15px; color: #5d4037;">作用: ${cityRole}</p>
+                        <p style="margin: 8px 0; font-size: 15px; color: #5d4037;">节点角: ${nodeAngle}</p>
+                    </div>
+                `,
+                offset: new AMap.Pixel(0, -30)
+            });
+
+            // 打开信息窗口
+            infoWindow.open(map, coordinates);
+        }
+        
+        // 存储所有城市数据的全局变量
+        let allCities = [];
+        
+        // 显示错误信息
+        function showErrorMessage(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '50%';
+            errorDiv.style.left = '50%';
+            errorDiv.style.transform = 'translate(-50%, -50%)';
+            errorDiv.style.backgroundColor = 'rgba(220, 53, 69, 0.9)';
+            errorDiv.style.color = 'white';
+            errorDiv.style.padding = '20px';
+            errorDiv.style.borderRadius = '8px';
+            errorDiv.style.zIndex = '1000';
+            errorDiv.style.textAlign = 'center';
+            errorDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+            errorDiv.style.maxWidth = '80%';
+            errorDiv.textContent = message;
+            
+            document.body.appendChild(errorDiv);
+            
+            // 5秒后自动移除
+            setTimeout(() => {
+                errorDiv.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(errorDiv);
+                }, 500);
+            }, 5000);
+        }
+        
+        // 显示API密钥提示
+        function showApiKeyWarning() {
+            const warningDiv = document.createElement('div');
+            warningDiv.style.position = 'fixed';
+            warningDiv.style.top = '20px';
+            warningDiv.style.left = '50%';
+            warningDiv.style.transform = 'translateX(-50%)';
+            warningDiv.style.backgroundColor = 'rgba(255, 193, 7, 0.9)';
+            warningDiv.style.color = '#212529';
+            warningDiv.style.padding = '15px 20px';
+            warningDiv.style.borderRadius = '8px';
+            warningDiv.style.zIndex = '1000';
+            warningDiv.style.textAlign = 'center';
+            warningDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+            warningDiv.style.maxWidth = '90%';
+            warningDiv.innerHTML = `
+                <strong>注意：</strong>请在route.html文件中替换为可用的高德地图API密钥，
+                否则地图功能将无法正常使用。<br>
+                您可以在<a href="https://lbs.amap.com/" style="color: #007bff; text-decoration: underline;" target="_blank">高德地图开放平台</a>申请免费API密钥。
+            `;
+            
+            document.body.appendChild(warningDiv);
+            
+            // 1秒后自动移除
+            setTimeout(() => {
+                warningDiv.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(warningDiv);
+                }, 50);
+            }, 1000);
+        }
+        
+        // 显示加载完成通知
+        function showLoadCompleteMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.position = 'fixed';
+            messageDiv.style.bottom = '20px';
+            messageDiv.style.left = '50%';
+            messageDiv.style.transform = 'translateX(-50%)';
+            messageDiv.style.backgroundColor = 'rgba(40, 167, 69, 0.9)';
+            messageDiv.style.color = 'white';
+            messageDiv.style.padding = '15px 20px';
+            messageDiv.style.borderRadius = '8px';
+            messageDiv.style.zIndex = '1000';
+            messageDiv.style.textAlign = 'center';
+            messageDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+            messageDiv.style.maxWidth = '90%';
+            messageDiv.textContent = message || '三维地图和数据加载完成！您可以使用地图控制按钮查看茶马古道路线和城市点。';
+            
+            document.body.appendChild(messageDiv);
+            
+            // 15秒后自动移除
+            setTimeout(() => {
+                messageDiv.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(messageDiv);
+                }, 500);
+            }, 15000);
+        }
+        
+        // 显示城市列表
+        function displayCitiesList(cities) {
+            console.log('开始显示城市列表...');
+            
+            const citiesContainer = document.getElementById('cities-content');
+            let htmlContent = '<ul>';
+            
+            cities.forEach((city, index) => {
+                try {
+                    // 检查城市数据对象的完整性（适配Esri格式）
+                    if (!city || !city.geometry || !city.attributes) {
+                        console.warn(`跳过不完整的城市数据对象，索引: ${index}`);
+                        return;
+                    }
+                    
+                    // 从Esri格式中提取数据
+                    const x = city.geometry.x;
+                    const y = city.geometry.y;
+                    const attributes = city.attributes;
+                    const name = attributes.城市 || '';
+                    const coordinates = [x, y];
+                    
+                    // 确定点的类型（是否是起点或终点）
+                    let typeClass = "city-node";
+                    let typeText = "途经城市";
+                    
+                    // 将第一个点设为起点，最后一个点设为终点
+                    if (index === 0) {
+                        typeClass = "city-start";
+                        typeText = "起点";
+                    } else if (index === cities.length - 1) {
+                        typeClass = "city-end";
+                        typeText = "终点";
+                    }
+                    
+                    htmlContent += `
+                        <li class="${typeClass}">
+                            <strong>${name}</strong> (${typeText})
+                            <span class="coordinates">经度: ${coordinates[0].toFixed(4)}, 纬度: ${coordinates[1].toFixed(4)}</span>
+                        </li>
+                    `;
+                } catch (error) {
+                    console.error(`处理城市数据时出错: ${error}`);
+                }
+            });
+            
+            htmlContent += '</ul>';
+            citiesContainer.innerHTML = htmlContent;
+            console.log('城市列表显示完成');
+        }
+        
+
+        
+        // 加载唐朝城市
+        function toggleLabels() {
+            console.log('开始加载唐朝城市...');
+            
+            // 清除现有标记
+            cityMarkers.forEach(marker => marker.setMap(null));
+            cityMarkers = [];
+            
+            // 加载唐朝城市数据
+            loadJSONFile('json/City_Tang.json').then(cities => {
+                if (cities && cities.features && cities.features.length > 0) {
+                    citiesData = cities.features;
+                    console.log(`成功加载唐朝城市数据，共 ${citiesData.length} 个城市`);
+                    displayCitiesOnMap(citiesData);
+                    displayCitiesList(citiesData);
+                    showLoadCompleteMessage();
+                } else {
+                    console.warn('未加载到有效的唐朝城市数据');
+                    showErrorMessage('加载唐朝城市数据失败');
+                }
+            }).catch(error => {
+                console.error('加载唐朝城市数据时出错:', error);
+                showErrorMessage('加载唐朝城市数据失败：' + error.message);
+            });
+        }
+        
+        // 显示历史信息
+        function showHistoricalNote() {
+            const noteElement = document.getElementById('historicalNote');
+            noteElement.style.display = 'block';
+        }
+        
+        // 隐藏历史信息
+        function hideHistoricalNote() {
+            const noteElement = document.getElementById('historicalNote');
+            noteElement.style.display = 'none';
+        }
+        
+        // 动态加载唐代路线（按城市顺序）
+        async function loadDynamicRoute() {
+            // 清除原有路径
+            console.log('清除原有路径...');
+            // 清除动态路径
+            while (pathLines.length > 0) {
+                const line = pathLines.pop();
+                if (line && line.setMap) {
+                    line.setMap(null);
+                }
+            }
+            // 清除静态路径
+            while (pathPolylines && pathPolylines.length > 0) {
+                const line = pathPolylines.pop();
+                if (line && line.setMap) {
+                    line.setMap(null);
+                }
+            }
+            
+            // 显示加载状态
+            showLoadCompleteMessage('正在动态加载茶马古道路线...');
+            
+            // 在加载路径时调整影像到最大分辨率，以便看清地形
+            map.setZoom(12, true); // 设置为最大缩放级别
+            map.setPitch(45, true); // 设置合适的俯仰角以查看地形
+            
+            try {
+                // 确保城市数据已加载
+                if (citiesData.length === 0) {
+                    console.log('正在加载城市数据...');
+                    const cities = await loadJSONFile('json/City_Tang.json');
+                    if (cities && cities.features && cities.features.length > 0) {
+                        citiesData = cities.features;
+                    } else {
+                        throw new Error('无法加载城市数据');
+                    }
+                }
+                
+                // 加载路径数据
+                console.log('正在加载路径数据...');
+                const paths = await loadJSONFile('json/CostPath_Tang.json');
+                if (!paths || !paths.features || paths.features.length === 0) {
+                    throw new Error('无法加载路径数据或数据为空');
+                }
+                
+                // 指定的城市顺序：紫阳→汉中→兰州→西宁→湟源→恰卜恰→玛多→玉树→那曲→拉萨
+                const targetCities = [
+                    '紫阳', '汉中', '兰州', '西宁', '湟源', '恰卜恰', '玛多', '玉树', '那曲', '拉萨'
+                ];
+                
+                // 从城市数据中找出目标城市的坐标
+                const targetCityCoords = [];
+                targetCities.forEach(cityName => {
+                    const city = citiesData.find(c => c.attributes.城市 === cityName);
+                    if (city && city.geometry && city.geometry.x !== undefined && city.geometry.y !== undefined) {
+                        targetCityCoords.push({
+                            name: cityName,
+                            coordinates: [city.geometry.x, city.geometry.y]
+                        });
+                    } else {
+                        console.warn(`未找到城市 ${cityName} 的数据`);
+                    }
+                });
+                
+                // 提取所有路径的坐标点并合并
+                let allPathPoints = [];
+                
+                // 处理CostPath_Tang.json中的每个feature (Esri JSON格式)
+                // 先收集所有有效路径段
+                let validPaths = [];
+                
+                paths.features.forEach((feature) => {
+                    if (feature.geometry && feature.geometry.paths && Array.isArray(feature.geometry.paths)) {
+                        // 遍历每个path
+                        feature.geometry.paths.forEach((path) => {
+                            if (Array.isArray(path) && path.length >= 2) {
+                                const convertedPath = [];
+                                
+                                // 遍历path中的每个坐标点
+                                path.forEach((utmCoord) => {
+                                    if (Array.isArray(utmCoord) && utmCoord.length >= 2) {
+                                        try {
+                                            // 使用固定的投影坐标系：WGS_1984_UTM_Zone_48N
+                            const zoneNumber = 48; // 固定区域号48
+                            const northernHemisphere = true; // 北半球
+
+                            // 添加调试信息
+                            console.log(`UTM坐标转换 (WGS_1984_UTM_Zone_48N): 东坐标=${utmCoord[0]}, 北坐标=${utmCoord[1]}`);
+                                            
+                                            // 转换UTM坐标为经纬度（WGS84坐标系）
+                                            const convertedCoords = utmToLatLon(utmCoord[0], utmCoord[1], zoneNumber, northernHemisphere);
+                                                
+                                            // 检查转换结果是否有效
+                                            if (convertedCoords && convertedCoords.length === 2 && !isNaN(convertedCoords[0]) && !isNaN(convertedCoords[1])) {
+                                                // 对坐标进行微调，确保在有效范围内
+                                                const adjustedLon = Math.max(-179.9999, Math.min(179.9999, convertedCoords[0]));
+                                                const adjustedLat = Math.max(-89.9999, Math.min(89.9999, convertedCoords[1]));
+                                                    
+                                                // 确保坐标有效后添加
+                                                if (!isNaN(adjustedLon) && !isNaN(adjustedLat)) {
+                                                    // 将WGS84坐标转换为GCJ-02坐标（高德地图使用的坐标系）
+                                                    const gcj02Coords = wgs84ToGcj02(adjustedLon, adjustedLat);
+                                                    if (gcj02Coords && gcj02Coords.length === 2 && !isNaN(gcj02Coords[0]) && !isNaN(gcj02Coords[1])) {
+                                                        // 高德地图API要求的坐标顺序是 [经度, 纬度]
+                                                        convertedPath.push([gcj02Coords[0], gcj02Coords[1]]);
+                                                    }
+                                                }
+                                            }
+                                        } catch (error) {
+                                            console.warn(`坐标转换失败: ${error}`);
+                                        }
+                                    }
+                                });
+                                
+                                // 只有当路径段有足够有效点时才添加
+                                if (convertedPath.length >= 2) {
+                                    validPaths.push(convertedPath);
+                                }
+                            }
+                        });
+                    }
+                });
+                
+                // 检测路径连续性并连接路径段
+                if (validPaths.length > 0) {
+                    // 第一个路径直接添加
+                    allPathPoints = allPathPoints.concat(validPaths[0]);
+                    
+                    // 设置连续性阈值（约5公里）
+                    const continuityThreshold = 0.05; // 弧度约等于5公里
+                    
+                    // 遍历剩余路径段并检测连续性
+                    for (let i = 1; i < validPaths.length; i++) {
+                        const lastPath = validPaths[i-1];
+                        const currentPath = validPaths[i];
+                        
+                        // 获取上一路径终点和当前路径起点
+                        const lastPathEnd = lastPath[lastPath.length - 1];
+                        const currentPathStart = currentPath[0];
+                        const currentPathEnd = currentPath[currentPath.length - 1];
+                        
+                        // 计算距离
+                        const distanceToStart = Math.sqrt(
+                            Math.pow(lastPathEnd[0] - currentPathStart[0], 2) + 
+                            Math.pow(lastPathEnd[1] - currentPathStart[1], 2)
+                        );
+                        
+                        const distanceToEnd = Math.sqrt(
+                            Math.pow(lastPathEnd[0] - currentPathEnd[0], 2) + 
+                            Math.pow(lastPathEnd[1] - currentPathEnd[1], 2)
+                        );
+                        
+                        // 判断是否需要反转当前路径
+                        let pathToAdd = currentPath;
+                        if (distanceToEnd < distanceToStart && distanceToEnd < continuityThreshold) {
+                            // 如果当前路径终点离上一路径终点更近且在阈值内，则反转路径
+                            pathToAdd = currentPath.reverse();
+                            console.log(`路径段 ${i} 与上一路径不连续，已反转`);
+                        } else if (distanceToStart > continuityThreshold) {
+                            console.warn(`路径段 ${i} 与上一路径不连续，距离过大: ${distanceToStart.toFixed(4)} 弧度`);
+                            // 自动遍历各路径，找到连续点
+                            let bestMatchDistance = continuityThreshold;
+                            let bestMatchIndex = -1;
+                            
+                            // 遍历当前路径的所有点，查找与上一路径终点最近的点
+                            for (let j = 0; j < currentPath.length; j++) {
+                                const matchDistance = Math.sqrt(
+                                    Math.pow(lastPathEnd[0] - currentPath[j][0], 2) + 
+                                    Math.pow(lastPathEnd[1] - currentPath[j][1], 2)
+                                );
+                                
+                                if (matchDistance < bestMatchDistance) {
+                                    bestMatchDistance = matchDistance;
+                                    bestMatchIndex = j;
+                                }
+                            }
+                            
+                            if (bestMatchIndex >= 0) {
+                                console.log(`找到路径段 ${i} 的连续点，位于索引 ${bestMatchIndex}`);
+                                // 截取从匹配点开始的路径段
+                                pathToAdd = currentPath.slice(bestMatchIndex);
+                            }
+                        }
+                        
+                        // 添加路径段，避免重复点
+                        if (pathToAdd[0][0] !== allPathPoints[allPathPoints.length - 1][0] || 
+                            pathToAdd[0][1] !== allPathPoints[allPathPoints.length - 1][1]) {
+                            allPathPoints = allPathPoints.concat(pathToAdd);
+                        } else {
+                            // 如果起点相同，则从第二个点开始添加
+                            allPathPoints = allPathPoints.concat(pathToAdd.slice(1));
+                        }
+                    }
+                }
+                
+                // 如果没有足够的有效点，显示错误
+                if (allPathPoints.length < 2) {
+                    console.error('没有足够的有效坐标点来显示路线');
+                    showErrorMessage('没有足够的有效坐标点来显示路线，请检查路径数据格式');
+                    return;
+                }
+                
+
+                
+                // 优化路径点，移除异常点和过于密集的点
+                let optimizedPoints = [allPathPoints[0]]; // 保留第一个点
+                const minDistance = 0.001; // 最小距离阈值（约111米）
+                const maxDistance = 1.0; // 最大距离阈值（约111公里，超过这个距离认为是异常点）
+                
+                for (let i = 1; i < allPathPoints.length; i++) {
+                    const lastPoint = optimizedPoints[optimizedPoints.length - 1];
+                    const currentPoint = allPathPoints[i];
+                    
+                    // 计算两点之间的距离
+                    const distance = Math.sqrt(
+                        Math.pow(lastPoint[0] - currentPoint[0], 2) + 
+                        Math.pow(lastPoint[1] - currentPoint[1], 2)
+                    );
+                    
+                    // 只保留距离合适的点（不太近也不太远）
+                    if (distance > minDistance && distance < maxDistance) {
+                        optimizedPoints.push(currentPoint);
+                    } else if (distance >= maxDistance) {
+                        // 对于距离过大的点（异常点），创建中间点来平滑过渡
+                        console.log(`发现异常距离点，添加中间点进行平滑过渡`);
+                        
+                        // 添加中间点来创建更平滑的过渡
+                        const numMiddlePoints = Math.ceil(distance / maxDistance);
+                        for (let j = 1; j <= numMiddlePoints; j++) {
+                            const t = j / (numMiddlePoints + 1);
+                            const middleLon = lastPoint[0] + (currentPoint[0] - lastPoint[0]) * t;
+                            const middleLat = lastPoint[1] + (currentPoint[1] - lastPoint[1]) * t;
+                            optimizedPoints.push([middleLon, middleLat]);
+                        }
+                    }
+                }
+                
+                // 确保保留最后一个点
+                if (optimizedPoints[optimizedPoints.length - 1] !== allPathPoints[allPathPoints.length - 1]) {
+                    optimizedPoints.push(allPathPoints[allPathPoints.length - 1]);
+                }
+                
+                allPathPoints = optimizedPoints;
+                
+                // 确保路径从紫阳开始，到拉萨结束
+                    const ziyangCoord = targetCityCoords.find(c => c.name === '紫阳')?.coordinates;
+                    const lhasaCoord = targetCityCoords.find(c => c.name === '拉萨')?.coordinates;
+
+                    if (ziyangCoord && lhasaCoord) {
+                        // 直接设置起点为紫阳，终点为拉萨
+                        // 1. 找到最接近紫阳的点作为起点
+                        let closestToZiyangIndex = 0;
+                        let minDistanceToZiyang = Infinity;
+                        
+                        allPathPoints.forEach((point, index) => {
+                            const distance = Math.sqrt(
+                                Math.pow(point[0] - ziyangCoord[0], 2) + 
+                                Math.pow(point[1] - ziyangCoord[1], 2)
+                            );
+                            if (distance < minDistanceToZiyang) {
+                                minDistanceToZiyang = distance;
+                                closestToZiyangIndex = index;
+                            }
+                        });
+                        
+                        // 2. 找到最接近拉萨的点作为终点
+                        let closestToLhasaIndex = 0;
+                        let minDistanceToLhasa = Infinity;
+                        
+                        allPathPoints.forEach((point, index) => {
+                            const distance = Math.sqrt(
+                                Math.pow(point[0] - lhasaCoord[0], 2) + 
+                                Math.pow(point[1] - lhasaCoord[1], 2)
+                            );
+                            if (distance < minDistanceToLhasa) {
+                                minDistanceToLhasa = distance;
+                                closestToLhasaIndex = index;
+                            }
+                        });
+                        
+                        // 3. 根据起点和终点的位置调整路径方向
+                        if (closestToZiyangIndex > closestToLhasaIndex) {
+                            // 如果紫阳在拉萨后面，则反转路径
+                            allPathPoints.reverse();
+                            // 重新计算索引
+                            const tempIndex = closestToZiyangIndex;
+                            closestToZiyangIndex = allPathPoints.length - 1 - closestToLhasaIndex;
+                            closestToLhasaIndex = allPathPoints.length - 1 - tempIndex;
+                        }
+                        
+                        // 4. 截取从紫阳附近到拉萨附近的路径段，确保路径完整性
+                        const adjustedPath = allPathPoints.slice(closestToZiyangIndex, closestToLhasaIndex + 1);
+                        
+                        // 5. 如果截取后的路径点太少，则保留完整路径
+                        if (adjustedPath.length >= 20) {
+                            allPathPoints = adjustedPath;
+                        }
+                        
+                        console.log(`路径已调整为从紫阳到拉萨，共${allPathPoints.length}个点`);
+                    }
+                
+                // 查找湟源的坐标，以便特别处理该段路径
+                const huangyuanIndex = targetCities.indexOf('湟源');
+                let huangyuanCoord = null;
+                if (huangyuanIndex !== -1) {
+                    huangyuanCoord = targetCityCoords[huangyuanIndex]?.coordinates;
+                }
+                
+                // 动态显示路线
+                let currentPointIndex = 0;
+                const segmentSize = 3; // 每次加载的点数量减少，使动画更平滑
+                let dynamicPolyline = new AMap.Polyline({
+                    path: [],
+                    strokeColor: 'red', // 
+                    strokeWeight: 10, // 增加线宽
+                    strokeOpacity: 0.95,
+                    strokeStyle: 'solid',
+                    lineJoin: 'round',
+                    lineCap: 'round',
+                    zIndex: 100
+                });
+                
+                dynamicPolyline.setMap(map);
+                pathLines.push(dynamicPolyline);
+                
+                // 创建初始线段
+                let currentPath = [allPathPoints[0], allPathPoints[1]];
+                dynamicPolyline.setPath(currentPath);
+                
+                // 创建马匹图标 - 用于移动的终点马匹
+                let horseMarker = null;
+                
+                // 创建路线起点的固定马匹图标
+                let startHorseMarker = null;
+                if (allPathPoints.length > 0 && Array.isArray(allPathPoints[0]) && allPathPoints[0].length === 2 &&
+                    !isNaN(allPathPoints[0][0]) && !isNaN(allPathPoints[0][1])) {
+                    startHorseMarker = new AMap.Marker({
+                        position: allPathPoints[0],
+                        icon: new AMap.Icon({
+                            size: new AMap.Size(32, 32),
+                            imageSize: new AMap.Size(32, 32),
+                            image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="startHorseGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%235D3A1A"/><stop offset="100%" stop-color="%238B4513"/></linearGradient><filter id="startShadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.3)"/></filter></defs><g filter="url(%23startShadow)"><path d="M16,5C14,5 12,6 10,7L9,10L7,11L6,14L7,17L8,18L9,21L12,22L14,20L16,21L18,20L19,22L22,21L23,18L24,17L25,14L24,11L22,10L21,7C19,6 17,5 16,5Z" fill="url(%23startHorseGradient)"/><path d="M12,8L14,10L12,12L10,10M10,12L12,14L10,16L8,14M12,16L14,18L12,20L10,18M16,8L18,10L16,12L14,10M14,12L16,14L14,16L12,14M16,16L18,18L16,20L14,18M18,12L20,14L18,16L16,14" fill="%233D2314" stroke="%231C140D" stroke-width="0.5"/></g></svg>'
+                        }),
+                        offset: new AMap.Pixel(-16, -16),
+                        zIndex: 102
+                    });
+                    startHorseMarker.setMap(map);
+                }
+                
+                // 开始动画加载路线
+                currentPointIndex = 2;
+                
+                const animationInterval = setInterval(() => {
+                    if (currentPointIndex >= allPathPoints.length) {
+                        // 动画结束
+                        clearInterval(animationInterval);
+                        showLoadCompleteMessage(`路线加载完成！按照 ${targetCities.join('→')} 的顺序显示`);
+                        return;
+                    }
+                    
+                    // 检查当前路径点是否有效
+                    if (!Array.isArray(allPathPoints[currentPointIndex]) || allPathPoints[currentPointIndex].length !== 2 ||
+                        isNaN(allPathPoints[currentPointIndex][0]) || isNaN(allPathPoints[currentPointIndex][1])) {
+                        console.warn(`跳过无效路径点: ${currentPointIndex}`);
+                        currentPointIndex++;
+                        return;
+                    }
+                    
+                    // 添加新的点
+                    const endIndex = Math.min(currentPointIndex + segmentSize, allPathPoints.length);
+                    const newPointsToAdd = [];
+                    
+                    for (let i = currentPointIndex; i < endIndex; i++) {
+                        // 严格检查每个点的有效性
+                        if (Array.isArray(allPathPoints[i]) && allPathPoints[i].length === 2 &&
+                            !isNaN(allPathPoints[i][0]) && !isNaN(allPathPoints[i][1]) &&
+                            isFinite(allPathPoints[i][0]) && isFinite(allPathPoints[i][1]) &&
+                            allPathPoints[i][0] >= -180 && allPathPoints[i][0] <= 180 &&
+                            allPathPoints[i][1] >= -90 && allPathPoints[i][1] <= 90) {
+                            newPointsToAdd.push(allPathPoints[i]);
+                        } else {
+                            console.warn(`跳过无效路径点[${i}]:`, allPathPoints[i]);
+                        }
+                    }
+                    
+                    // 只有在有有效点的情况下才更新路径
+                    if (newPointsToAdd.length > 0) {
+                        // 添加新点到当前路径
+                        currentPath = currentPath.concat(newPointsToAdd);
+                        
+                        // 额外的有效性检查
+                        if (currentPath.length < 2) {
+                            console.warn('路径点数量不足，无法绘制Polyline');
+                            // 确保至少有两个点
+                            while (currentPath.length < 2 && i < allPathPoints.length) {
+                                if (Array.isArray(allPathPoints[i]) && allPathPoints[i].length === 2 &&
+                                    !isNaN(allPathPoints[i][0]) && !isNaN(allPathPoints[i][1])) {
+                                    currentPath.push(allPathPoints[i]);
+                                }
+                                i++;
+                            }
+                        }
+                    }
+                    
+                    try {
+                        // 确保当前路径有效
+                        if (currentPath && currentPath.length >= 2) {
+                            // 过滤掉无效的路径点
+                            const validPath = currentPath.filter(point => 
+                                Array.isArray(point) && point.length === 2 &&
+                                !isNaN(point[0]) && !isNaN(point[1]) &&
+                                isFinite(point[0]) && isFinite(point[1])
+                            );
+                            
+                            if (validPath.length >= 2) {
+                                // 更新路径
+                                dynamicPolyline.setPath(validPath);
+                                
+                                // 保持currentPath与validPath同步
+                                currentPath = validPath;
+                            } else {
+                                console.warn('有效路径点不足，跳过更新');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('更新Polyline路径失败:', error);
+                        // 创建新的Polyline对象来解决可能的路径错误
+                        if (pathLines.length > 0) {
+                            const lastValidPoint = currentPath.find(point => 
+                                Array.isArray(point) && point.length === 2 &&
+                                !isNaN(point[0]) && !isNaN(point[1])
+                            );
+                            
+                            if (lastValidPoint) {
+                                // 移除旧的Polyline
+                                dynamicPolyline.setMap(null);
+                                
+                                // 创建新的Polyline - 使用金色路线保持一致性
+                                dynamicPolyline = new AMap.Polyline({
+                                    path: [lastValidPoint],
+                                    strokeColor: '#D4AF37', // 金色路线，保持一致性
+                                    strokeWeight: 8, // 保持粗线宽
+                                    strokeOpacity: 0.95,
+                                    strokeStyle: 'solid',
+                                    lineJoin: 'round',
+                                    lineCap: 'round',
+                                    zIndex: 100
+                                });
+                                dynamicPolyline.setMap(map);
+                                pathLines.push(dynamicPolyline);
+                                
+                                // 重置当前路径
+                                currentPath = [lastValidPoint];
+                            }
+                        }
+                    }
+                    
+                    // 更新马匹位置
+                    const horsePosition = currentPath[currentPath.length - 1];
+                    
+                    if (horsePosition && Array.isArray(horsePosition) && horsePosition.length === 2 && 
+                        !isNaN(horsePosition[0]) && !isNaN(horsePosition[1]) &&
+                        isFinite(horsePosition[0]) && isFinite(horsePosition[1])) {
+                        if (!horseMarker) {
+                            // 创建立体马匹图标
+                            horseMarker = new AMap.Marker({
+                                position: horsePosition,
+                                icon: new AMap.Icon({
+                                    size: new AMap.Size(32, 32),
+                                    imageSize: new AMap.Size(32, 32),
+                                    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="horseGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%235D3A1A"/><stop offset="100%" stop-color="%238B4513"/></linearGradient><filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.3)"/></filter></defs><g filter="url(%23shadow)"><path d="M16,5C14,5 12,6 10,7L9,10L7,11L6,14L7,17L8,18L9,21L12,22L14,20L16,21L18,20L19,22L22,21L23,18L24,17L25,14L24,11L22,10L21,7C19,6 17,5 16,5Z" fill="url(%23horseGradient)"/><path d="M12,8L14,10L12,12L10,10M10,12L12,14L10,16L8,14M12,16L14,18L12,20L10,18M16,8L18,10L16,12L14,10M14,12L16,14L14,16L12,14M16,16L18,18L16,20L14,18M18,12L20,14L18,16L16,14" fill="%233D2314" stroke="%231C140D" stroke-width="0.5"/></g></svg>'
+                                }),
+                                offset: new AMap.Pixel(-16, -16),
+                                zIndex: 101
+                            });
+                            horseMarker.setMap(map);
+                        } else {
+                            // 更新马匹位置
+                            horseMarker.setPosition(horsePosition);
+                        }
+                        
+                        // 添加增强的视角跟随功能，自动跟随路径连续点
+                        map.setCenter(horsePosition, true);
+                        
+                        // 标记当前经过的连续点
+                        if (currentPath.length > 1) {
+                            const lastPoint = currentPath[currentPath.length - 2];
+                            const currentPoint = currentPath[currentPath.length - 1];
+                            const segmentDistance = Math.sqrt(
+                                Math.pow(lastPoint[0] - currentPoint[0], 2) + 
+                                Math.pow(lastPoint[1] - currentPoint[1], 2)
+                            );
+                            
+                            // 当经过重要路径点或路径变化较大时，记录为连续点
+                            if (segmentDistance > 0.01) { // 距离大于约1公里的点作为重要连续点
+                                console.log(`经过重要连续点: [${currentPoint[0].toFixed(4)}, ${currentPoint[1].toFixed(4)}]`);
+                            }
+                        }
+                        
+                        // 调整地图视角使其更贴近路线，动态计算缩放级别以匹配路径分辨率
+                        // 根据当前路径段的长度和复杂性动态调整缩放级别
+                        let dynamicZoomLevel = 6; // 默认缩放级别
+                        
+                        // 获取当前已加载路径的部分
+                        const currentPathLength = currentPath.length;
+                        if (currentPathLength > 2) {
+                            // 计算最近一段路径的总长度
+                            let recentPathLength = 0;
+                            const segmentToCheck = Math.min(20, currentPathLength - 1); // 检查最近20个点
+                            
+                            for (let i = currentPathLength - segmentToCheck; i < currentPathLength - 1; i++) {
+                                if (i >= 0) {
+                                    const distance = Math.sqrt(
+                                        Math.pow(currentPath[i][0] - currentPath[i+1][0], 2) + 
+                                        Math.pow(currentPath[i][1] - currentPath[i+1][1], 2)
+                                    );
+                                    recentPathLength += distance;
+                                }
+                            }
+                            
+                            // 根据路径密度调整缩放级别
+                            const avgDistance = recentPathLength / segmentToCheck;
+                            
+                            // 路径越密集，缩放级别越高，尽量接近最大分辨率
+                        if (avgDistance < 0.002) { // 超密集路径
+                            dynamicZoomLevel = 12; // 最大分辨率
+                        } else if (avgDistance < 0.005) { // 非常密集的路径
+                            dynamicZoomLevel = 11;
+                        } else if (avgDistance < 0.01) { // 密集的路径
+                            dynamicZoomLevel = 10;
+                        } else if (avgDistance < 0.02) { // 中等密度
+                            dynamicZoomLevel = 9;
+                        } else if (avgDistance < 0.05) { // 较稀疏
+                            dynamicZoomLevel = 8;
+                        } else {
+                            dynamicZoomLevel = 7;
+                        }
+                        }
+                        
+                        // 限制缩放级别的范围
+                        dynamicZoomLevel = Math.max(5, Math.min(12, dynamicZoomLevel));
+                        
+                        // 设置动态计算的缩放级别
+                        map.setZoom(dynamicZoomLevel, true);
+                        
+                        // 根据缩放级别调整俯仰角，缩放级别越高，俯仰角越大
+                        const dynamicPitch = Math.min(60, 30 + (dynamicZoomLevel - 5) * 5);
+                        map.setPitch(dynamicPitch, true);
+                    }
+                    
+                    currentPointIndex = endIndex;
+                }, 80); // 每80毫秒添加一段路径，使动画更流畅
+                
+                // 更新状态栏信息
+                const totalLength = calculateRouteLength(paths);
+                const historicalSpan = '唐代 (618-907)';
+                const stationCount = citiesData ? citiesData.length : 0;
+                const maxAltitude = 5265.88; // 唐代路径的估计最高海拔
+                updateStatusBar(totalLength, historicalSpan, stationCount, maxAltitude);
+                
+            } catch (error) {
+                console.error('动态加载路线失败:', error);
+                showErrorMessage('动态加载路线失败，请重试');
+            }
+        }
+        
+        // 加载宋代城市数据
+        async function loadSongCities() {
+            try {
+                // 显示加载状态
+                showLoadCompleteMessage('正在加载宋代城市数据...');
+                
+                // 清除现有的城市标记
+                if (cityMarkers.length > 0) {
+                    map.remove(cityMarkers);
+                    cityMarkers = [];
+                }
+                
+                // 重置搜索数据库
+                allCities = [];
+                
+                // 加载宋代城市数据
+                const songCities = await loadJSONFile('json/City_Song.json');
+                if (!songCities || !songCities.features || songCities.features.length === 0) {
+                    throw new Error('无法加载宋代城市数据或数据为空');
+                }
+                
+                // 收集所有城市数据
+                songCities.features.forEach(city => {
+                    if (city.geometry && city.attributes) {
+                        const name = city.attributes.城市 || `城市`;
+                        const coordinates = [city.geometry.x, city.geometry.y];
+                        allCities.push({ name, coordinates });
+                    }
+                });
+                
+                // 显示宋代城市
+                displaySongCities(songCities.features);
+                
+                // 显示加载完成消息
+                showLoadCompleteMessage('宋代城市数据加载完成！');
+            } catch (error) {
+                console.error('加载宋代城市数据时出错:', error);
+                showErrorMessage('加载宋代城市数据失败：' + error.message);
+            }
+        }
+        
+        // 显示宋代城市
+        function displaySongCities(cities) {
+            console.log('开始显示宋代城市...');
+            
+            // 清除现有城市列表
+            const citiesContainer = document.getElementById('cities-content');
+            citiesContainer.innerHTML = '<p>加载中...</p>';
+            
+            let htmlContent = '<ul>';
+            
+            cities.forEach((city, index) => {
+                try {
+                    // 检查城市数据对象的完整性
+                    if (!city || !city.geometry || !city.attributes) {
+                        console.warn(`跳过不完整的宋代城市数据对象，索引: ${index}`);
+                        return;
+                    }
+                    
+                    // 从Esri格式中提取数据
+                    const x = city.geometry.x;
+                    const y = city.geometry.y;
+                    const attributes = city.attributes;
+                    const name = attributes.城市 || `城市${index + 1}`;
+                    const coordinates = [x, y];
+                    
+                    // 确定点的类型（是否是起点或终点）
+                    let iconColor = '#A0522D'; // 默认途经城市颜色
+                    let iconSize = [30, 30];
+                    let iconSvg = '';
+                    
+                    if (name === '西安' || name === '雅安' || name === '普洱') {
+                        // 起点图标 - 绿色旗帜
+                        iconColor = '#4CAF50';
+                        iconSize = [40, 40];
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <path d="M20 5L30 25H5z" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                            <path d="M20 5v30" stroke="#F5F5DC" stroke-width="3"/>
+                        </svg>`;
+                    } else if (name === '拉萨') {
+                        // 终点图标 - 金色地标
+                        iconColor = '#F5D020';
+                        iconSize = [40, 40];
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <circle cx="20" cy="15" r="10" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                            <polygon points="20 25 10 35 30 35" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                        </svg>`;
+                    } else {
+                        // 途经城市图标 - 位置标记
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                            <path d="M15 5c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10-4.5-10-10-10zm0 15c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5zm0-8c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z" fill="${iconColor}" stroke="#F5F5DC" stroke-width="1.5"/>
+                        </svg>`;
+                    }
+                    
+                    // 创建城市标记
+                    const marker = new AMap.Marker({
+                        position: coordinates,
+                        title: name,
+                        icon: new AMap.Icon({
+                            size: iconSize,
+                            image: `data:image/svg+xml;utf-8,${encodeURIComponent(iconSvg)}`,
+                            imageSize: iconSize
+                        }),
+                        zIndex: 101,
+                        extData: {
+                            name: name,
+                            type: (name === '西安' || name === '雅安' || name === '普洱') ? 'start' : (name === '拉萨' ? 'end' : 'normal')
+                        }
+                    });
+                    
+                    // 存储城市信息
+                    marker.setExtData({ name: name });
+                    
+                    // 添加标记到地图
+                    marker.setMap(map);
+                    cityMarkers.push(marker);
+                    
+                    // 添加点击事件
+                    marker.on('click', function() {
+                        showCityInfo(name, coordinates);
+                    });
+                    
+                    // 添加标签
+                    if (labelsVisible) {
+                        addMarkerLabel(marker, name);
+                    }
+                    
+                    // 确定点的类型
+                    let typeClass = "city-node";
+                    let typeText = "途经城市";
+                    
+                    // 如果是起点或终点
+                    if (index === 0) {
+                        typeClass = "city-start";
+                        typeText = "起点";
+                    } else if (index === cities.length - 1) {
+                        typeClass = "city-end";
+                        typeText = "终点";
+                    }
+                    
+                    htmlContent += `
+                        <li class="${typeClass}">
+                            <strong>${name}</strong> (${typeText}) - 宋代
+                            <span class="coordinates">经度: ${coordinates[0].toFixed(4)}, 纬度: ${coordinates[1].toFixed(4)}</span>
+                        </li>
+                    `;
+                } catch (error) {
+                    console.error(`处理宋代城市数据时出错: ${error}`);
+                }
+            });
+            
+            htmlContent += '</ul>';
+            citiesContainer.innerHTML = htmlContent;
+            console.log('宋代城市显示完成');
+        }
+        
+        // 全局变量，存储路径线
+        let pathPolylines = [];
+        
+        // 加载宋代路径数据
+        async function loadSongRoute() {
+            try {
+                // 显示加载状态
+                showLoadCompleteMessage('正在加载宋代路径数据...');
+                
+                // 清除原有路径
+                console.log('清除原有路径...');
+                // 清除动态路径
+                while (pathLines.length > 0) {
+                    const line = pathLines.pop();
+                    if (line && line.setMap) {
+                        line.setMap(null);
+                    }
+                }
+                // 清除静态路径
+                pathPolylines.forEach(polyline => polyline.setMap(null));
+                pathPolylines = [];
+                
+                // 加载宋代路径数据
+                const songPaths = await loadJSONFile('json/CostPath_Song.json');
+                if (!songPaths || !songPaths.features || songPaths.features.length === 0) {
+                    throw new Error('无法加载宋代路径数据或数据为空');
+                }
+                
+                // 在地图上显示路径
+                displayPathsOnMap(songPaths);
+                
+                // 显示加载完成消息
+                showLoadCompleteMessage('宋代路径数据加载完成！');
+                
+                // 更新状态栏信息
+                const totalLength = calculateRouteLength(songPaths);
+                const historicalSpan = '北宋-南宋 (960-1279)';
+                // 获取宋代城市数量
+                try {
+                    const songCitiesData = await loadJSONFile('json/City_Song.json');
+                    const stationCount = songCitiesData && songCitiesData.features ? songCitiesData.features.length : 0;
+                    const maxAltitude = 5486.54; // 宋代路径的估计最高海拔
+                    updateStatusBar(totalLength, historicalSpan, stationCount, maxAltitude);
+                } catch (error) {
+                    console.warn('获取宋代城市数量失败:', error);
+                    updateStatusBar(totalLength, historicalSpan, 0, 4500);
+                }
+            } catch (error) {
+                console.error('加载宋代路径数据时出错:', error);
+                showErrorMessage('加载宋代路径数据失败：' + error.message);
+            }
+        }
+        
+        // 加载明代城市数据
+        async function loadMingCities() {
+            try {
+                // 显示加载状态
+                showLoadCompleteMessage('正在加载明代城市数据...');
+                
+                // 清除现有的城市标记
+                if (cityMarkers.length > 0) {
+                    map.remove(cityMarkers);
+                    cityMarkers = [];
+                }
+                
+                // 重置搜索数据库
+                allCities = [];
+                
+                // 加载明代城市数据
+                const mingCities = await loadJSONFile('json/City_Ming.json');
+                if (!mingCities || !mingCities.features || mingCities.features.length === 0) {
+                    throw new Error('无法加载明代城市数据或数据为空');
+                }
+                
+                // 收集所有城市数据
+                mingCities.features.forEach(city => {
+                    if (city.geometry && city.attributes) {
+                        const name = city.attributes.城市 || `城市`;
+                        const coordinates = [city.geometry.x, city.geometry.y];
+                        allCities.push({ name, coordinates });
+                    }
+                });
+                
+                // 显示明代城市
+                displayMingCities(mingCities.features);
+                
+                // 显示加载完成消息
+                showLoadCompleteMessage('明代城市数据加载完成！');
+            } catch (error) {
+                console.error('加载明代城市数据时出错:', error);
+                showErrorMessage('加载明代城市数据失败：' + error.message);
+            }
+        }
+        
+        // 显示明代城市
+        function displayMingCities(cities) {
+            console.log('开始显示明代城市...');
+            
+            // 清除现有城市列表
+            const citiesContainer = document.getElementById('cities-content');
+            citiesContainer.innerHTML = '<p>加载中...</p>';
+            
+            let htmlContent = '<ul>';
+            
+            cities.forEach((city, index) => {
+                try {
+                    // 检查城市数据对象的完整性
+                    if (!city || !city.geometry || !city.attributes) {
+                        console.warn(`跳过不完整的明代城市数据对象，索引: ${index}`);
+                        return;
+                    }
+                    
+                    // 从Esri格式中提取数据
+                    const x = city.geometry.x;
+                    const y = city.geometry.y;
+                    const attributes = city.attributes;
+                    const name = attributes.城市 || `城市${index + 1}`;
+                    const coordinates = [x, y];
+                    
+                    // 检查坐标是否有效（非NaN且在合理范围内）
+                    if (!coordinates || coordinates.length !== 2 || 
+                        isNaN(coordinates[0]) || isNaN(coordinates[1]) ||
+                        coordinates[0] < -180 || coordinates[0] > 180 ||
+                        coordinates[1] < -90 || coordinates[1] > 90) {
+                        console.warn(`跳过无效坐标点 ${name}: ${coordinates}`);
+                        return;
+                    }
+                    
+                    // 确定点的类型（是否是起点或终点）
+                    let iconColor = '#A0522D'; // 默认途经城市颜色
+                    let iconSize = [30, 30];
+                    let iconSvg = '';
+                    
+                    if (name === '西安' || name === '武夷山' || name === '雅安' || name === '普洱') {
+                        // 起点图标 - 绿色旗帜
+                        iconColor = '#4CAF50';
+                        iconSize = [40, 40];
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <path d="M20 5L30 25H5z" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                            <path d="M20 5v30" stroke="#F5F5DC" stroke-width="3"/>
+                        </svg>`;
+                    } else if (name === '拉萨' || name === '密支那' || name === '乌兰察布') {
+                        // 终点图标 - 金色地标
+                        iconColor = '#F5D020';
+                        iconSize = [40, 40];
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <circle cx="20" cy="15" r="10" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                            <polygon points="20 25 10 35 30 35" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                        </svg>`;
+                    } else {
+                        // 途经城市图标 - 位置标记
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                            <path d="M15 5c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10-4.5-10-10-10zm0 15c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5zm0-8c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z" fill="${iconColor}" stroke="#F5F5DC" stroke-width="1.5"/>
+                        </svg>`;
+                    }
+                    
+                    // 创建城市标记
+                    const marker = new AMap.Marker({
+                        position: coordinates,
+                        title: name,
+                        icon: new AMap.Icon({
+                            size: iconSize,
+                            image: `data:image/svg+xml;utf-8,${encodeURIComponent(iconSvg)}`,
+                            imageSize: iconSize
+                        }),
+                        zIndex: 101,
+                        extData: {
+                            name: name,
+                            type: (name === '西安' || name === '武夷山' || name === '雅安' || name === '普洱') ? 'start' : ((name === '拉萨' || name === '密支那' || name === '乌兰察布') ? 'end' : 'normal')
+                        }
+                    });
+                    
+                    // 存储城市信息
+                    marker.setExtData({ name: name });
+                    
+                    // 添加标记到地图
+                    marker.setMap(map);
+                    cityMarkers.push(marker);
+                    
+                    // 添加点击事件
+                    marker.on('click', function() {
+                        showCityInfo(name, coordinates);
+                    });
+                    
+                    // 添加标签
+                    if (labelsVisible) {
+                        addMarkerLabel(marker, name);
+                    }
+                    
+                    // 添加到城市列表
+                    htmlContent += `<li class="city-item ${(name === '西安' || name === '雅安' || name === '普洱') ? 'city-start' : (name === '拉萨' ? 'city-end' : 'city-node')}" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}])">
+                        <div class="city-name">${name}</div>
+                        <div class="city-coordinates">(${coordinates[0].toFixed(4)}, ${coordinates[1].toFixed(4)})</div>
+                    </li>`;
+                    
+                } catch (error) {
+                    console.error(`处理明代城市点数据时出错: ${error}`);
+                }
+            });
+            
+            // 完成城市列表
+            htmlContent += '</ul>';
+            citiesContainer.innerHTML = htmlContent;
+            
+            console.log('明代城市点显示完成');
+        }
+        
+        // 加载明代路径数据
+        async function loadMingRoute() {
+            try {
+                // 显示加载状态
+                showLoadCompleteMessage('正在加载明代路径数据...');
+                
+                // 清除原有路径
+                console.log('清除原有路径...');
+                // 清除动态路径
+                while (pathLines.length > 0) {
+                    const line = pathLines.pop();
+                    if (line && line.setMap) {
+                        line.setMap(null);
+                    }
+                }
+                // 清除静态路径
+                pathPolylines.forEach(polyline => polyline.setMap(null));
+                pathPolylines = [];
+                
+                // 加载明代路径数据
+                const mingPaths = await loadJSONFile('json/CostPath_Ming.json');
+                if (!mingPaths || !mingPaths.features || mingPaths.features.length === 0) {
+                    throw new Error('无法加载明代路径数据或数据为空');
+                }
+                
+                // 在地图上显示路径
+                displayPathsOnMap(mingPaths);
+                
+                // 显示加载完成消息
+                showLoadCompleteMessage('明代路径数据加载完成！');
+                
+                // 更新状态栏信息
+                const totalLength = calculateRouteLength(mingPaths);
+                const historicalSpan = '明朝 (1368-1644)';
+                // 获取明代城市数量
+                try {
+                    const mingCitiesData = await loadJSONFile('json/City_Ming.json');
+                    const stationCount = mingCitiesData && mingCitiesData.features ? mingCitiesData.features.length : 0;
+                    const maxAltitude = 5448.47; // 明代路径的估计最高海拔
+                    updateStatusBar(totalLength, historicalSpan, stationCount, maxAltitude);
+                } catch (error) {
+                    console.warn('获取明代城市数量失败:', error);
+                    updateStatusBar(totalLength, historicalSpan, 0, 4300);
+                }
+            } catch (error) {
+                console.error('加载明代路径数据时出错:', error);
+                showErrorMessage('加载明代路径数据失败：' + error.message);
+            }
+        }
+        
+        // 加载清代城市数据
+        async function loadQingCities() {
+            try {
+                // 显示加载状态
+                showLoadCompleteMessage('正在加载清代城市数据...');
+                
+                // 清除现有的城市标记
+                if (cityMarkers.length > 0) {
+                    map.remove(cityMarkers);
+                    cityMarkers = [];
+                }
+                
+                // 重置搜索数据库
+                allCities = [];
+                
+                // 加载清代城市数据
+                const qingCities = await loadJSONFile('json/City_Qing.json');
+                if (!qingCities || !qingCities.features || qingCities.features.length === 0) {
+                    throw new Error('无法加载清代城市数据或数据为空');
+                }
+                
+                // 收集所有城市数据
+                qingCities.features.forEach(city => {
+                    if (city.geometry && city.attributes) {
+                        const name = city.attributes.城市 || `城市`;
+                        const coordinates = [city.geometry.x, city.geometry.y];
+                        allCities.push({ name, coordinates });
+                    }
+                });
+                
+                // 显示清代城市
+                displayQingCities(qingCities.features);
+                
+                // 显示加载完成消息
+                showLoadCompleteMessage('清代城市数据加载完成！');
+            } catch (error) {
+                console.error('加载清代城市数据时出错:', error);
+                showErrorMessage('加载清代城市数据失败：' + error.message);
+            }
+        }
+        
+        // 显示清代城市
+        function displayQingCities(cities) {
+            console.log('开始显示清代城市...');
+            
+            // 清除现有城市列表
+            const citiesContainer = document.getElementById('cities-content');
+            citiesContainer.innerHTML = '<p>加载中...</p>';
+            
+            let htmlContent = '<ul>';
+            
+            cities.forEach((city, index) => {
+                try {
+                    // 检查城市数据对象的完整性
+                    if (!city || !city.geometry || !city.attributes) {
+                        console.warn(`跳过不完整的清代城市数据对象，索引: ${index}`);
+                        return;
+                    }
+                    
+                    // 从Esri格式中提取数据
+                    const x = city.geometry.x;
+                    const y = city.geometry.y;
+                    const attributes = city.attributes;
+                    const name = attributes.城市 || `城市${index + 1}`;
+                    const coordinates = [x, y];
+                    
+                    // 检查坐标是否有效（非NaN且在合理范围内）
+                    if (!coordinates || coordinates.length !== 2 || 
+                        isNaN(coordinates[0]) || isNaN(coordinates[1]) ||
+                        coordinates[0] < -180 || coordinates[0] > 180 ||
+                        coordinates[1] < -90 || coordinates[1] > 90) {
+                        console.warn(`跳过无效坐标点 ${name}: ${coordinates}`);
+                        return;
+                    }
+                    
+                    // 确定点的类型（是否是起点或终点）
+                    let iconColor = '#A0522D'; // 默认途经城市颜色
+                    let iconSize = [30, 30];
+                    let iconSvg = '';
+                    
+                    if (index === 0 || name === '紫阳' || name === '雅安') {
+                        // 起点图标 - 绿色旗帜
+                        iconColor = '#4CAF50';
+                        iconSize = [40, 40];
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <path d="M20 5L30 25H5z" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                            <path d="M20 5v30" stroke="#F5F5DC" stroke-width="3"/>
+                        </svg>`;
+                    } else if (name === '拉萨') {
+                        // 终点图标 - 金色地标
+                        iconColor = '#F5D020';
+                        iconSize = [40, 40];
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <circle cx="20" cy="15" r="10" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                            <polygon points="20 25 10 35 30 35" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                        </svg>`;
+                    } else {
+                        // 途经城市图标 - 位置标记
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                            <path d="M15 5c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10-4.5-10-10-10zm0 15c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5zm0-8c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z" fill="${iconColor}" stroke="#F5F5DC" stroke-width="1.5"/>
+                        </svg>`;
+                    }
+                    
+                    // 创建城市标记
+                    const marker = new AMap.Marker({
+                        position: coordinates,
+                        title: name,
+                        icon: new AMap.Icon({
+                            size: iconSize,
+                            image: `data:image/svg+xml;utf-8,${encodeURIComponent(iconSvg)}`,
+                            imageSize: iconSize
+                        }),
+                        zIndex: 101,
+                        extData: {
+                            name: name,
+                            type: (index === 0 || name === '紫阳' || name === '雅安') ? 'start' : (name === '拉萨' ? 'end' : 'normal')
+                        }
+                    });
+                    
+                    // 存储城市信息
+                    marker.setExtData({ name: name });
+                    
+                    // 添加标记到地图
+                    marker.setMap(map);
+                    cityMarkers.push(marker);
+                    
+                    // 添加点击事件
+                    marker.on('click', function() {
+                        showCityInfo(name, coordinates);
+                    });
+                    
+                    // 添加标签
+                    if (labelsVisible) {
+                        addMarkerLabel(marker, name);
+                    }
+                    
+                    // 添加到城市列表
+                    htmlContent += `<li class="city-item ${(name === '西安' || name === '武夷山' || name === '雅安' || name === '普洱') ? 'city-start' : ((name === '拉萨' || name === '密支那' || name === '乌兰察布') ? 'city-end' : 'city-node')}" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}])">
+                        <div class="city-name">${name}</div>
+                        <div class="city-coordinates">(${coordinates[0].toFixed(4)}, ${coordinates[1].toFixed(4)})</div>
+                    </li>`;
+                    
+                } catch (error) {
+                    console.error(`处理清代城市点数据时出错: ${error}`);
+                }
+            });
+            
+            // 完成城市列表
+            htmlContent += '</ul>';
+            citiesContainer.innerHTML = htmlContent;
+            
+            console.log('清代城市点显示完成');
+        }
+        
+        // 加载清代路径数据
+        async function loadQingRoute() {
+            try {
+                // 显示加载状态
+                showLoadCompleteMessage('正在加载清代路径数据...');
+                
+                // 清除原有路径
+                console.log('清除原有路径...');
+                // 清除动态路径
+                while (pathLines.length > 0) {
+                    const line = pathLines.pop();
+                    if (line && line.setMap) {
+                        line.setMap(null);
+                    }
+                }
+                // 清除静态路径
+                pathPolylines.forEach(polyline => polyline.setMap(null));
+                pathPolylines = [];
+                
+                // 加载清代路径数据
+                const qingPaths = await loadJSONFile('json/CostPath_Qing.json');
+                if (!qingPaths || !qingPaths.features || qingPaths.features.length === 0) {
+                    throw new Error('无法加载清代路径数据或数据为空');
+                }
+                
+                // 在地图上显示路径
+                displayPathsOnMap(qingPaths);
+                
+                // 显示加载完成消息
+                showLoadCompleteMessage('清代路径数据加载完成！');
+                
+                // 更新状态栏信息
+                const totalLength = calculateRouteLength(qingPaths);
+                const historicalSpan = '清朝 (1636-1912)';
+                // 获取清代城市数量
+                try {
+                    const qingCitiesData = await loadJSONFile('json/City_Qing.json');
+                    const stationCount = qingCitiesData && qingCitiesData.features ? qingCitiesData.features.length : 0;
+                    const maxAltitude = 5717.52; // 清代路径的估计最高海拔
+                    updateStatusBar(totalLength, historicalSpan, stationCount, maxAltitude);
+                } catch (error) {
+                    console.warn('获取清代城市数量失败:', error);
+                    updateStatusBar(totalLength, historicalSpan, 0, 4400);
+                }
+            } catch (error) {
+                console.error('加载清代路径数据时出错:', error);
+                showErrorMessage('加载清代路径数据失败：' + error.message);
+            }
+        }
+        // 加载茶叶传播节点
+        async function loadSpreadNodes() {
+            try {
+                // 显示加载状态
+                showLoadCompleteMessage('正在加载茶叶传播节点数据...');
+                
+                // 清除现有的城市标记
+                if (cityMarkers.length > 0) {
+                    map.remove(cityMarkers);
+                    cityMarkers = [];
+                }
+                
+                // 加载茶叶传播节点数据
+                const spreadNodes = await loadJSONFile('json/City_Spread.json');
+                if (!spreadNodes || !spreadNodes.features || spreadNodes.features.length === 0) {
+                    throw new Error('无法加载茶叶传播节点数据或数据为空');
+                }
+                
+                // 显示茶叶传播节点
+                displaySpreadNodes(spreadNodes.features);
+                
+                // 显示加载完成消息
+                showLoadCompleteMessage('茶叶传播节点数据加载完成！');
+            } catch (error) {
+                console.error('加载茶叶传播节点数据时出错:', error);
+                showErrorMessage('加载茶叶传播节点数据失败：' + error.message);
+            }
+        }
+        
+        // 显示茶叶传播节点
+        function displaySpreadNodes(nodes) {
+            console.log('开始显示茶叶传播节点...');
+            
+            // 清除现有城市列表
+            const citiesContainer = document.getElementById('cities-content');
+            citiesContainer.innerHTML = '<p>加载中...</p>';
+            
+            let htmlContent = '<ul>';
+            
+            nodes.forEach((node, index) => {
+                try {
+                    // 检查节点数据对象的完整性
+                    if (!node || !node.geometry || !node.attributes) {
+                        console.warn(`跳过不完整的茶叶传播节点数据对象，索引: ${index}`);
+                        return;
+                    }
+                    
+                    // 从Esri格式中提取数据
+                    const x = node.geometry.x;
+                    const y = node.geometry.y;
+                    const attributes = node.attributes;
+                    const name = attributes.城市名;
+                    const coordinates = [x, y];
+                    
+                    // 检查坐标是否有效（非NaN且在合理范围内）
+                    if (!coordinates || coordinates.length !== 2 || 
+                        isNaN(coordinates[0]) || isNaN(coordinates[1]) ||
+                        coordinates[0] < -180 || coordinates[0] > 180 ||
+                        coordinates[1] < -90 || coordinates[1] > 90) {
+                        console.warn(`跳过无效坐标点 ${name}: ${coordinates}`);
+                        return;
+                    }
+                    
+                    // 设置节点图标 - 使用蓝色圆形表示传播节点
+                    const iconColor = '#2196F3';
+                    const iconSize = [30, 30];
+                    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                        <circle cx="15" cy="15" r="10" fill="${iconColor}" stroke="#F5F5DC" stroke-width="1.5"/>
+                        <circle cx="15" cy="15" r="5" fill="#F5F5DC"/>
+                    </svg>`;
+                    
+                    // 创建节点标记
+                    const marker = new AMap.Marker({
+                        position: coordinates,
+                        title: name,
+                        icon: new AMap.Icon({
+                            size: iconSize,
+                            image: `data:image/svg+xml;utf-8,${encodeURIComponent(iconSvg)}`,
+                            imageSize: iconSize
+                        }),
+                        zIndex: 101,
+                        extData: {
+                            name: name,
+                            type: 'spread'
+                        }
+                    });
+                    
+                    // 存储节点信息
+                    marker.setExtData({ name: name });
+                    
+                    // 添加标记到地图
+                    marker.setMap(map);
+                    cityMarkers.push(marker);
+                    
+                    // 添加点击事件
+                    marker.on('click', function() {
+                        showCityInfo(name, coordinates);
+                    });
+                    
+                    // 添加标签
+                    if (labelsVisible) {
+                        addMarkerLabel(marker, name);
+                    }
+                    
+                    // 添加到节点列表
+                    htmlContent += `<li class="city-item city-spread" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}])">
+                        <div class="city-name">${name}</div>
+                        <div class="city-coordinates">(${coordinates[0].toFixed(4)}, ${coordinates[1].toFixed(4)})</div>
+                    </li>`;
+                    
+                } catch (error) {
+                    console.error(`处理茶叶传播节点数据时出错: ${error}`);
+                }
+            });
+            
+            // 完成节点列表
+            htmlContent += '</ul>';
+            citiesContainer.innerHTML = htmlContent;
+            
+            console.log('茶叶传播节点显示完成');
+        }
+        
+        // 加载海外传播路径
+        async function loadOverseaRoutes() {
+            try {
+                // 显示加载状态
+                showLoadCompleteMessage('正在加载中俄海外传播路径数据...');
+                
+                // 清除原有路径
+                console.log('清除原有路径...');
+                // 清除动态路径
+                while (pathLines.length > 0) {
+                    const line = pathLines.pop();
+                    if (line && line.setMap) {
+                        line.setMap(null);
+                    }
+                }
+                // 清除静态路径
+                pathPolylines.forEach(polyline => polyline.setMap(null));
+                pathPolylines = [];
+                
+                // 加载中俄海外传播路径数据
+                const overseaRoutes = await loadJSONFile('json/China_Russia_Oversea.json');
+                if (!overseaRoutes || !overseaRoutes.features || overseaRoutes.features.length === 0) {
+                    throw new Error('无法加载中俄海外传播路径数据或数据为空');
+                }
+                
+                // 在地图上显示路径
+                displayPathsOnMap(overseaRoutes);
+                
+                // 显示加载完成消息
+                showLoadCompleteMessage('中俄海外传播路径数据加载完成！');
+                
+                // 更新状态栏信息
+                const totalLength = calculateRouteLength(overseaRoutes);
+                const historicalSpan = '明清时期 (1368-1912)';
+                // 使用已加载的数据获取传播节点数量
+                const stationCount = overseaRoutes.features.length;
+                const maxAltitude = 2141.29; // 海外传播路径不需要海拔信息
+                updateStatusBar(totalLength, historicalSpan, stationCount, maxAltitude);
+            } catch (error) {
+                console.error('加载中俄海外传播路径数据时出错:', error);
+                showErrorMessage('加载中俄海外传播路径数据失败：' + error.message);
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = function() {
+            registerEventListeners();
+            initMap();
+        };
+        // 在地图上显示路径 - 使用高德地图API
+        function displayPathsOnMap(pathsData) {
+            console.log('开始在地图上显示路径...');
+            
+            try {
+                // 清除现有路径
+                if (pathPolylines.length > 0) {
+                    pathPolylines.forEach(polyline => polyline.setMap(null));
+                    pathPolylines = [];
+                }
+                
+                if (!pathsData || !pathsData.features || pathsData.features.length === 0) {
+                    console.warn('没有有效的路径数据可供显示');
+                    showErrorMessage('没有有效的路径数据可供显示');
+                    return;
+                }
+                
+                // 提取所有路径的坐标点并合并
+                let allPathPoints = [];
+                
+                // 先收集所有有效路径段
+                let validPaths = [];
+                
+                pathsData.features.forEach((feature) => {
+                    if (feature.geometry && feature.geometry.paths && Array.isArray(feature.geometry.paths)) {
+                        // 遍历每个path
+                        feature.geometry.paths.forEach((path) => {
+                            if (Array.isArray(path) && path.length >= 2) {
+                                const convertedPath = [];
+                                
+                                // 检查是否包含空间参考信息，判断是否为GCS_WGS_1984投影
+                                const isWGS84Projection = pathsData.spatialReference && pathsData.spatialReference.wkid === 4326;
+                                
+                                // 遍历path中的每个坐标点
+                                path.forEach((coord) => {
+                                    if (Array.isArray(coord) && coord.length >= 2) {
+                                        try {
+                                            let lon, lat;
+                                            
+                                            if (isWGS84Projection) {
+                                                // 对于GCS_WGS_1984投影（wkid:4326），直接使用经纬度坐标
+                                                console.log(`使用GCS_WGS_1984投影 (wkid:4326) 直接处理坐标: 经度=${coord[0]}, 纬度=${coord[1]}`);
+                                                lon = coord[0];
+                                                lat = coord[1];
+                                            } else {
+                                                // 使用固定的投影坐标系：WGS_1984_UTM_Zone_48N
+                                                const zoneNumber = 48; // 固定区域号48
+                                                const northernHemisphere = true; // 北半球
+
+                                                // 添加调试信息
+                                                console.log(`UTM坐标转换 (WGS_1984_UTM_Zone_48N): 东坐标=${coord[0]}, 北坐标=${coord[1]}`);
+                                                
+                                                // 转换UTM坐标为经纬度（WGS84坐标系）
+                                                const convertedCoords = utmToLatLon(coord[0], coord[1], zoneNumber, northernHemisphere);
+                                                
+                                                if (!convertedCoords || convertedCoords.length !== 2 || isNaN(convertedCoords[0]) || isNaN(convertedCoords[1])) {
+                                                    console.warn(`坐标转换失败，跳过此点`);
+                                                    return;
+                                                }
+                                                
+                                                lon = convertedCoords[0];
+                                                lat = convertedCoords[1];
+                                            }
+
+                                            // 对坐标进行微调，确保在有效范围内
+                                            const adjustedLon = Math.max(-179.9999, Math.min(179.9999, lon));
+                                            const adjustedLat = Math.max(-89.9999, Math.min(89.9999, lat));
+                                                
+                                            // 确保坐标有效后添加
+                                            if (!isNaN(adjustedLon) && !isNaN(adjustedLat)) {
+                                                // 将WGS84坐标转换为GCJ-02坐标（高德地图使用的坐标系）
+                                                const gcj02Coords = wgs84ToGcj02(adjustedLon, adjustedLat);
+                                                if (gcj02Coords && gcj02Coords.length === 2 && !isNaN(gcj02Coords[0]) && !isNaN(gcj02Coords[1])) {
+                                                    // 高德地图API要求的坐标顺序是 [经度, 纬度]
+                                                    convertedPath.push([gcj02Coords[0], gcj02Coords[1]]);
+                                                }
+                                            }
+                                        } catch (error) {
+                                            console.warn(`坐标转换失败: ${error}`);
+                                        }
+                                    }
+                                });
+                                
+                                // 只有当路径段有足够有效点时才添加
+                                if (convertedPath.length >= 2) {
+                                    validPaths.push(convertedPath);
+                                }
+                            }
+                        });
+                    }
+                });
+                
+                // 静态显示路径 - 只显示JSON中已有的路径点，不添加额外连接线
+                if (validPaths.length > 0) {
+                    console.log(`成功加载 ${validPaths.length} 段路径数据`);
+                    
+                    // 为每段路径单独创建折线，不进行合并或添加额外连接线
+                    validPaths.forEach((pathSegment, index) => {
+                        if (pathSegment.length >= 2) {
+                            console.log(`路径段 ${index+1}: ${pathSegment.length} 个点`);
+                            
+                            // 创建静态折线路径 - 使用高德地图API
+                            const polyline = new AMap.Polyline({
+                                path: pathSegment,
+                                strokeColor: '#FF0000',
+                                strokeOpacity: 0.8,
+                                strokeWeight: 10, // 线宽加粗
+                                strokeStyle: 'solid',
+                                lineJoin: 'round',
+                                lineCap: 'round'
+                            });
+                            
+                            // 将路径添加到地图
+                            polyline.setMap(map);
+                            pathPolylines.push(polyline);
+                        }
+                    });
+                    
+                    // 收集所有路径点用于调整地图视野
+                    let allPathPoints = [];
+                    validPaths.forEach(pathSegment => {
+                        allPathPoints = allPathPoints.concat(pathSegment);
+                    });
+                    
+                    // 调整地图视野以显示所有路径
+                    const pathBounds = new AMap.Bounds();
+                    allPathPoints.forEach(point => {
+                        pathBounds.extend(point);
+                    });
+                    
+                    // 如果有足够的点，调整地图视野
+                    if (allPathPoints.length > 0) {
+                        // 调整地图视野以显示所有路径
+                        map.setFitView(pathPolylines);
+                    }
+                    
+                    showLoadCompleteMessage('路径加载完成！');
+                } else {
+                    console.warn('未找到有效的路径段');
+                    showErrorMessage('未找到有效的路径段');
+                }
+            } catch (error) {
+                console.error('显示路径时出错:', error);
+                showErrorMessage('显示路径失败：' + error.message);
+            }
+        }
+        // 注册事件监听器
+        function registerEventListeners() {
+            console.log('注册事件监听器...');
+            
+            // 为所有工具栏按钮添加点击事件监听器
+            document.getElementById('toggleLabels')?.addEventListener('click', toggleLabels);
+            document.getElementById('loadDynamicRoute')?.addEventListener('click', loadDynamicRoute);
+            document.getElementById('loadSongCities')?.addEventListener('click', loadSongCities);
+            document.getElementById('loadSongRoute')?.addEventListener('click', loadSongRoute);
+            document.getElementById('loadMingCities')?.addEventListener('click', loadMingCities);
+            document.getElementById('loadMingRoute')?.addEventListener('click', loadMingRoute);
+            document.getElementById('loadQingCities')?.addEventListener('click', loadQingCities);
+            document.getElementById('loadQingRoute')?.addEventListener('click', loadQingRoute);
+            document.getElementById('loadSpreadNodes')?.addEventListener('click', loadSpreadNodes);
+            document.getElementById('loadOverseaRoutes')?.addEventListener('click', loadOverseaRoutes);
+            document.getElementById('toggleCitiesList')?.addEventListener('click', toggleCitiesList);
+            
+            // 为关闭历史注释按钮添加事件监听器
+            document.getElementById('closeNote')?.addEventListener('click', hideHistoricalNote);
+        }
+        
+        // 为工具栏切换按钮添加事件监听器
+        document.getElementById('toggle-controls')?.addEventListener('click', function() {
+            const controls = document.querySelector('.controls');
+            controls.classList.toggle('hidden');
+            showLoadCompleteMessage(controls.classList.contains('hidden') ? '功能列表已隐藏' : '功能列表已显示');
+        });
+        
+        document.getElementById('toggle-stats')?.addEventListener('click', function() {
+            const stats = document.querySelector('.stats');
+            stats.classList.toggle('hidden');
+            showLoadCompleteMessage(stats.classList.contains('hidden') ? '信息栏已隐藏' : '信息栏已显示');
+        });
+        
+        document.getElementById('toggle-cities-list')?.addEventListener('click', function() {
+            const citiesList = document.getElementById('cities-list');
+            citiesList.classList.toggle('hidden');
+            showLoadCompleteMessage(citiesList.classList.contains('hidden') ? '城市列表已隐藏' : '城市列表已显示');
+        });
+        
+        // 添加工具栏拖动功能
+        function makeToolbarDraggable(elementId, handleSelector) {
+            const element = document.getElementById(elementId) || document.querySelector(elementId);
+            if (!element) return;
+            
+            const handle = element.querySelector(handleSelector);
+            if (!handle) return;
+            
+            // 添加拖动样式提示
+            handle.style.cursor = 'move';
+            handle.style.userSelect = 'none';
+            
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // 获取鼠标位置在视窗中的坐标
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+            
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // 计算新的鼠标位置
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                
+                // 设置元素新位置
+                const newTop = (element.offsetTop - pos2);
+                const newLeft = (element.offsetLeft - pos1);
+                
+                // 确保元素不会被拖出视窗
+                const maxTop = window.innerHeight - element.offsetHeight;
+                const maxLeft = window.innerWidth - element.offsetWidth;
+                
+                element.style.top = (newTop > 0 && newTop < maxTop) ? newTop + "px" : element.style.top;
+                element.style.left = (newLeft > 0 && newLeft < maxLeft) ? newLeft + "px" : element.style.left;
+                element.style.right = "auto"; // 覆盖原来的right定位
+                element.style.bottom = "auto"; // 覆盖原来的bottom定位
+            }
+            
+            function closeDragElement() {
+                // 停止移动时关闭事件监听器
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+            
+            handle.onmousedown = dragMouseDown;
+        }
+        
+        // 添加面板缩放功能
+        function makePanelResizable(elementId) {
+            const element = document.getElementById(elementId) || document.querySelector(elementId);
+            if (!element) return;
+            
+            // 确保元素使用absolute定位
+            element.style.position = 'absolute';
+            
+            // 添加缩放句柄
+            let resizeHandle = element.querySelector('.resize-handle');
+            if (!resizeHandle) {
+                resizeHandle = document.createElement('div');
+                resizeHandle.className = 'resize-handle';
+                element.appendChild(resizeHandle);
+            }
+            
+            // 存储原始的定位信息
+            const originalStyle = {
+                top: element.style.top,
+                right: element.style.right,
+                bottom: element.style.bottom,
+                left: element.style.left
+            };
+            
+            // 转换为使用left/top定位，便于缩放
+            const rect = element.getBoundingClientRect();
+            element.style.top = rect.top + 'px';
+            element.style.left = rect.left + 'px';
+            element.style.right = 'auto';
+            element.style.bottom = 'auto';
+            
+            // 确保元素使用像素单位进行大小调整
+            element.style.width = element.offsetWidth + 'px';
+            element.style.height = element.offsetHeight + 'px';
+            
+            let startX, startY, startWidth, startHeight;
+            let resizingEdge = null;
+            const EDGE_THRESHOLD = 8; // 边缘检测阈值
+            
+            // 检测鼠标是否在边缘区域
+            function isMouseOnEdge(e) {
+                const rect = element.getBoundingClientRect();
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+                
+                // 右侧边缘
+                if (mouseX >= rect.right - EDGE_THRESHOLD && mouseX <= rect.right && mouseY >= rect.top && mouseY <= rect.bottom) {
+                    return 'right';
+                }
+                // 底部边缘
+                if (mouseY >= rect.bottom - EDGE_THRESHOLD && mouseY <= rect.bottom && mouseX >= rect.left && mouseX <= rect.right) {
+                    return 'bottom';
+                }
+                // 右下角
+                if (mouseX >= rect.right - EDGE_THRESHOLD && mouseX <= rect.right && mouseY >= rect.bottom - EDGE_THRESHOLD && mouseY <= rect.bottom) {
+                    return 'bottom-right';
+                }
+                
+                return null;
+            }
+            
+            // 更新鼠标样式
+            function updateCursorStyle(e) {
+                const edge = isMouseOnEdge(e);
+                if (edge === 'right') {
+                    element.style.cursor = 'ew-resize';
+                } else if (edge === 'bottom') {
+                    element.style.cursor = 'ns-resize';
+                } else if (edge === 'bottom-right') {
+                    element.style.cursor = 'nwse-resize';
+                } else {
+                    element.style.cursor = '';
+                }
+            }
+            
+            function resizeMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                
+                // 检查是否是通过边缘触发的缩放
+                resizingEdge = isMouseOnEdge(e);
+                if (!resizingEdge && !e.target.classList.contains('resize-handle')) {
+                    return; // 不是通过边缘或缩放句柄触发的，不进行缩放
+                }
+                
+                // 获取初始鼠标位置和元素尺寸
+                startX = e.clientX;
+                startY = e.clientY;
+                startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
+                startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
+                
+                // 添加缩放时的视觉反馈
+                element.style.transition = 'none';
+                
+                // 添加事件监听器
+                document.onmouseup = stopResize;
+                document.onmousemove = resizeElement;
+            }
+            
+            function resizeElement(e) {
+                e = e || window.event;
+                e.preventDefault();
+                
+                // 获取最小和最大尺寸限制
+                const minWidth = parseInt(document.defaultView.getComputedStyle(element).minWidth, 10) || 280;
+                const minHeight = parseInt(document.defaultView.getComputedStyle(element).minHeight, 10) || 150;
+                const maxWidth = parseInt(document.defaultView.getComputedStyle(element).maxWidth, 10) || window.innerWidth * 0.8;
+                const maxHeight = parseInt(document.defaultView.getComputedStyle(element).maxHeight, 10) || window.innerHeight * 0.8;
+                
+                // 根据不同的边缘应用不同的缩放逻辑
+                if (resizingEdge === 'right' || resizingEdge === 'bottom-right' || e.target.classList.contains('resize-handle')) {
+                    const newWidth = startWidth + (e.clientX - startX);
+                    if (newWidth >= minWidth && newWidth <= maxWidth) {
+                        element.style.width = newWidth + 'px';
+                    }
+                }
+                
+                if (resizingEdge === 'bottom' || resizingEdge === 'bottom-right' || e.target.classList.contains('resize-handle')) {
+                    const newHeight = startHeight + (e.clientY - startY);
+                    if (newHeight >= minHeight && newHeight <= maxHeight) {
+                        element.style.height = newHeight + 'px';
+                    }
+                }
+            }
+            
+            function stopResize() {
+                // 恢复过渡效果
+                element.style.transition = '';
+                element.style.cursor = '';
+                
+                // 重置边缘状态
+                resizingEdge = null;
+                
+                // 移除事件监听器
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+            
+            // 绑定事件
+            resizeHandle.onmousedown = resizeMouseDown;
+            element.addEventListener('mousemove', updateCursorStyle);
+            element.addEventListener('mousedown', resizeMouseDown);
+        }
+        
+        // 为三个工具栏添加拖动功能
+        makeToolbarDraggable('.controls', 'h2');
+        makeToolbarDraggable('.stats', '.stats-grid');
+        makeToolbarDraggable('#cities-list', 'h2');
+        
+        // 为城市列表和功能列表添加缩放功能
+        makePanelResizable('.controls');
+        makePanelResizable('#cities-list');
+        
+        // 清除所有城市和路径，但不关闭窗口
+        function toggleCitiesList() {
+            // 清除地图上的所有城市标记
+            if (cityMarkers.length > 0) {
+                map.remove(cityMarkers);
+                cityMarkers = [];
+            }
+            
+            // 清除地图上的所有路径
+            if (pathPolylines && pathPolylines.length > 0) {
+                pathPolylines.forEach(polyline => polyline.setMap(null));
+                pathPolylines = [];
+            }
+            
+            showLoadCompleteMessage('地图上的城市和路径已清除');
+        }
+        
+        
+        // 路径点优化处理
+        function optimizePathPoints(points) {
+            if (!points || points.length <= 2) {
+                return points || [];
+            }
+            
+            const optimized = [];
+            let lastPoint = points[0];
+            optimized.push(lastPoint);
+            
+            // 设置最小距离阈值（约100米）
+            const minDistance = 0.001;
+            // 设置最大距离阈值（约5公里）
+            const maxDistance = 0.05;
+            
+            for (let i = 1; i < points.length; i++) {
+                const currentPoint = points[i];
+                const distance = calculateDistance(
+                    lastPoint[1], lastPoint[0], 
+                    currentPoint[1], currentPoint[0]
+                );
+                
+                // 如果距离太小，跳过这个点以减少点数
+                if (distance < minDistance) {
+                    continue;
+                }
+                
+                // 如果距离太大，添加中间点以保持路径平滑
+                if (distance > maxDistance) {
+                    // 计算需要添加的中间点数量
+                    const intermediatePoints = Math.ceil(distance / maxDistance);
+                    
+                    // 添加中间点
+                    for (let j = 1; j < intermediatePoints; j++) {
+                        const ratio = j / intermediatePoints;
+                        const intermediateLat = lastPoint[1] + (currentPoint[1] - lastPoint[1]) * ratio;
+                        const intermediateLon = lastPoint[0] + (currentPoint[0] - lastPoint[0]) * ratio;
+                        optimized.push([intermediateLon, intermediateLat]);
+                    }
+                }
+                
+                // 添加当前点
+                optimized.push(currentPoint);
+                lastPoint = currentPoint;
+            }
+            
+            // 确保保留最后一个点
+            if (optimized.length > 0 && !arraysEqual(optimized[optimized.length - 1], points[points.length - 1])) {
+                optimized.push(points[points.length - 1]);
+            }
+            
+            return optimized;
+        }
+        
+        // 计算两点之间的距离（弧度）
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // 地球半径（公里）
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const d = R * c; // 距离（公里）
+            return d / R; // 转换为弧度
+        }
+        
+        // 检查两个数组是否相等
+        function arraysEqual(arr1, arr2) {
+            if (arr1.length !== arr2.length) return false;
+            for (let i = 0; i < arr1.length; i++) {
+                if (Math.abs(arr1[i] - arr2[i]) > 0.00001) return false;
+            }
+            return true;
+        }
+        
+        // 设置城市搜索功能
+        function setupCitySearch() {
+            const searchInput = document.getElementById('city-search');
+            const searchResults = document.getElementById('search-results');
+            
+            // 监听搜索输入
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.trim().toLowerCase();
+                
+                // 如果搜索词为空，隐藏结果
+                if (!searchTerm) {
+                    searchResults.innerHTML = '';
+                    searchResults.style.display = 'none';
+                    return;
+                }
+                
+                // 过滤城市
+                const filteredCities = allCities.filter(city => 
+                    city.name.toLowerCase().includes(searchTerm)
+                );
+                
+                // 显示搜索结果
+                searchResults.innerHTML = '';
+                
+                if (filteredCities.length > 0) {
+                    filteredCities.forEach(city => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'search-result-item';
+                        resultItem.textContent = city.name;
+                        
+                        // 添加点击事件
+                        resultItem.addEventListener('click', function() {
+                            // 跳转到城市并放大视图
+                            map.setZoomAndCenter(10, city.coordinates);
+                            
+                            // 打开信息窗口
+                            showCityInfo(city.name, city.coordinates);
+                            
+                            // 清空搜索框并隐藏结果
+                            searchInput.value = '';
+                            searchResults.innerHTML = '';
+                            searchResults.style.display = 'none';
+                        });
+                        
+                        searchResults.appendChild(resultItem);
+                    });
+                    
+                    searchResults.style.display = 'block';
+                } else {
+                    searchResults.innerHTML = '<div class="search-result-item">未找到匹配的城市</div>';
+                    searchResults.style.display = 'block';
+                }
+            });
+            
+            // 点击页面其他地方关闭搜索结果
+            document.addEventListener('click', function(event) {
+                if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+                    searchResults.innerHTML = '';
+                    searchResults.style.display = 'none';
+                }
+            });
+        }
+        
+        // WGS84坐标系转GCJ-02坐标系（火星坐标系）
+        // 高德地图使用GCJ-02坐标系，需要进行坐标转换
+        function wgs84ToGcj02(lng, lat) {
+            // 常量定义
+            const pi = 3.1415926535897932384626;
+            const a = 6378245.0; // 地球长半轴
+            const ee = 0.00669342162296594323; // 地球偏心率平方
+            
+            // 输入验证
+            if (isNaN(lng) || isNaN(lat)) {
+                return null;
+            }
+            
+            // 判断是否在中国范围内（简化判断）
+            if (lng < 72.004 || lng > 137.8347 || lat < 0.8293 || lat > 55.8271) {
+                return [lng, lat]; // 不在中国范围内，不进行转换
+            }
+            
+            // 转换算法核心部分
+            let dLat = transformLat(lng - 105.0, lat - 35.0);
+            let dLng = transformLng(lng - 105.0, lat - 35.0);
+            
+            const radLat = lat / 180.0 * pi;
+            let magic = Math.sin(radLat);
+            magic = 1 - ee * magic * magic;
+            const sqrtMagic = Math.sqrt(magic);
+            
+            dLat = (dLat * 180.0) / ((a * (1 - ee)) / (magic * sqrtMagic) * pi);
+            dLng = (dLng * 180.0) / (a / sqrtMagic * Math.cos(radLat) * pi);
+            
+            const gcjLat = lat + dLat;
+            const gcjLng = lng + dLng;
+            
+            return [gcjLng, gcjLat];
+        }
+        
+        // 经纬度转换辅助函数
+        function transformLat(x, y) {
+            const pi = 3.1415926535897932384626;
+            let ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+            ret += (20.0 * Math.sin(6.0 * x * pi) + 20.0 * Math.sin(2.0 * x * pi)) * 2.0 / 3.0;
+            ret += (20.0 * Math.sin(y * pi) + 40.0 * Math.sin(y / 3.0 * pi)) * 2.0 / 3.0;
+            ret += (160.0 * Math.sin(y / 12.0 * pi) + 320 * Math.sin(y * pi / 30.0)) * 2.0 / 3.0;
+            return ret;
+        }
+        
+        function transformLng(x, y) {
+            const pi = 3.1415926535897932384626;
+            let ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+            ret += (20.0 * Math.sin(6.0 * x * pi) + 20.0 * Math.sin(2.0 * x * pi)) * 2.0 / 3.0;
+            ret += (20.0 * Math.sin(x * pi) + 40.0 * Math.sin(x / 3.0 * pi)) * 2.0 / 3.0;
+            ret += (150.0 * Math.sin(x / 12.0 * pi) + 300.0 * Math.sin(x / 30.0 * pi)) * 2.0 / 3.0;
+            return ret;
+        }
+        
+        // 动态更新状态栏信息
+        function updateStatusBar(totalLength, historicalSpan, stationCount, maxAltitude) {
+            // 更新路线全长
+            const lengthElement = document.getElementById('route-length');
+            if (lengthElement) {
+                // 格式化路线长度，保留一位小数
+                const formattedLength = totalLength > 0 ? 
+                    `${(totalLength).toFixed(1)} km` : '3,000 km';
+                lengthElement.textContent = formattedLength;
+            }
+            
+            // 更新历史跨度
+            const spanElement = document.getElementById('historical-span');
+            if (spanElement) {
+                spanElement.textContent = historicalSpan || '1,200+ 年';
+            }
+            
+            // 更新主要驿站数量
+            const stationsElement = document.getElementById('main-stations');
+            if (stationsElement) {
+                stationsElement.textContent = stationCount > 0 ? stationCount : 12;
+            }
+            
+            // 更新最高海拔
+            const altitudeElement = document.getElementById('max-altitude');
+            if (altitudeElement) {
+                // 格式化海拔高度，保留整数
+                const formattedAltitude = maxAltitude > 0 ? 
+                    `${Math.round(maxAltitude)} m` : '4,500 m';
+                altitudeElement.textContent = formattedAltitude;
+            }
+        }
+        
+        // 计算路线总长度（公里）
+        function calculateRouteLength(pathsData) {
+            if (!pathsData || !pathsData.features || pathsData.features.length === 0) {
+                return 0;
+            }
+            
+            let totalLength = 0;
+            
+            pathsData.features.forEach((feature) => {
+                if (feature.geometry && feature.geometry.paths && Array.isArray(feature.geometry.paths)) {
+                    feature.geometry.paths.forEach((path) => {
+                        if (Array.isArray(path) && path.length >= 2) {
+                            // 检查是否包含空间参考信息，判断是否为GCS_WGS_1984投影
+                            const isWGS84Projection = pathsData.spatialReference && pathsData.spatialReference.wkid === 4326;
+                             
+                            // 转换路径点到WGS84坐标系
+                            let convertedPoints = [];
+                            path.forEach((coord) => {
+                                if (Array.isArray(coord) && coord.length >= 2) {
+                                    try {
+                                        let lon, lat;
+                                         
+                                        if (isWGS84Projection) {
+                                            lon = coord[0];
+                                            lat = coord[1];
+                                        } else {
+                                            // 使用固定的投影坐标系：WGS_1984_UTM_Zone_48N
+                                            const zoneNumber = 48; // 固定区域号48
+                                            const northernHemisphere = true; // 北半球
+                                             
+                                            // 转换UTM坐标为经纬度（WGS84坐标系）
+                                            const convertedCoords = utmToLatLon(coord[0], coord[1], zoneNumber, northernHemisphere);
+                                             
+                                            if (!convertedCoords || convertedCoords.length !== 2 || isNaN(convertedCoords[0]) || isNaN(convertedCoords[1])) {
+                                                return;
+                                            }
+                                             
+                                            lon = convertedCoords[0];
+                                            lat = convertedCoords[1];
+                                        }
+                                         
+                                        // 对坐标进行微调，确保在有效范围内
+                                        const adjustedLon = Math.max(-179.9999, Math.min(179.9999, lon));
+                                        const adjustedLat = Math.max(-89.9999, Math.min(89.9999, lat));
+                                         
+                                        if (!isNaN(adjustedLon) && !isNaN(adjustedLat)) {
+                                            convertedPoints.push([adjustedLat, adjustedLon]); // [lat, lon]格式用于计算距离
+                                        }
+                                    } catch (error) {
+                                        console.warn(`计算距离时坐标转换失败: ${error}`);
+                                    }
+                                }
+                            });
+                             
+                            // 计算转换后路径的长度
+                            if (convertedPoints.length >= 2) {
+                                for (let i = 1; i < convertedPoints.length; i++) {
+                                    totalLength += calculateDistance(
+                                        convertedPoints[i-1][0], convertedPoints[i-1][1],
+                                        convertedPoints[i][0], convertedPoints[i][1]
+                                    ) * 6371; // 转换为公里
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+            
+            return totalLength;
+        }
+        
+        // UTM坐标转经纬度
+        function utmToLatLon(easting, northing, zoneNumber, northernHemisphere = true) {
+            try {
+                // 输入验证
+                if (isNaN(easting) || isNaN(northing) || isNaN(zoneNumber)) {
+                    console.warn('UTM坐标转换：无效的数值输入');
+                    return null;
+                }
+                
+                // WGS84椭球参数
+                const a = 6378137.0; // 地球赤道半径
+                const e = 0.0818191910428; // 离心率
+                const eSquared = e * e;
+                const k0 = 0.9996; // 缩放因子
+                
+                // 东坐标调整（减去500,000米偏移）
+                const x = easting - 500000.0;
+                let y = northing;
+                
+                // 南半球调整
+                if (!northernHemisphere) {
+                    y -= 10000000.0;
+                }
+                
+                // 计算中央经线
+                const longitudeOrigin = (zoneNumber - 1) * 6 - 180 + 3; // 中央经线经度
+                
+                // 从比例因子计算实际距离
+                const eastingFromCentralMeridian = x / k0;
+                const northingFromEquator = y / k0;
+                
+                // 计算子午线弧长
+                const M = northingFromEquator;
+                
+                // 计算Footpoint纬度
+                const mu = M / (a * (1 - eSquared / 4 - 3 * eSquared * eSquared / 64 - 5 * eSquared * eSquared * eSquared / 256));
+                
+                // 计算辅助系数
+                const e1 = (1 - Math.sqrt(1 - eSquared)) / (1 + Math.sqrt(1 - eSquared));
+                const J1 = (3 * e1 / 2 - 27 * e1 * e1 * e1 / 32);
+                const J2 = (21 * e1 * e1 / 16 - 55 * e1 * e1 * e1 * e1 / 32);
+                const J3 = (151 * e1 * e1 * e1 / 96);
+                const J4 = (1097 * e1 * e1 * e1 * e1 / 512);
+                
+                // 计算初始纬度
+                const phi1Rad = mu + J1 * Math.sin(2 * mu) + J2 * Math.sin(4 * mu) + J3 * Math.sin(6 * mu) + J4 * Math.sin(8 * mu);
+                
+                // 计算曲率半径等参数
+                const N1 = a / Math.sqrt(1 - eSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad));
+                const T1 = Math.tan(phi1Rad) * Math.tan(phi1Rad);
+                const C1 = eSquared * Math.cos(phi1Rad) * Math.cos(phi1Rad);
+                const R1 = a * (1 - eSquared) / Math.pow(1 - eSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad), 1.5);
+                const D = eastingFromCentralMeridian / N1;
+                
+                // 计算最终纬度和经度
+                const longitudeRad = longitudeOrigin * Math.PI / 180 + (D - T1 * D * D * D / 6 + (T1 * T1 - C1) * D * D * D * D * D / 120) / Math.cos(phi1Rad);
+                const latitudeRad = phi1Rad - (N1 * Math.tan(phi1Rad) / R1) * (
+                    D * D / 2 - 
+                    (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * eSquared) * D * D * D * D / 24 + 
+                    (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * eSquared - 3 * C1 * C1) * D * D * D * D * D * D / 720
+                );
+                
+                // 转换为度并标准化到有效范围
+                let lonDeg = longitudeRad * 180 / Math.PI;
+                const latDeg = latitudeRad * 180 / Math.PI;
+                
+                // 经度标准化处理：确保经度在-180到180之间
+                lonDeg = ((lonDeg + 180) % 360 + 360) % 360 - 180;
+                
+                // 确保返回有效坐标
+                if (isNaN(lonDeg) || isNaN(latDeg)) {
+                    console.error('UTM坐标转换结果无效');
+                    return null;
+                }
+                
+                return [lonDeg, latDeg];
+            } catch (error) {
+                console.error('UTM坐标转换失败:', error);
+                return null;
+            }
+        }
+    </script>
+</body>
+</html>
