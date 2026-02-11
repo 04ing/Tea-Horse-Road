@@ -1,0 +1,934 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Microsoft YaHei', 'SimSun', serif;
+}
+
+body {
+    overflow-y: auto; /* 允许垂直滚动并显示右侧滚动条 */
+    overflow-x: hidden; /* 禁止水平滚动 */
+    background: transparent;
+    color: #F5F5DC;
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+}
+
+/* Cesium容器 - 作为底层背景，不设置背景色以显示三维地球 */
+#cesiumContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: transparent;
+    border: 1px solid rgba(245, 214, 155, 0.3);
+}
+
+/* 加载界面 - 最高层级，确保初始化时可见 */
+.loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(107, 66, 38, 0.9), rgba(139, 90, 43, 0.9));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    transition: opacity 0.5s ease;
+    border: 2px solid rgba(210, 180, 140, 0.8);
+}
+
+.loading h3 {
+    color: #D4AF37;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 15px;
+    font-family: 'SimSun', serif;
+    letter-spacing: 1px;
+}
+
+.loading p {
+    color: #F5F5DC;
+    font-style: italic;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid rgba(210, 180, 140, 0.3);
+    border-radius: 50%;
+    border-top: 5px solid #D4AF37;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* UI元素 - 统一使用absolute定位和适当的z-index */
+.header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    background: rgba(107, 66, 38, 0.9);
+    backdrop-filter: blur(10px);
+    z-index: 2;
+    border-bottom: 2px solid rgba(210, 180, 140, 0.8);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* 搜索框样式 */
+.search-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+    width: 25%;
+    max-width: 350px;
+    min-width: 250px;
+}
+
+/* 右上角导航按钮样式 */
+.header-nav-buttons {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+    display: flex;
+    gap: 10px;
+}
+
+.header-nav-btn {
+    display: inline-block;
+    padding: 10px 15px;
+    background: rgba(212, 175, 55, 0.9);
+    color: #6B4226;
+    text-decoration: none;
+    border-radius: 25px;
+    font-family: 'Microsoft YaHei', 'SimSun', serif;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(210, 180, 140, 0.8);
+}
+
+.header-nav-btn:hover {
+    background: #D4AF37;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border-color: #D4AF37;
+}
+
+#city-search {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 2px solid rgba(210, 180, 140, 0.8);
+    border-radius: 25px;
+    background: rgba(245, 245, 220, 0.95);
+    color: #6B4226;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: 'Microsoft YaHei', 'SimSun', serif;
+}
+
+#city-search:focus {
+    border-color: #D4AF37;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+#city-search::placeholder {
+    color: rgba(107, 66, 38, 0.6);
+    font-style: italic;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    background: rgba(245, 245, 220, 0.95);
+    border: 2px solid rgba(245, 214, 155, 0.5);
+    border-radius: 0 0 25px 25px;
+    margin-top: 5px;
+    display: none;
+    z-index: 100;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.search-result-item {
+    padding: 12px 15px;
+    color: #8B4513;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Microsoft YaHei', 'SimSun', serif;
+    border-bottom: 1px solid rgba(139, 69, 19, 0.1);
+}
+
+.search-result-item:hover {
+    background: rgba(245, 208, 32, 0.2);
+    color: #A0522D;
+    padding-left: 20px;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    letter-spacing: 3px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    color: #D4AF37;
+    font-family: 'SimSun', serif;
+    border-bottom: 1px solid rgba(210, 180, 140, 0.5);
+    padding-bottom: 8px;
+    display: inline-block;
+}
+
+.header p {
+    font-size: 1.1rem;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+    color: #F5F5DC;
+    font-style: italic;
+}
+
+.controls {
+    position: absolute;
+    top: 180px;
+    right: 20px;
+    width: 28%;
+    height: 50vh;
+    max-width: 400px;
+    min-width: 280px;
+    background: rgba(107, 66, 38, 0.85);
+    border-radius: 8px;
+    padding: 20px;
+    z-index: 2;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(210, 180, 140, 0.8);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    overflow-y: auto;
+    max-height: calc(100vh - 220px);
+}
+
+.controls h2 {
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #D4AF37;
+    font-family: 'SimSun', serif;
+    border-bottom: 1px solid rgba(210, 180, 140, 0.5);
+    padding-bottom: 8px;
+}
+
+.info-panel {
+    margin-bottom: 20px;
+    background: rgba(107, 66, 38, 0.7);
+    border-radius: 6px;
+    padding: 15px;
+    border: 1px solid rgba(210, 180, 140, 0.5);
+}
+
+.info-panel h3 {
+    color: #D4AF37;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    font-family: 'SimSun', serif;
+}
+
+.info-panel p {
+    color: #F5F5DC;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.info-panel strong {
+    color: #D4AF37;
+}
+
+.stats {
+    position: absolute;
+    bottom: 75px;
+    left: 20px;
+    background: rgba(107, 66, 38, 0.85);
+    border-radius: 8px;
+    padding: auto auto;
+    z-index: 2;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(210, 180, 140, 0.8);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    width: auto;
+    height:auto;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 15px;
+}
+
+.stat-value {
+    font-size: 1.35rem;
+    font-weight: bold;
+    color: #D4AF37;
+    margin: 8px 0;
+    font-family: 'SimSun', serif;
+    letter-spacing: 1px;
+}
+
+.stat-label {
+    font-size: 1rem;
+    color: #F5F5DC;
+    letter-spacing: 0.5px;
+    margin-top: 5px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    background: rgba(107, 66, 38, 0.85);
+    text-align: center;
+    font-size: 0.9rem;
+    color: #F5F5DC;
+    z-index: 2;
+    border-top: 1px solid rgba(210, 180, 140, 0.5);
+}
+
+.btn-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.full-width-btn {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #4CAF50, #388E3C);
+}
+
+button {
+    background: linear-gradient(135deg, #D4AF37, #8B5A2B);
+    color: #1E1E1E;
+    border: 1px solid rgba(210, 180, 140, 0.8);
+    padding: 12px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    font-family: 'SimSun', serif;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(135deg, #E5C100, #A0522D);
+}
+
+.full-width-btn:hover {
+    background: linear-gradient(135deg, #66BB6A, #388E3C);
+}
+
+/* 图例样式 */
+.legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* 隐藏类 */
+.hidden {
+    display: none !important;
+}
+
+/* 工具栏切换按钮容器 */
+.toolbar-toggle-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* 工具栏切换按钮样式 */
+.toolbar-toggle {
+    background: linear-gradient(135deg, #8B4513, #A0522D) !important;
+    color: #F5F5DC !important;
+    border: 2px solid rgba(245, 214, 155, 0.5) !important;
+    padding: 10px 18px !important;
+    border-radius: 25px !important;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    font-family: 'Microsoft YaHei', 'SimSun', serif !important;
+    font-size: 0.9rem !important;
+    min-width: 160px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.toolbar-toggle:hover {
+
+/* 拖动区域样式 */
+.draggable-handle {
+    cursor: move !important;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.draggable-handle:hover {
+    background-color: rgba(245, 214, 155, 0.1);
+}
+
+/* 缩放控制样式 */
+.resize-handle {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: rgba(245, 208, 32, 0.8);
+    border: 1px solid #8B4513;
+    cursor: nwse-resize;
+    user-select: none;
+    transition: all 0.2s ease;
+    z-index: 11;
+}
+
+/* 边缘缩放相关样式 */
+.controls, .cities-container {
+    position: absolute !important;
+    box-sizing: border-box;
+}
+
+/* 确保子元素不会干扰边缘检测 */
+.controls *:not(.resize-handle), .cities-container *:not(.resize-handle) {
+    pointer-events: auto;
+}
+
+/* 缩放时防止文字选中 */
+.controls:active, .cities-container:active {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* 缩放句柄样式 */
+.resize-handle {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 15px;
+    height: 15px;
+    background-color: #F5D020;
+    border: 2px solid #8B4513;
+    border-radius: 50%;
+    cursor: nwse-resize;
+    z-index: 1001;
+    opacity: 0.8;
+    transition: opacity 0.3s ease, transform 0.2s ease;
+}
+
+.resize-handle:hover {
+    background: rgba(245, 208, 32, 1);
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+/* 右下角缩放句柄 */
+.controls .resize-handle, .cities-container .resize-handle, .events-modal-content .resize-handle {
+    bottom: 5px;
+    right: 5px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* 确保工具栏在拖动和缩放时的z-index足够高 */
+.controls, .stats, .cities-container {
+    z-index: 10 !important;
+    transition: transform 0.1s ease;
+    min-height: 150px;
+    min-width: 280px;
+    max-width: 80%;
+    max-height: 80vh;
+}
+
+/* 拖动时的视觉反馈 */
+.controls:active, .stats:active, .cities-container:active {
+    transform: scale(0.98);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5) !important;
+}
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(135deg, #A0522D, #C17947) !important;
+    border-color: #F5D020 !important;
+}
+
+/* 城市列表容器 - 右侧工具栏 */
+.cities-container {
+    position: absolute;
+    top: 180px;
+    right: 20px;
+    width: 28%;
+    height: 500px;
+    max-width: 400px;
+    min-width: 300px;
+    max-height: calc(100vh - 150px);
+    background: rgba(107, 66, 38, 0.85);
+    border-radius: 8px;
+    padding: 20px;
+    z-index: 2;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(210, 180, 140, 0.8);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    overflow-y: auto;
+}
+
+.cities-container h2 {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #D4AF37;
+    font-family: 'SimSun', serif;
+    border-bottom: 1px solid rgba(210, 180, 140, 0.5);
+    padding-bottom: 8px;
+}
+
+.cities-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cities-list ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.city-item {
+    background: rgba(100, 60, 30, 0.7);
+    border: 1px solid rgba(245, 214, 155, 0.3);
+    border-radius: 6px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.city-item:hover {
+    background: rgba(120, 70, 40, 0.8);
+    transform: translateX(5px);
+}
+
+.city-name {
+    font-weight: bold;
+    color: #F5D020;
+    margin-bottom: 5px;
+}
+
+.city-coordinates {
+    font-size: 0.9rem;
+    color: #F5F5DC;
+    font-style: italic;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid rgba(245, 214, 155, 0.5);
+}
+
+.route-color { 
+    background: linear-gradient(90deg, #F5D020, #A0522D); 
+}
+.point-color { 
+    background-color: #A0522D; 
+}
+.start-color { 
+    background-color: #4CAF50; 
+}
+.end-color { 
+    background-color: #F5D020; 
+}
+
+/* 历史注释弹窗样式 */
+.historical-note {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(107, 66, 38, 0.95);
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 70%;
+    min-width: 400px;
+    height: auto;
+    min-height: 250px;
+    z-index: 10;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 2px solid #D4AF37;
+    animation: fadeIn 1.5s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.historical-note h3 {
+    color: #D4AF37;
+    margin-bottom: 15px;
+    font-family: 'SimSun', serif;
+}
+
+.historical-note p {
+    color: #F5F5DC;
+    line-height: 1.6;
+    font-style: italic;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: 1px solid rgba(210, 180, 140, 0.8);
+    color: #F5F5DC;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: rgba(210, 180, 140, 0.2);
+    color: #D4AF37;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -40%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* history copy.html 样式 - 历史茶马古道地图 */
+
+/* 顶部栏样式 */
+.top-bar {
+    background-color: #8B4513;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.top-bar-title {
+    flex: 1;
+    text-align: center;
+    min-width: 300px;
+}
+
+.main-title {
+    margin: 0 0 5px 0;
+    font-size: 32px;
+    font-weight: bold;
+    color: #FFD700;
+}
+
+.subtitle {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.9;
+    line-height: 1.4;
+}
+
+.top-bar button {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    white-space: nowrap;
+}
+
+.top-bar button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.back-button {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 弹窗样式 */
+.comparison-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 3000;
+    justify-content: center;
+    align-items: center;
+}
+
+.comparison-modal-content {
+    background-color: #8B4513;
+    color: white;
+    border-radius: 8px;
+    width: 95%;
+    max-width: 1200px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.comparison-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.comparison-modal-title {
+    margin: 0;
+    font-size: 20px;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.comparison-modal-body {
+    padding: 20px;
+}
+
+.comparison-grid {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+}
+
+.dynasty-card {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 15px;
+    flex: 1;
+    min-width: 0;
+}
+
+.dynasty-card h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #FFD700;
+}
+
+.dynasty-info {
+    line-height: 1.6;
+}
+
+/* 棕色视频容器 */
+.video-brown-container {
+    background-color: #8B4513; /* 棕色 */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 20px 0;
+}
+
+/* 视频标题样式 */
+.video-title {
+    color: rgb(237, 226, 15);
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* 视频容器样式 */
+.video-container {
+    width: 80%;
+    margin: 0;
+}
+
+.video-container video {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+}
+
+/* 三栏布局 */
+.container {
+    display: flex;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* 每个朝代的容器 */
+.dynasty-container {
+    flex: 1;
+    position: relative;
+    margin: 0 10px;
+    height: 500px;
+}
+
+/* 地图容器样式 */
+.map-container {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ccc;
+    position: relative;
+}
+
+/* 朝代标题 */
+.dynasty-title {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(63, 60, 4, 0.8);
+    padding: 5px 15px;
+    border-radius: 4px;
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 1000;
+}
+
+/* 饼图容器样式 */
+.chart-container {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 200px;
+    height: 200px;
+    z-index: 1000;
+    background-color: transparent;
+}
+
+/* 柱状图容器 - 修改为一行四列 */
+.bar-charts-container {
+    margin: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 20px;
+    height: 400px;
+    background-color: #FFFACD; /* 淡黄色背景 */
+    padding: 20px;
+    border-radius: 4px;
+}
+
+/* 单个柱状图样式 */
+.bar-chart-item {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+/* 清朝对俄茶贸易量图表容器样式 */
+.special-chart-container {
+    margin: 20px;
+    background-color: #FFFACD; /* 与柱状图容器相同的淡黄色背景 */
+    padding: 20px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 清朝对俄茶贸易量图表样式 */
+.special-chart {
+    width: 100%;
+    max-width: 1200px;
+    height: 500px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+/* 指标选择器容器样式 */
+.indicator-selector-container {
+    margin: 10px 0;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* 指标选择器标签样式 */
+.indicator-selector-container label {
+    font-weight: bold;
+    margin-right: 10px;
+    color: #333;
+}
+
+/* 指标选择器下拉框样式 */
+.indicator-selector-container select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+/* 指标选择器下拉框悬停和聚焦样式 */
+.indicator-selector-container select:hover {
+    border-color: #888;
+}
+
+.indicator-selector-container select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}

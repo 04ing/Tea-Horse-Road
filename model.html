@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>茶马古道模型展示</title>
+    <link href="./Build/SuperMap3D/Widgets/widgets.css" rel="stylesheet">
+    <link href="./css/pretty.css" rel="stylesheet">
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/supermap/SuperMap.Include.js"></script>
+    <script type="text/javascript" src="./Build/SuperMap3D/SuperMap3D.js"></script>
+</head>
+
+<body class="loading">
+    <!-- 返回按钮 -->
+    <div style="position: fixed; top: 20px; left: 20px; z-index: 1000;">
+        <a href="route.html" style="background-color: #5D4037; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+            返回
+        </a>
+    </div>
+    
+    <div id="Container"></div>
+    <div class="params-setting-container">
+        <div class="params-setting-anchor" title="显示/隐藏参数面板"><span class="fui-expand"></span></div>
+        <div class="params-setting">
+            <div class="param-item">
+                <label for="hdrShow">开启HDR</label>
+                <input type="checkbox" id="hdrShow">
+            </div>
+            <div class="param-item">
+                <label>调整亮度</label>
+                <input type="range" id="brightness" min="0.1" max="2" value="0.65" step="0.05" style="width: 170px">
+            </div>
+            <div class="param-item">
+                <label for="showRoadModel">显示茶马古道模型</label>
+                <input type="checkbox" id="showRoadModel" checked>
+            </div>
+        </div>
+    </div>
+    <script>
+        function onload(SuperMap3D) {
+            var EngineType = getEngineType();
+            var viewer = new SuperMap3D.Viewer('Container', {
+                selectionIndicator: false,
+                infoBox: false,
+                timeline: true,
+                animation: false,  // 禁用动画控制器
+                baseLayerPicker: false,  // 禁用底图选择器
+                fullscreenButton: false,  // 禁用全屏按钮
+                geocoder: false,  // 禁用地理编码器
+                homeButton: false,  // 禁用主页按钮
+                sceneModePicker: false,  // 禁用场景模式选择器
+                navigationHelpButton: false,  // 禁用导航帮助按钮
+                navigationInstructionsInitiallyVisible: false,
+                scene3DOnly: true,
+                contextOptions: {
+		contextType: Number(EngineType)  // Webgl2:2 ; WebGPU:3
+		}
+            });
+            viewer.scenePromise.then(function (scene) {
+                init(SuperMap3D, scene, viewer);
+            });
+        }
+        function init(SuperMap3D, scene, viewer) {
+            // 调整环境光以增强纹理细节显示
+            scene.lightSource.ambientLightColor = new SuperMap3D.Color(0.8, 0.8, 0.8, 1);
+            
+            // 启用地面大气效果，增强场景真实感
+            if (viewer.scene.globe) {
+                viewer.scene.globe.showGroundAtmosphere = true;
+            }
+            
+            // 初始化光源颜色和强度
+            if (scene.lightSource) {
+                // 设置环境光颜色（RGB均为0.8，白色环境光）
+                scene.lightSource.ambientLightColor = new SuperMap3D.Color(0.8, 0.8, 0.8, 1);
+                // 设置方向光颜色和强度
+                if (scene.lightSource.directionalLight) {
+                    scene.lightSource.directionalLight.color = new SuperMap3D.Color(1.0, 1.0, 1.0, 1);
+                    scene.lightSource.directionalLight.intensity = 1.0;
+                }
+            }
+
+                // 加载并显示Castle.gltf模型，添加历史棕色色调同时保留纹理细节
+                var carModel = viewer.entities.add({
+                    name: "gltf",
+                    position: SuperMap3D.Cartesian3.fromDegrees(116.38594661245477, 39.989735121370416, 40), // 增加高度值使模型显示完全
+                    orientation: SuperMap3D.Transforms.headingPitchRollQuaternion(SuperMap3D.Cartesian3.fromDegrees(116.38594661245477, 39.989735121370416, 100), new SuperMap3D.HeadingPitchRoll(SuperMap3D.Math.toRadians(-90), 0, 0)), // 保持方向与位置一致
+                    model: {
+                        uri: "model/Castle.gltf",
+                        scale: 1.5,
+                        color: new SuperMap3D.Color(0.65, 0.33, 0.11, 1), // 历史气息的棕色
+                        colorBlendMode: SuperMap3D.ColorBlendMode.HIGHLIGHT, // 使用高亮模式，保留纹理细节
+                        colorBlendAmount: 0.3 // 色调强度，确保纹理可见
+                    },
+                    viewFrom: new SuperMap3D.Cartesian3(35, 70, 30)
+                });
+                // 添加第二个模型chamayouhua.gltf，添加历史棕色色调同时保留纹理细节
+                var flowerModel = viewer.entities.add({
+                    name: "chamayouhua",
+                    position: SuperMap3D.Cartesian3.fromDegrees(116.38594661245477, 39.989735121370416, 95), // 调整高度参数以对齐基底
+                    orientation: SuperMap3D.Transforms.headingPitchRollQuaternion(SuperMap3D.Cartesian3.fromDegrees(116.38594661245477, 39.989735121370416, 100), new SuperMap3D.HeadingPitchRoll(SuperMap3D.Math.toRadians(-90), 0, 0)),
+                    model: {
+                        uri: "model/chamayouhua.gltf",
+                        scale: 1.5,
+                        color: new SuperMap3D.Color(0.65, 0.33, 0.11, 1), // 历史气息的棕色
+                        colorBlendMode: SuperMap3D.ColorBlendMode.HIGHLIGHT, // 使用高亮模式，保留纹理细节
+                        colorBlendAmount: 0.3 // 色调强度，确保纹理可见
+                    }
+                });
+                viewer.trackedEntity = carModel;
+
+                
+                // HDR开关
+                $("#hdrShow").on("input change", function () {
+                    viewer.scene.hdrEnabled = this.checked;
+                });
+                // 调整亮度
+                $("#brightness").on("input change", function () {
+                    var brightnessValue = parseFloat(this.value);
+                    console.log("调整亮度值为:", brightnessValue);
+                    
+                    // 直接调整环境光颜色的RGB值来改变亮度
+                    if (scene.lightSource) {
+                        // 调整环境光颜色亮度
+                        scene.lightSource.ambientLightColor = new SuperMap3D.Color(brightnessValue, brightnessValue, brightnessValue, 1);
+                        
+                        // 调整方向光强度
+                        if (scene.lightSource.directionalLight) {
+                            scene.lightSource.directionalLight.intensity = brightnessValue;
+                        }
+                    }
+                });
+                // 设置功能面板显隐
+                $("#brightness").val(0.65); // 设置初始亮度值
+                $(".params-setting-anchor").click(function () {
+                    $(".params-setting").toggleClass("params-setting-hide");
+                });
+                // 控制茶马古道模型显示/隐藏（关联到chamayouhua模型）
+                $("#showRoadModel").on("input change", function () {
+                    if (flowerModel) {
+                        flowerModel.show = this.checked;
+                    }
+                });
+        }
+        if (typeof SuperMap3D !== 'undefined') {
+            window.startupCalled = true;
+            onload(SuperMap3D);
+        }
+    </script>
+</body>
+
+</html>

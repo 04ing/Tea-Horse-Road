@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>茶马古道旅游意义：前世与今生</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/flat-ui.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/tourism_significance.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="route.html" class="back-button">← 返回主页面</a>
+            <h1>茶马古道旅游意义</h1>
+            <p>茶马古道旅游是一场穿越时空的文化之旅，在雪山、峡谷与草原之间，感受千年商道的历史底蕴与现代价值，体验民族文化的多元融合，探索人与自然和谐共生的典范。</p>
+        </header>
+        
+        <section id="video-section">
+            <h2>茶马古道影像</h2>
+            <div style="text-align: center;">
+                <video width="80%" height="auto" controls>
+                    <source src="tour.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <p style="margin-top: 25px; font-style: italic; text-align: center; font-size: 1.3rem;">视频呈现茶马古道沿途壮美的自然风光、独特的民族风情与厚重的历史遗迹</p>
+            </div>
+        </section>
+        
+        <section id="introduction">
+            <h2>茶马古道简介</h2>
+            <p style="font-size: 1.4rem; line-height: 1.8;">茶马古道是世界上海拔最高的文明通道，横跨四川、云南、西藏的崇山峻岭，连接中国与东南亚、南亚，因历史上的茶马贸易而得名。这条古道不仅是商贸往来的通道，更是文化交流的桥梁。</p>
+            <p style="font-size: 1.4rem; line-height: 1.8;">千年间，茶叶、丝绸、马匹、药材等物资在此流通，汉、藏、彝等多民族文化在此交融，佛教、道教等宗教在此传播。如今，古道虽已不再是主要商道，但其深厚的文化底蕴和壮美的自然景观，使其成为珍贵的遗产和旅游资源。</p>
+            <div class="quote">
+                "茶马古道是世界上地势最高的文明文化传播古道之一，它像一条大走廊，连接着沿途各个民族，发展了当地经济，搞活了商品市场，促进了边贸地区农业、畜牧业的发展。" —— 文化学者 费孝通
+            </div>
+        </section>
+
+        <!-- 茶马古道地图版块 -->
+        <section id="route-map">
+            <h2>茶马古道地理分布图</h2>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <p style="font-size: 1.2rem;">通过地图探索茶马古道的主要路线和重要节点（以明代为例），点击标记可查看详细信息</p>
+            </div>
+            
+            <div id="map-container" style="width: 100%; height: 600px; border-radius: 10px; overflow: hidden; position: relative;">
+                <!-- 地图将通过JavaScript加载 -->
+                <div id="loading-map" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #F5D020; font-size: 1.5rem;">
+                    地图加载中...
+                </div>
+                <div id="amap" style="width: 100%; height: 100%;"></div>
+            </div>
+        </section>
+
+        <section id="historical-significance">
+            <h2>前世：茶马古道的历史意义</h2>
+            <h3>商贸通道</h3>
+            <p style="font-size: 1.4rem; line-height: 1.8;">自唐代兴起，经宋、元、明、清繁荣发展，茶马古道是中原与西南边疆茶马互市的核心通道。内地的茶叶、丝绸、布匹与边疆的马匹、皮毛、药材在此交换，形成了互补共赢的贸易体系。</p>
+            
+            <h3>文化交流</h3>
+            <p style="font-size: 1.4rem; line-height: 1.8;">作为多民族文化交流的纽带，茶马古道促进了汉、藏、彝等民族间的深度融合。汉族的生产技术、儒家文化与藏族的宗教信仰、艺术风格相互影响，共同孕育了独特的茶马文化。</p>
+            
+            <h3>宗教传播</h3>
+            <p style="font-size: 1.4rem; line-height: 1.8;">古道也是宗教传播的重要通道，唐代玄奘、文成公主等通过此处西行，藏传佛教也由此东渐，促进了不同宗教文化的交流互鉴，对中国宗教文化的发展产生了深远影响。</p>
+            
+            <!-- 横向动态时间轴 -->
+            <div class="horizontal-timeline">
+                <div class="timeline-track">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot" data-dynasty="唐代">
+                        <span class="dynasty-label">唐代</span>
+                    </div>
+                    <div class="timeline-dot" data-dynasty="宋代">
+                        <span class="dynasty-label">宋代</span>
+                    </div>
+                    <div class="timeline-dot" data-dynasty="明代">
+                        <span class="dynasty-label">明代</span>
+                    </div>
+                    <div class="timeline-dot" data-dynasty="清代">
+                        <span class="dynasty-label">清代</span>
+                    </div>
+                    <div class="timeline-dot" data-dynasty="近现代">
+                        <span class="dynasty-label">近现代</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 朝代信息弹窗 -->
+            <div id="timeline-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h3 id="modal-title"></h3>
+                    <p id="modal-description"></p>
+                </div>
+            </div>
+            
+            <script>
+                // 时间轴朝代数据
+                const dynastyData = {
+                    '唐代': {
+                        title: '唐代 茶马古道初步形成',
+                        description: '随着唐蕃古道的开通，汉藏之间的贸易往来日益频繁，茶马贸易开始兴起。'
+                    },
+                    '宋代': {
+                        title: '宋代 茶马互市制度确立',
+                        description: '宋神宗熙宁七年（1074年），政府正式确立茶马互市制度，在四川等地设置茶马司，管理茶马贸易。'
+                    },
+                    '明代': {
+                        title: '明代 茶马古道繁荣发展',
+                        description: '明朝政府进一步完善茶马互市制度，设置多个茶马司，茶马古道进入繁荣发展时期。'
+                    },
+                    '清代': {
+                        title: '清代 茶马古道鼎盛时期',
+                        description: '清朝时期，茶马贸易规模进一步扩大，形成了以川藏、滇藏两条主线为主的庞大贸易网络。'
+                    },
+                    '近现代': {
+                        title: '近现代 茶马古道逐渐衰落',
+                        description: '随着现代交通的发展和茶叶贸易方式的改变，茶马古道的商贸功能逐渐减弱，但作为遗产被保留下来。'
+                    }
+                };
+                
+                // 获取DOM元素
+                const timelineDots = document.querySelectorAll('.timeline-dot');
+                const modal = document.getElementById('timeline-modal');
+                const modalTitle = document.getElementById('modal-title');
+                const modalDescription = document.getElementById('modal-description');
+                const closeModal = document.querySelector('.close-modal');
+                
+                // 点击朝代显示信息窗口
+                timelineDots.forEach(dot => {
+                    dot.addEventListener('click', () => {
+                        const dynasty = dot.getAttribute('data-dynasty');
+                        modalTitle.textContent = dynastyData[dynasty].title;
+                        modalDescription.textContent = dynastyData[dynasty].description;
+                        modal.style.display = 'block';
+                        
+                        // 添加点击动画效果
+                        dot.classList.add('active');
+                        setTimeout(() => {
+                            dot.classList.remove('active');
+                        }, 300);
+                    });
+                });
+                
+                // 关闭信息窗口
+                closeModal.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+                
+                // 点击窗口外部关闭
+                window.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            </script>
+        </section>
+        
+        <section id="modern-significance">
+            <h2>今生：茶马古道的现代旅游意义</h2>
+            <div class="feature-grid" style="gap: 20px;">
+                <div class="feature-item" style="padding: 25px;">
+                    <h4>遗产保护</h4>
+                    <p style="font-size: 1.4rem; line-height: 1.7;">通过旅游开发，古道遗址、古建筑与民俗文化得到有效保护与传承，千年商道在当代焕发新生机。</p>
+                </div>
+                <div class="feature-item" style="padding: 25px;">
+                    <h4>区域经济发展</h4>
+                    <p style="font-size: 1.4rem; line-height: 1.7;">旅游带动了交通、餐饮、住宿等产业发展，为沿线居民创造就业机会，推动了区域经济的可持续增长。</p>
+                </div>
+                <div class="feature-item" style="padding: 25px;">
+                    <h4>民族团结进步</h4>
+                    <p style="font-size: 1.4rem; line-height: 1.7;">作为多民族共同的文化遗产，茶马古道旅游增进了民族间的了解与交流，促进了民族团结与社会和谐。</p>
+                </div>
+                <div class="feature-item" style="padding: 25px;">
+                    <h4>生态环境保护</h4>
+                    <p style="font-size: 1.4rem; line-height: 1.7;">遵循生态旅游理念，促进了对高原生态系统的保护与可持续利用，实现人与自然的和谐共生。</p>
+                </div>
+                <div class="feature-item" style="padding: 25px;">
+                    <h4>文化体验与教育</h4>
+                    <p style="font-size: 1.4rem; line-height: 1.7;">提供沉浸式文化体验，让游客在行走中感受历史，增强对中华多元文化的认同感与自豪感。</p>
+                </div>
+                <div class="feature-item" style="padding: 25px;">
+                    <h4>国际文化交流</h4>
+                    <p style="font-size: 1.4rem; line-height: 1.7;">作为连接中国与东南亚、南亚的文化纽带，促进了国际间的文化交流与合作。</p>
+                </div>
+            </div>
+            
+            <h3>旅游体验特色</h3>
+            <p style="font-size: 1.4rem; line-height: 1.8;">茶马古道旅游融合了自然探索与文化体验：徒步或骑行古道，重走先人足迹；探访古镇、古寺与村落，触摸历史印记；品尝酥油茶、青稞酒、普洱茶等特色美食；参与藏历新年、火把节等民族节庆，感受浓郁的民俗风情；欣赏雪山、峡谷、草原等壮美景致，体验高原独特的自然魅力。</p>
+        </section>
+        
+        <section id="recommendations">
+            <h2>茶马古道旅游推荐</h2>
+            <div class="recommendations" style="gap: 15px; display: grid; grid-template-columns: repeat(2, 1fr);">
+                <div class="recommendation-item" style="padding: 30px;">
+                    <h4 style="font-size: 1.6rem;">经典路线</h4>
+                    <ul style="font-size: 2rem; line-height: 2; color: white">
+                        <li>川藏线：成都-雅安-康定-理塘-巴塘-昌都-拉萨</li>
+                        <li>滇藏线：昆明-大理-丽江-香格里拉-德钦-芒康-拉萨</li>                      
+                    </ul>
+                </div>
+                <div class="recommendation-item" style="padding: 30px;">
+                    <h4 style="font-size: 1.6rem;">必游景点</h4>
+                    <ul style="font-size: 2rem; line-height: 2; color: white;">
+                        <li>四川：都江堰、青城山、海螺沟、康定古城</li>
+                        <li>云南：大理古城、丽江古城、香格里拉、梅里雪山</li>
+                        <li>西藏：布达拉宫、大昭寺、纳木错、羊卓雍错</li>
+                    </ul>
+                </div>
+                <div class="recommendation-item" style="padding: 30px;">
+                    <h4 style="font-size: 1.6rem;">最佳时间</h4>
+                    <ul style="font-size: 2rem; line-height: 2; color: white;">
+                        <li>春季（3-5月）：沿途鲜花盛开，气候宜人</li>
+                        <li>夏季（6-8月）：草原翠绿，但需注意雨季路况</li>
+                        <li>秋季（9-11月）：天气晴朗，秋色迷人</li>
+                        <li>冬季（12-2月）：可体验高原雪景，但需注意保暖</li>
+                    </ul>
+                </div>
+                <div class="recommendation-item" style="padding: 30px;">
+                    <h4 style="font-size: 1.6rem;">旅行贴士</h4>
+                    <ul style="font-size: 2rem; line-height: 2; color: white;">
+                        <li>提前做好高原反应的预防准备</li>
+                        <li>尊重当地的风俗习惯和宗教信仰</li>
+                        <li>注意保护环境，不乱扔垃圾</li>
+                        <li>准备好防晒、防雨、保暖等装备</li>
+                        <li>建议选择正规的旅行社或向导</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>© 2025 茶马古道文化旅游 | <a href="route.html">返回主页面</a> | <a href="timeline.html">查看历史时间轴</a></p>
+            <p>探索千年商道，感受文化魅力</p>
+        </footer>
+    </div>
+    
+
+    
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <!-- 高德地图API -->
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=023d66b5702b31968e66e268cf667e77"></script>
+    <script>
+        // 平滑滚动效果
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // 页面加载动画
+        window.addEventListener('load', function() {
+            document.body.classList.add('loaded');
+        });
+        
+        // 初始化茶马古道地图
+        window.addEventListener('load', function() {
+            // 等待页面加载完成后初始化地图
+            setTimeout(() => {
+                initTeaHorseRoadMap();
+            }, 500);
+        });
+        
+        function initTeaHorseRoadMap() {
+            // 创建地图实例
+            const map = new AMap.Map('amap', {
+                zoom: 5,
+                center: [98.5, 30],
+                mapStyle: 'amap://styles/darkblue', // 使用深色风格地图
+                viewMode: '3D',
+                pitch: 0,
+                rotation: 0
+            });
+            
+            // 添加路网图层
+            AMap.plugin('AMap.TileLayer.RoadNet', function() {
+                const roadNetLayer = new AMap.TileLayer.RoadNet();
+                roadNetLayer.setMap(map);
+            });
+            
+            // 地图加载完成后隐藏加载提示
+            map.on('complete', function() {
+                document.getElementById('loading-map').style.display = 'none';
+            });
+            
+            // 添加地图控件
+            AMap.plugin(['AMap.ToolBar', 'AMap.Scale', 'AMap.MapType'], function() {
+                map.addControl(new AMap.ToolBar({
+                    position: 'RB'
+                }));
+                map.addControl(new AMap.Scale({
+                    position: 'RB'
+                }));
+                map.addControl(new AMap.MapType({
+                    position: 'RB'
+                }));
+            });
+            
+            // 当JSON加载失败时显示默认数据
+            function showDefaultData() {
+                // 城市特征介绍映射
+                const cityFeatures = {
+                    '成都': '四川省省会，西南地区中心城市，拥有悠久的茶文化历史，是古茶马古道的重要起点之一。如今是西南地区的经济、文化和交通中心。',
+                    '雅安': '历史上著名的茶马贸易中心，素有"雨城"之称，是四川通往西藏的重要门户。现在是川藏线上的重要城市，以优美的自然风光和茶文化闻名。',
+                    '康定': '甘孜藏族自治州首府，川藏线重要节点，因歌曲《康定情歌》而闻名于世。如今是藏族文化的重要传承地和旅游胜地。',
+                    '理塘': '世界高城，海拔4014米，茶马古道重要驿站，是藏族聚居区。现代理塘凭借其独特的高原风光和藏族文化吸引着众多游客。',
+                    '巴塘': '川藏交界的重要商镇，历史上是茶马贸易的重要集散地。现在是连接四川和西藏的交通枢纽，保留了丰富的藏族文化遗产。',
+                    '昌都': '西藏东部交通枢纽，茶马古道重要中转站，是康巴文化的中心。现代昌都是西藏重要的经济、文化和交通中心之一。',
+                    '拉萨': '西藏自治区首府，古道终点，是藏传佛教的圣地，拥有布达拉宫等世界文化遗产。如今是西藏的政治、经济、文化和宗教中心。',
+                    '昆明': '云南省省会，滇藏线起点，享有"春城"美誉。现代昆明是中国西南地区重要的中心城市和旅游目的地。',
+                    '大理': '历史文化名城，古道重要节点，拥有大理古城等历史遗迹。现在是著名的旅游城市，以白族文化和苍山洱海自然风光闻名。',
+                    '丽江': '世界遗产，纳西族聚居地，拥有丽江古城等著名景点。现代丽江是国际知名的旅游城市，保留了浓郁的纳西族文化特色。',
+                    '香格里拉': '迪庆藏族自治州首府，被誉为"人间天堂"，是藏族、纳西族等多民族聚居地。现代是著名的生态旅游和文化旅游目的地。',
+                    '德钦': '梅里雪山所在地，滇藏线重要节点，是藏族聚居区。现代以壮丽的雪山风光和藏族文化吸引着众多游客和登山爱好者。',
+                    '芒康': '滇藏线与川藏线交汇点，历史上是茶马古道的重要节点。现代是西藏昌都市下辖县，是西藏与云南、四川的交通枢纽。',
+                    '西宁': '青海省省会，青藏线起点，是青藏高原的东方门户。现代西宁是青海省的政治、经济、文化、教育、科教、交通和通讯中心。'
+                };
+                
+                // 主要节点数据
+                const importantNodes = [
+                    {name: '成都', lnglat: [104.07, 30.67], desc: '茶马古道起点之一，四川省省会', feature: cityFeatures['成都']},
+                    {name: '雅安', lnglat: [103.00, 29.98], desc: '历史上著名的茶马贸易中心', feature: cityFeatures['雅安']},
+                    {name: '康定', lnglat: [101.97, 30.05], desc: '甘孜藏族自治州首府，川藏线重要节点', feature: cityFeatures['康定']},
+                    {name: '理塘', lnglat: [100.23, 30.01], desc: '世界高城，茶马古道重要驿站', feature: cityFeatures['理塘']},
+                    {name: '巴塘', lnglat: [99.02, 30.00], desc: '川藏交界的重要商镇', feature: cityFeatures['巴塘']},
+                    {name: '昌都', lnglat: [97.10, 31.10], desc: '西藏东部交通枢纽，茶马古道重要中转站', feature: cityFeatures['昌都']},
+                    {name: '拉萨', lnglat: [91.11, 29.97], desc: '西藏自治区首府，古道终点', feature: cityFeatures['拉萨']},
+                    {name: '昆明', lnglat: [102.71, 25.04], desc: '云南省省会，滇藏线起点', feature: cityFeatures['昆明']},
+                    {name: '大理', lnglat: [100.25, 25.68], desc: '历史文化名城，古道重要节点', feature: cityFeatures['大理']},
+                    {name: '丽江', lnglat: [100.25, 26.86], desc: '世界遗产，纳西族聚居地', feature: cityFeatures['丽江']},
+                    {name: '香格里拉', lnglat: [99.71, 27.83], desc: '迪庆藏族自治州首府', feature: cityFeatures['香格里拉']},
+                    {name: '德钦', lnglat: [98.92, 28.49], desc: '梅里雪山所在地，滇藏线重要节点', feature: cityFeatures['德钦']},
+                    {name: '芒康', lnglat: [98.58, 29.69], desc: '滇藏线与川藏线交汇点', feature: cityFeatures['芒康']},
+                    {name: '西宁', lnglat: [101.74, 36.56], desc: '青海省省会，青藏线起点', feature: cityFeatures['西宁']}
+                ];
+                
+                // 川藏线经纬度点（简化版）
+                const sichuanTibetRoute = [
+                    [104.07, 30.67], // 成都
+                    [103.00, 29.98], // 雅安
+                    [101.97, 30.05], // 康定
+                    [100.23, 30.01], // 理塘
+                    [99.02, 30.00],  // 巴塘
+                    [97.10, 31.10],  // 昌都
+                    [91.11, 29.97]   // 拉萨
+                ];
+                
+                // 滇藏线经纬度点（简化版）
+                const yunnanTibetRoute = [
+                    [102.71, 25.04], // 昆明
+                    [100.25, 25.68], // 大理
+                    [100.25, 26.86], // 丽江
+                    [99.71, 27.83],  // 香格里拉
+                    [98.92, 28.49],  // 德钦
+                    [98.58, 29.69],  // 芒康
+                    [97.10, 31.10],  // 昌都
+                    [91.11, 29.97]   // 拉萨
+                ];
+                
+                // 创建城市对象数组用于路线规划
+                const sichuanTibetCities = sichuanTibetRoute.map((lnglat, index) => ({
+                    name: window.mingDynastyCities.find(node => node.lnglat[0] === lnglat[0] && node.lnglat[1] === lnglat[1])?.name || `节点${index+1}`,
+                    lnglat: lnglat
+                }));
+                
+                const yunnanTibetCities = yunnanTibetRoute.map((lnglat, index) => ({
+                    name: window.mingDynastyCities.find(node => node.lnglat[0] === lnglat[0] && node.lnglat[1] === lnglat[1])?.name || `节点${index+1}`,
+                    lnglat: lnglat
+                }));
+                
+                // 添加重要节点标记
+                window.mingDynastyCities.forEach(node => {
+                    const marker = new AMap.Marker({
+                        position: node.lnglat,
+                        title: node.name,
+                        icon: new AMap.Icon({
+                            size: new AMap.Size(30, 30),
+                            image: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
+                            imageSize: new AMap.Size(30, 30)
+                        }),
+                        animation: 'AMAP_ANIMATION_BOUNCE'
+                    });
+                    
+                    marker.setMap(map);
+                    
+                    // 为标记添加点击事件
+                    marker.on('click', function() {
+                        const infoWindow = new AMap.InfoWindow({
+                            position: node.lnglat,
+                            content: `<div style="padding: 10px;"><h4 style="color: #8B4513; margin-top: 0;">${node.name}</h4><p style="color: #8B4513;">类型：历史节点</p><p style="color: #8B4513; margin-top: 8px; line-height: 1.6;">${node.feature}</p></div>`,
+                            offset: new AMap.Pixel(0, -30)
+                        });
+                        
+                        infoWindow.open(map);
+                    });
+                });
+                
+                // 为地图添加点击事件，点击空白处关闭信息窗口
+                map.on('click', function() {
+                    map.clearInfoWindow();
+                });
+                
+                // 将默认城市数据保存到全局变量
+                window.mingDynastyCities = importantNodes;
+            }
+            
+            // 从JSON文件加载城市和路线数据
+            Promise.all([
+                fetch('json/City_Ming.json').then(response => response.json()),
+                fetch('json/CostPath_Ming.json').then(response => response.json())
+            ]).then(([cityData, routeData]) => {
+                
+                // 城市特征介绍映射
+                const cityFeatures = {
+                    '成都': '四川省省会，西南地区中心城市，拥有悠久的茶文化历史，是古茶马古道的重要起点之一。如今是西南地区的经济、文化和交通中心。',
+                    '雅安': '历史上著名的茶马贸易中心，素有"雨城"之称，是四川通往西藏的重要门户。现在是川藏线上的重要城市，以优美的自然风光和茶文化闻名。',
+                    '康定': '甘孜藏族自治州首府，川藏线重要节点，因歌曲《康定情歌》而闻名于世。如今是藏族文化的重要传承地和旅游胜地。',
+                    '理塘': '世界高城，海拔4014米，茶马古道重要驿站，是藏族聚居区。现代理塘凭借其独特的高原风光和藏族文化吸引着众多游客。',
+                    '巴塘': '川藏交界的重要商镇，历史上是茶马贸易的重要集散地。现在是连接四川和西藏的交通枢纽，保留了丰富的藏族文化遗产。',
+                    '昌都': '西藏东部交通枢纽，茶马古道重要中转站，是康巴文化的中心。现代昌都是西藏重要的经济、文化和交通中心之一。',
+                    '拉萨': '西藏自治区首府，古道终点，是藏传佛教的圣地，拥有布达拉宫等世界文化遗产。如今是西藏的政治、经济、文化和宗教中心。',
+                    '昆明': '云南省省会，滇藏线起点，享有"春城"美誉。现代昆明是中国西南地区重要的中心城市和旅游目的地。',
+                    '大理': '历史文化名城，古道重要节点，拥有大理古城等历史遗迹。现在是著名的旅游城市，以白族文化和苍山洱海自然风光闻名。',
+                    '丽江': '世界遗产，纳西族聚居地，拥有丽江古城等著名景点。现代丽江是国际知名的旅游城市，保留了浓郁的纳西族文化特色。',
+                    '香格里拉': '迪庆藏族自治州首府，被誉为"人间天堂"，是藏族、纳西族等多民族聚居地。现代是著名的生态旅游和文化旅游目的地。',
+                    '德钦': '梅里雪山所在地，滇藏线重要节点，是藏族聚居区。现代以壮丽的雪山风光和藏族文化吸引着众多游客和登山爱好者。',
+                    '芒康': '滇藏线与川藏线交汇点，历史上是茶马古道的重要节点。现代是西藏昌都市下辖县，是西藏与云南、四川的交通枢纽。',
+                    '西宁': '青海省省会，青藏线起点，是青藏高原的东方门户。现代西宁是青海省的政治、经济、文化、教育、科教、交通和通讯中心。',
+                    '左贡': '西藏昌都市下辖县，位于怒江上游，是川藏公路的重要节点。现代左贡以其独特的高原河谷风光和藏族文化为特色。',
+                    '邦达': '西藏昌都市八宿县下辖镇，拥有世界上海拔最高的民用机场之一——邦达机场。现代是连接昌都与林芝、拉萨的重要交通枢纽。',
+                    '类乌齐': '西藏昌都市下辖县，历史上是茶马古道的重要驿站。现代类乌齐以其保存完好的藏传佛教寺庙和自然风光而闻名。',
+                    '丁青': '西藏昌都市下辖县，位于怒江上游，是热巴舞的发源地之一。现代丁青是西藏重要的虫草产地和文化旅游目的地。',
+                    '巴青': '西藏那曲市下辖县，位于怒江上游，是藏族聚居区。现代巴青以其广阔的草原和丰富的野生动物资源为特色。',
+                    '那曲': '西藏那曲市下辖县，位于青藏高原腹地，是藏北草原的中心城市。现代那曲是西藏重要的畜牧业基地和交通枢纽。',
+                    '当雄': '西藏拉萨市下辖县，位于念青唐古拉山脉脚下，拥有纳木错等著名景点。现代当雄是西藏重要的畜牧业基地和旅游目的地。'
+                };
+                
+                // 处理城市数据
+                window.mingDynastyCities = cityData.features.map(feature => ({
+                    name: feature.attributes.城市 || feature.attributes.鍩庡競 || `城市${feature.attributes.FID}`,
+                    type: feature.attributes.类型 || '未知类型',
+                    lnglat: [feature.geometry.x, feature.geometry.y],
+                    desc: `${feature.attributes.城市 || feature.attributes.鍩庡競} - ${feature.attributes.类型 || '明朝时期茶马古道重要节点'}`,
+                    feature: cityFeatures[feature.attributes.城市 || feature.attributes.鍩庡競] || '该城市在茶马古道历史上具有重要地位，是连接内地与西藏的重要节点。'
+                }));
+                
+                // 添加重要节点标记
+                window.mingDynastyCities.forEach(node => {
+                    const marker = new AMap.Marker({
+                        position: node.lnglat,
+                        title: node.name,
+                        icon: new AMap.Icon({
+                            size: new AMap.Size(30, 30),
+                            image: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
+                            imageSize: new AMap.Size(30, 30)
+                        }),
+                        animation: 'AMAP_ANIMATION_BOUNCE'
+                    });
+                    
+                    marker.setMap(map);
+                    
+                    // 为标记添加点击事件
+                    marker.on('click', function() {
+                        const infoWindow = new AMap.InfoWindow({
+                            position: node.lnglat,
+                            content: `<div style="padding: 10px;"><h4 style="color: #8B4513; margin-top: 0;">${node.name}</h4><p style="color: #8B4513;">类型：${node.type}</p><p style="color: #8B4513; margin-top: 8px; line-height: 1.6;">${node.feature}</p></div>`,
+                            offset: new AMap.Pixel(0, -30)
+                        });
+                        
+                        infoWindow.open(map);
+                    });
+                });
+                
+                // 处理路线数据并绘制
+                routeData.features.forEach((feature, index) => {
+                    const paths = feature.geometry.paths;
+                    
+                    // 为每条路线生成随机颜色
+                    const colors = ['#F5D020', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'];
+                    const color = colors[index % colors.length];
+                    
+                    // 绘制每条路径
+                    paths.forEach(path => {
+                        if (path && path.length > 0) {
+                            const polyline = new AMap.Polyline({
+                                path: path.map(point => [point[0], point[1]]),
+                                strokeColor: color,
+                                strokeWeight: 6,
+                                strokeOpacity: 0.8,
+                                strokeStyle: 'solid',
+                                lineJoin: 'round',
+                                lineCap: 'round',
+                                zIndex: 150
+                            });
+                            
+                            polyline.setMap(map);
+                        }
+                    });
+                });
+                
+                // 为地图添加点击事件，点击空白处关闭信息窗口
+                map.on('click', function() {
+                    map.clearInfoWindow();
+                });
+                
+            }).catch(error => {
+                console.error('加载JSON数据失败:', error);
+                // 如果加载失败，显示原有的模拟数据
+                showDefaultData();
+            });;
+            
+            // 社交分享功能
+            // 创建分享面板
+            const sharePanel = document.createElement('div');
+            sharePanel.style.position = 'fixed';
+            sharePanel.style.bottom = '20px';
+            sharePanel.style.left = '50%';
+            sharePanel.style.transform = 'translateX(-50%)';
+            sharePanel.style.backgroundColor = 'transparent';
+            sharePanel.style.border = 'none';
+            sharePanel.style.borderRadius = '10px';
+            sharePanel.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)';
+            sharePanel.style.padding = '15px';
+            sharePanel.style.zIndex = '100';
+            sharePanel.style.display = 'flex';
+            sharePanel.style.gap = '10px';
+            sharePanel.style.alignItems = 'center';
+
+            // 路线分享按钮
+            const routeShareBtn = document.createElement('button');
+            routeShareBtn.innerHTML = '🔗 分享路线';
+            routeShareBtn.style.backgroundColor = '#2196F3';
+            routeShareBtn.style.color = 'white';
+            routeShareBtn.style.border = 'none';
+            routeShareBtn.style.padding = '10px 15px';
+            routeShareBtn.style.borderRadius = '5px';
+            routeShareBtn.style.cursor = 'pointer';
+            routeShareBtn.style.fontSize = '14px';
+
+            // 生成旅行故事按钮
+            const storyBtn = document.createElement('button');
+            storyBtn.innerHTML = '📝 旅行故事';
+            storyBtn.style.backgroundColor = '#FF9800';
+            storyBtn.style.color = 'white';
+            storyBtn.style.border = 'none';
+            storyBtn.style.padding = '10px 15px';
+            storyBtn.style.borderRadius = '5px';
+            storyBtn.style.cursor = 'pointer';
+            storyBtn.style.fontSize = '14px';
+
+            sharePanel.appendChild(routeShareBtn);
+            sharePanel.appendChild(storyBtn);
+            document.body.appendChild(sharePanel);
+
+            // 实现路线分享功能
+            routeShareBtn.addEventListener('click', function() {
+                // 获取当前地图状态
+                const center = map.getCenter();
+                const zoom = map.getZoom();
+
+                // 构造分享链接
+                const shareUrl = `${window.location.origin}${window.location.pathname}?center=${center.lng},${center.lat}&zoom=${zoom}`;
+
+                // 复制到剪贴板
+                navigator.clipboard.writeText(shareUrl).then(function() {
+                    showShareMessage('路线链接已复制到剪贴板！');
+                }).catch(function() {
+                    // 如果复制失败，显示链接让用户手动复制
+                    prompt('请复制以下链接:', shareUrl);
+                });
+            });
+            
+            // 实现旅行故事生成功能
+            storyBtn.addEventListener('click', function() {
+                // 创建旅行故事生成面板
+                const storyModal = document.createElement('div');
+                storyModal.style.position = 'fixed';
+                storyModal.style.top = '0';
+                storyModal.style.left = '0';
+                storyModal.style.width = '100%';
+                storyModal.style.height = '100%';
+                storyModal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                storyModal.style.display = 'flex';
+                storyModal.style.justifyContent = 'center';
+                storyModal.style.alignItems = 'center';
+                storyModal.style.zIndex = '1000';
+                
+                const storyContent = document.createElement('div');
+                storyContent.style.backgroundColor = 'white';
+                storyContent.style.padding = '30px';
+                storyContent.style.borderRadius = '10px';
+                storyContent.style.width = '90%';
+                storyContent.style.maxWidth = '600px';
+                
+                storyContent.innerHTML = `
+                    <h3 style="color: #8B4513; margin-top: 0;">生成你的茶马古道旅行故事</h3>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; color: #333;">选择起点城市：</label>
+                        <select id="startCity" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            ${window.mingDynastyCities.map(node => `<option value="${node.name}">${node.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; color: #333;">选择终点城市：</label>
+                        <select id="endCity" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            ${window.mingDynastyCities.map(node => `<option value="${node.name}">${node.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; color: #333;">旅行主题：</label>
+                        <select id="travelTheme" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            <option value="文化探索">文化探索</option>
+                            <option value="自然风光">自然风光</option>
+                            <option value="美食之旅">美食之旅</option>
+                            <option value="户外探险">户外探险</option>
+                        </select>
+                    </div>
+                    <div style="text-align: center;">
+                        <button id="generateStoryBtn" style="background-color: #8B4513; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">生成故事</button>
+                        <button id="closeStoryModal" style="background-color: #ccc; color: #333; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">关闭</button>
+                    </div>
+                    <div id="storyResult" style="margin-top: 20px; min-height: 100px; display: none;">
+                        <h4 style="color: #8B4513; margin-top: 20px;">你的茶马古道旅行故事：</h4>
+                        <p id="storyText" style="line-height: 1.6; color: #333;"></p>
+                        <button id="copyStoryBtn" style="background-color: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px;">复制故事</button>
+                    </div>
+                `;
+                
+                storyModal.appendChild(storyContent);
+                document.body.appendChild(storyModal);
+                
+                // 关闭按钮事件
+                document.getElementById('closeStoryModal').addEventListener('click', function() {
+                    document.body.removeChild(storyModal);
+                });
+                
+                // 生成故事按钮事件
+                document.getElementById('generateStoryBtn').addEventListener('click', function() {
+                    const startCity = document.getElementById('startCity').value;
+                    const endCity = document.getElementById('endCity').value;
+                    const theme = document.getElementById('travelTheme').value;
+                    
+                    // 更新对应小标题后的内容
+                    // 直接获取各个label元素
+                    const startCityLabel = document.querySelector('label[style="display: block; margin-bottom: 10px; color: #333;"]');
+                    if (startCityLabel && startCityLabel.textContent.includes('选择起点城市')) {
+                        startCityLabel.textContent = '选择起点城市：' + startCity;
+                    }
+                    
+                    // 获取所有label元素并找到包含'选择终点城市'的那个
+                    const labels = document.querySelectorAll('label[style="display: block; margin-bottom: 10px; color: #333;"]');
+                    let endCityLabel = null;
+                    let themeLabel = null;
+                    labels.forEach(label => {
+                        if (label.textContent.includes('选择终点城市')) {
+                            endCityLabel = label;
+                        } else if (label.textContent.includes('旅行主题')) {
+                            themeLabel = label;
+                        }
+                    });
+                    
+                    if (endCityLabel) {
+                        endCityLabel.textContent = '选择终点城市：' + endCity;
+                    }
+                    
+                    if (themeLabel) {
+                        themeLabel.textContent = '旅行主题：' + theme;
+                    }
+                    
+                    // 根据选择的城市和主题生成故事
+                    const story = generateTeaHorseRoadStory(startCity, endCity, theme);
+                    
+                    // 更新故事标题
+                    document.querySelector('#storyResult h4').textContent = `你的茶马古道旅行故事`;
+                    
+                    // 显示生成的故事
+                    document.getElementById('storyText').textContent = story;
+                    document.getElementById('storyResult').style.display = 'block';
+                });
+                
+                // 为下拉框添加change事件，实时更新故事标题
+                document.getElementById('startCity').addEventListener('change', updateStoryTitlePreview);
+                document.getElementById('endCity').addEventListener('change', updateStoryTitlePreview);
+                document.getElementById('travelTheme').addEventListener('change', updateStoryTitlePreview);
+                
+                function updateStoryTitlePreview() {
+                    const startCity = document.getElementById('startCity').value;
+                    const endCity = document.getElementById('endCity').value;
+                    const theme = document.getElementById('travelTheme').value;
+                    
+                    // 更新对应小标题后的内容
+                    // 直接获取各个label元素
+                    const startCityLabel = document.querySelector('label[style="display: block; margin-bottom: 10px; color: #333;"]');
+                    if (startCityLabel && startCityLabel.textContent.includes('选择起点城市')) {
+                        startCityLabel.textContent = '选择起点城市：' + startCity;
+                    }
+                    
+                    // 获取所有label元素并找到包含'选择终点城市'的那个
+                    const labels = document.querySelectorAll('label[style="display: block; margin-bottom: 10px; color: #333;"]');
+                    let endCityLabel = null;
+                    let themeLabel = null;
+                    labels.forEach(label => {
+                        if (label.textContent.includes('选择终点城市')) {
+                            endCityLabel = label;
+                        } else if (label.textContent.includes('旅行主题')) {
+                            themeLabel = label;
+                        }
+                    });
+                    
+                    if (endCityLabel) {
+                        endCityLabel.textContent = '选择终点城市：' + endCity;
+                    }
+                    
+                    if (themeLabel) {
+                        themeLabel.textContent = '旅行主题：' + theme;
+                    }
+                    
+                    // 如果故事结果区域已经显示，则更新故事大标题
+                    const storyResultElement = document.getElementById('storyResult');
+                    if (storyResultElement.style.display === 'block') {
+                        document.querySelector('#storyResult h4').textContent = `你的茶马古道旅行故事`;
+                    }
+                }
+                
+                // 复制故事按钮事件
+                document.getElementById('copyStoryBtn').addEventListener('click', function() {
+                    const storyText = document.getElementById('storyText').textContent;
+                    navigator.clipboard.writeText(storyText).then(function() {
+                        alert('旅行故事已复制到剪贴板！');
+                    }).catch(function() {
+                        alert('复制失败，请手动复制');
+                    });
+                });
+            });
+            
+            // 生成茶马古道旅行故事的函数
+            function generateTeaHorseRoadStory(startCity, endCity, theme) {
+                // 故事模板库
+                const storyTemplates = {
+                    '文化探索': [
+                        `从${startCity}出发，踏上茶马古道的文化探索之旅。这条道路承载了千年的历史与文化，每一步都仿佛在与先人对话。`,
+                        `在${endCity}，你可以感受到浓郁的民族风情和深刻的文化底蕴。古老的建筑、传统的手工艺、独特的风俗习惯，都在诉说着茶马古道的传奇故事。`,
+                        `沿途经过的每一个小镇和村庄，都保留着最原汁原味的茶马古道文化。在这里，你可以品尝到正宗的酥油茶，听到悠扬的藏族民歌，感受各民族和谐共生的美好画面。`
+                    ],
+                    '自然风光': [
+                        `${startCity}的旅程开始了，茶马古道不仅是文化之路，更是一条连接绝美自然风光的景观大道。`,
+                        `从${startCity}到${endCity}，你将穿越雪山、峡谷、草原、森林等多样的自然景观。特别是在${getMidCity(startCity, endCity)}附近，壮丽的自然风光一定会让你流连忘返。`,
+                        `到达${endCity}后，别忘了欣赏当地著名的自然景观。站在高原之上，远眺雪山，近看草原，心灵也会得到净化和升华。`
+                    ],
+                    '美食之旅': [
+                        `以${startCity}为起点，开启一段难忘的茶马古道美食之旅。这条古道不仅是贸易通道，更是美食文化的交流之路。`,
+                        `在沿途的每一个地方，都有独特的美食等待你的品尝。在${getMidCity(startCity, endCity)}，你可以尝试当地的特色小吃；在${endCity}，正宗的高原美食一定会让你大快朵颐。`,
+                        `从川菜的麻辣鲜香到藏族的酥油糍粑，从云南的过桥米线到青海的手抓羊肉，茶马古道的美食之旅将让你的味蕾得到全方位的享受。`
+                    ],
+                    '户外探险': [
+                        `勇敢的旅行者，从${startCity}出发，挑战茶马古道的户外探险路线吧！这是一条充满刺激与惊喜的旅程。`,
+                        `你可以选择徒步、骑行或自驾的方式，体验古道的险峻与壮美。特别是在${getMidCity(startCity, endCity)}到${endCity}的路段，地形复杂多变，是户外爱好者的天堂。`,
+                        `在探险过程中，你将邂逅壮丽的自然风光，结识志同道合的伙伴，挑战自我极限，收获难忘的回忆。这将是一次终生难忘的户外探险体验。`
+                    ]
+                };
+                
+                // 选择对应的故事模板
+                const templates = storyTemplates[theme];
+                
+                // 生成完整故事
+                let story = `${templates[0]}\n\n${templates[1]}\n\n${templates[2]}\n\n`;
+                story += '踏上这段旅程，你不仅是在探索地理上的茶马古道，更是在追寻一段跨越千年的历史记忆。每一步，都在续写新的传奇。';
+                
+                return story;
+            }
+            
+            // 获取两个城市之间的中间城市
+            function getMidCity(startCity, endCity) {
+                // 简化实现，实际应用中可以根据路线计算
+                const cities = ['康定', '理塘', '昌都', '大理', '丽江', '香格里拉'];
+                return cities[Math.floor(Math.random() * cities.length)];
+            }
+            
+            // 显示分享成功提示
+            function showShareMessage(message) {
+                const msgElement = document.createElement('div');
+                msgElement.style.position = 'fixed';
+                msgElement.style.top = '50%';
+                msgElement.style.left = '50%';
+                msgElement.style.transform = 'translate(-50%, -50%)';
+                msgElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                msgElement.style.color = 'white';
+                msgElement.style.padding = '15px 25px';
+                msgElement.style.borderRadius = '5px';
+                msgElement.style.zIndex = '300';
+                msgElement.style.fontSize = '16px';
+                msgElement.textContent = message;
+                
+                document.body.appendChild(msgElement);
+                
+                // 3秒后自动消失
+                setTimeout(function() {
+                    msgElement.style.opacity = '0';
+                    msgElement.style.transition = 'opacity 0.5s ease';
+                    setTimeout(function() {
+                        document.body.removeChild(msgElement);
+                    }, 500);
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>

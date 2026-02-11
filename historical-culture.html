@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>茶马古道历史文化内涵</title>
+    <link href="style.css" rel="stylesheet">
+    <!-- 引入样式文件 -->
+    <link rel="stylesheet" href="css/historical-culture.css">
+    <!-- 引入高德地图API加载器 -->
+    <script src="https://webapi.amap.com/loader.js"></script>
+</head>
+<body>
+    <!-- 加载界面 -->
+    <div id="loading" class="loading">
+        <div class="loading-spinner"></div>
+        <h3>正在加载历史文化数据...</h3>
+        <p>请稍候，正在准备茶马古道历史文化体验</p>
+    </div>
+
+    <!-- 三维地图容器 -->
+    <div id="mapContainer"></div>
+
+    <!-- 标题区域 -->
+    <div class="header">
+        <a href="route.html" class="back-button">返回</a>
+        <div style="flex-grow: 1;">
+            <h1>茶马古道历史文化内涵</h1>
+            <p>探索茶马古道上的城市变迁、历史人物与文化遗产</p>
+        </div>
+    </div>
+    
+    <!-- 工具栏 -->
+    <div class="toolbar">
+        <h2>功能导航</h2>
+        
+        <div class="toolbar-section">
+            <h3>朝代选择</h3>
+            <div class="dynasties-switch">
+                <button id="dynasties-tang" class="active">唐朝</button>
+                <button id="dynasties-song">宋朝</button>
+                <button id="dynasties-ming">明朝</button>
+                <button id="dynasties-qing">清朝</button>
+            </div>
+        </div>
+        
+        <div class="toolbar-section">
+            <h3>显示模式</h3>
+            <div class="btn-group">
+                <button id="mode-cities" class="active">城市详情</button>
+                <button id="mode-people">历史人物</button>
+                <button id="mode-heritage">文化遗产</button>
+            </div>
+        </div>
+        
+        <div class="toolbar-section">
+            <h3>地图控制</h3>
+            <div class="btn-group">
+                <button id="btn-clear-all">清除所有</button>
+                <button id="btn-show-info">历史背景</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 信息面板 -->
+    <div id="info-panel" class="info-panel">
+        <!-- 拖拽调整大小的手柄 -->
+        <div class="info-panel-resizer top-left"></div>
+        <div class="info-panel-resizer top"></div>
+        <div class="info-panel-resizer top-right"></div>
+        <div class="info-panel-resizer right"></div>
+        <div class="info-panel-resizer bottom-right"></div>
+        <div class="info-panel-resizer bottom"></div>
+        <div class="info-panel-resizer bottom-left"></div>
+        <div class="info-panel-resizer left"></div>
+        
+        <button id="info-panel-close" class="info-panel-close">×</button>
+        <h3 id="info-panel-title">信息详情</h3>
+        <div id="info-panel-content" class="info-panel-content">
+            <!-- 内容将通过JavaScript动态加载 -->
+        </div>
+    </div>
+    
+    <!-- 时间轴 -->
+    <div id="timeline" class="timeline">
+        <span class="timeline-label">唐朝</span>
+        <input type="range" id="dynasties-slider" class="timeline-slider" min="0" max="3" value="0">
+        <span class="timeline-label">清朝</span>
+    </div>
+
+    <script>
+        // 全局变量
+        let map = null;
+        let citiesData = [];
+        let pathsData = [];
+        let currentDynasty = 'Tang'; // 默认唐朝
+        let currentMode = 'cities'; // 默认城市模式
+        
+        let cityMarkers = [];
+        let personMarkers = [];
+        let heritageMarkers = [];
+        let pathLines = [];
+        
+        // 模拟历史人物数据
+        const historicalPeople = [
+            {
+                name: "文成公主",
+                coordinates: [91.33, 29.87], // 拉萨附近
+                dynasty: "Tang",
+                description: "唐朝文成公主入藏，促进了汉藏文化交流和茶马贸易的发展。她带来了先进的生产技术和文化，对藏族地区的发展产生了深远影响。",
+                achievements: "促进汉藏文化交流，推动茶马贸易发展"
+            },
+            {
+                name: "松赞干布",
+                coordinates: [91.13, 29.67], // 拉萨附近
+                dynasty: "Tang",
+                description: "吐蕃赞普，统一西藏，迎娶文成公主，建立了与唐朝的友好关系，开启了茶马古道的早期阶段。",
+                achievements: "统一西藏，建立吐蕃王朝，促进唐蕃交流"
+            },
+            {
+                name: "王震将军",
+                coordinates: [102.71, 25.04], // 昆明附近
+                dynasty: "Modern",
+                description: "中国人民解放军高级将领，在解放西南地区和支持西藏建设过程中作出了重要贡献，为现代茶马古道地区的发展奠定了基础。",
+                achievements: "解放西南，支持西藏建设"
+            },
+            {
+                name: "赵匡胤",
+                coordinates: [114.39, 34.81],
+                dynasty: "Song",
+                description: "宋朝开国皇帝，结束五代十国分裂局面，建立统一政权。为抵御北方辽、西夏等游牧民族，急需战马，遂将茶叶作为战略物资，与西南少数民族开展茶马贸易。",
+                achievements: "建立宋朝，开创建隆之治，促进茶马贸易发展。设立“茶马司”，制度化茶马贸易。"
+            },
+            {
+                name: "朱元璋",
+                coordinates: [118.46, 32.02], 
+                dynasty: "Ming",
+                description: "明朝建立后，为巩固边防并垄断战略资源，强化茶马贸易管制，打击私茶贩卖。",
+                achievements: "颁布《茶马法》，确立官方贸易垄断。设立“茶马御史”监督边境贸易。"
+            },
+            {
+                name: "马锅头",
+                coordinates: [100.58, 22.46], 
+                dynasty: "Qing",
+                description: "滇西地区民间马帮的首领，负责组织骡马队穿越茶马古道，运输茶叶、盐巴等物资。",
+                achievements: "维系古道的商业运作与物资流通。协调汉藏商人，促进边疆经济。"
+            },
+            {
+                name: "康巴商人",
+                coordinates: [101.7,30.3], 
+                dynasty: "Qing",
+                description: "藏区（今川、藏交界）的藏族商帮，以胆识和经商能力闻名，活跃于茶马古道。",
+                achievements: "推动汉藏贸易，将茶叶、丝绸输入藏区，输出马匹、药材。促进藏区与内地的文化交融。"
+            },
+            {
+                name: "莲花生大师",
+                coordinates: [85.1,24.89], 
+                dynasty: "Tang",
+                description: "印度佛教高僧，应吐蕃邀请入藏传教，途经茶马古道沿线。",
+                achievements: "奠定藏传佛教基础，创建桑耶寺。融合佛教与西藏本土信仰。"
+            },
+             {
+                name: "仓央嘉措",
+                coordinates: [90.14,27.08], 
+                dynasty: "Qing",
+                description: "六世达赖喇嘛，诗人，其作品反映茶马古道上的世俗与宗教生活。",
+                achievements: "创作大量诗歌，展现藏区风情与人性情感。成为汉藏文化交融的象征人物。"
+            },
+            {
+                name: "约瑟夫·洛克",
+                coordinates: [100.47,26.83], 
+                dynasty: "Modern",
+                description: "美籍奥地利探险家，深入滇藏地区考察茶马古道。",
+                achievements: "拍摄大量古道照片，记录民族风情。撰写《中国西南古纳西王国》，向西方介绍古道文化。"
+            },
+             {
+                name: "埃德加·斯诺",
+                coordinates: [101.79,32.28], 
+                dynasty: "Modern",
+                description: "美国记者，曾随马帮行走茶马古道。",
+                achievements: "在《马帮旅行》中记录古道贸易实况。向国际社会揭示中国西南边疆风貌。"
+            }
+        ];
+        
+        // 模拟文化遗产数据
+        const heritageSites = [
+            {
+                name: "布达拉宫",
+                coordinates: [91.13, 29.67], // 拉萨
+                type: "World Heritage",
+                description: "世界文化遗产，藏传佛教圣地，始建于7世纪松赞干布时期，是吐蕃王朝的宫堡建筑，也是西藏政教合一的统治中心。",
+                status: "保护良好",
+                imageUrl: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23f0e6d2'/><path d='M150 50 L50 150 L250 150 Z' fill='%23a0522d'/><path d='M120 80 L80 150 L160 150 Z' fill='%238b4513'/><path d='M180 80 L140 150 L220 150 Z' fill='%238b4513'/><rect x='140' y='50' width='20' height='30' fill='%23d2691e'/></svg>"
+            },
+            {
+                name: "丽江古城",
+                coordinates: [100.25, 26.86], // 丽江
+                type: "World Heritage",
+                description: "世界文化遗产，纳西族聚居地，是茶马古道上的重要商贸城市，保存了完整的古代城市风貌和民族文化。",
+                status: "保护良好",
+                imageUrl: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23f0e6d2'/><path d='M50 150 L250 150 L250 180 L50 180 Z' fill='%23a0522d'/><path d='M100 100 L100 150 M150 80 L150 150 M200 120 L200 150' stroke='%238b4513' stroke-width='10'/><path d='M100 100 L120 70 L140 100 M150 80 L170 50 L190 80 M200 120 L220 90 L240 120' fill='%23d2b48c'/></svg>"
+            },
+            {
+                name: "茶马古道遗址",
+                coordinates: [102.71, 25.04], // 昆明
+                type: "National Heritage",
+                description: "国家级文物保护单位，保存了古代茶马贸易的重要历史遗迹，包括古栈道、驿站、马店等设施，见证了茶马古道的繁荣历史。",
+                status: "部分损毁，正在修复",
+                imageUrl: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23f0e6d2'/><path d='M50 150 Q150 100 250 150' stroke='%238b4513' stroke-width='8' fill='none'/><path d='M80 140 L80 170 M120 130 L120 170 M160 145 L160 170 M200 135 L200 170 M240 145 L240 170' stroke='%23a0522d' stroke-width='4'/></svg>"
+            }
+        ];
+        
+        // 初始化地图
+        function initMap() {
+            console.log('开始初始化高德地图...');
+            
+            // 设置地图容器样式
+            const mapContainer = document.getElementById('mapContainer');
+            mapContainer.style.position = 'absolute';
+            mapContainer.style.top = '0';
+            mapContainer.style.left = '0';
+            mapContainer.style.width = '100%';
+            mapContainer.style.height = '100%';
+            mapContainer.style.zIndex = '1';
+            
+            // 配置高德地图加载器
+            AMapLoader.load({
+                key: 'fe4e50125495ae9967861058e720c5dd', // 请替换为您的高德地图API密钥
+                version: '2.0',
+                plugins: ['AMap.Globe', 'AMap.Geocoder', 'AMap.MarkerClusterer'],
+                AMapUI: {
+                    version: '1.1',
+                    plugins: ['overlay/SimpleMarker']
+                }
+            }).then(() => {
+                console.log('高德地图API加载成功');
+                
+                try {
+                    // 设置默认中心点坐标（茶马古道中心区域）
+                    let defaultCenter = [102.71, 25.04]; // 昆明附近
+                    
+                    // 创建地图实例
+                    map = new AMap.Map('mapContainer', {
+                        center: defaultCenter,
+                        zoom: 5, // 初始缩放级别
+                        viewMode: '3D', // 3D视图
+                        pitch: 45, // 俯视角
+                        rotation: 0, // 旋转角度
+                        mapStyle: 'amap://styles/light', // 浅色风格地图
+                        terrain: true, // 启用地形
+                        features: ['road', 'point', 'bg', 'building3d'], // 显示的地图要素
+                        layers: [
+                            new AMap.TileLayer.Satellite(), // 卫星图层
+                            new AMap.TileLayer.RoadNet() // 路网图层
+                        ]
+                    });
+                    
+                    // 添加地图控制组件
+                    AMap.plugin(['AMap.ToolBar', 'AMap.Scale', 'AMap.HawkEye', 'AMap.Geolocation'], function() {
+                        // 添加工具栏，包含缩放按钮
+                        map.addControl(new AMap.ToolBar({
+                            position: 'LB',
+                            offset: [20, 20],
+                            showZoomNum: true,
+                            ruler: true,
+                            autoPosition: true
+                        }));
+                        
+                        // 添加比例尺
+                        map.addControl(new AMap.Scale({
+                            position: 'RB'
+                        }));
+                    });
+                    
+                    // 设置地图交互控制
+                    map.setStatus({
+                        dragEnable: true,
+                        scrollWheelZoom: true,
+                        rotateEnable: true,
+                        doubleClickZoom: true,
+                        keyboardEnable: true
+                    });
+                    
+                    console.log('地图初始化完成');
+                    
+                    // 加载初始数据
+                    loadDynastyData(currentDynasty);
+                    
+                    // 绑定事件监听
+                    setupEventListeners();
+                    
+                    // 隐藏加载界面
+                    setTimeout(() => {
+                        const loadingElement = document.getElementById('loading');
+                        loadingElement.style.opacity = '0';
+                        setTimeout(() => {
+                            loadingElement.style.display = 'none';
+                        }, 500);
+                    }, 1000);
+                    
+                } catch (error) {
+                    console.error('地图初始化失败:', error);
+                    showErrorMessage('地图初始化失败，请刷新页面重试。');
+                }
+            }).catch(error => {
+                console.error('高德地图API加载失败:', error);
+                showErrorMessage('地图加载失败，请刷新页面重试');
+            });
+        }
+        
+        // 加载JSON文件函数
+        async function loadJSONFile(filePath) {
+            try {
+                console.log(`尝试加载JSON文件: ${filePath}`);
+                const response = await fetch(filePath);
+                
+                if (!response.ok) {
+                    console.error(`HTTP错误! 状态码: ${response.status}, 路径: ${filePath}`);
+                    throw new Error(`无法加载文件 ${filePath}`);
+                }
+                
+                const data = await response.json();
+                console.log(`成功加载JSON文件: ${filePath}`);
+                return data;
+            } catch (error) {
+                console.error(`加载文件失败: ${error.message}`);
+                return null;
+            }
+        }
+        
+        // 加载朝代数据
+        async function loadDynastyData(dynasty) {
+            console.log(`加载${dynasty}朝代数据...`);
+            
+            // 清除现有标记
+            clearAllMarkers();
+            
+            // 并行加载城市和路径数据
+            const [cities, paths] = await Promise.all([
+                loadJSONFile(`json/City_${dynasty}.json`),
+                loadJSONFile(`json/CostPath_${dynasty}.json`)
+            ]);
+            
+            // 处理城市数据
+            if (cities && cities.features && cities.features.length > 0) {
+                citiesData = cities.features;
+                console.log(`成功加载城市数据，共 ${citiesData.length} 个城市`);
+                
+                // 根据当前模式显示不同内容
+                if (currentMode === 'cities') {
+                    displayCitiesOnMap(citiesData);
+                } else if (currentMode === 'people') {
+                    displayPeopleOnMap();
+                } else if (currentMode === 'heritage') {
+                    displayHeritageOnMap();
+                }
+            } else {
+                console.warn('未加载到有效的城市数据');
+            }
+            
+            // 处理路径数据
+            if (paths && paths.features && paths.features.length > 0) {
+                pathsData = paths.features;
+                console.log(`成功加载路径数据，共 ${pathsData.length} 条路径`);
+            } else {
+                console.warn('未加载到有效的路径数据');
+            }
+        }
+        
+        // 在地图上显示城市点
+        function displayCitiesOnMap(cities) {
+            console.log('开始在地图上显示城市点...');
+            
+            cities.forEach((city, index) => {
+                try {
+                    // 检查城市数据对象的完整性
+                    if (!city || !city.geometry || !city.attributes) {
+                        console.warn(`跳过不完整的城市数据对象，索引: ${index}`);
+                        return;
+                    }
+                    
+                    // 从Esri格式中提取数据
+                    const x = city.geometry.x;
+                    const y = city.geometry.y;
+                    const attributes = city.attributes;
+                    const name = attributes.城市 || '';
+                    const coordinates = [x, y];
+                    
+                    // 检查坐标是否有效
+                    if (!coordinates || coordinates.length !== 2 || 
+                        isNaN(coordinates[0]) || isNaN(coordinates[1]) ||
+                        coordinates[0] < -180 || coordinates[0] > 180 ||
+                        coordinates[1] < -90 || coordinates[1] > 90) {
+                        console.warn(`跳过无效坐标点 ${name}: ${coordinates}`);
+                        return;
+                    }
+                    
+                    // 转换UTM坐标到经纬度（如果需要）
+                    let convertedCoords = coordinates;
+                    if (needsUTMConversion(coordinates)) {
+                        convertedCoords = utmToLatLon(x, y, 48, true);
+                        if (!convertedCoords) {
+                            console.warn(`坐标转换失败: ${coordinates}`);
+                            return;
+                        }
+                    }
+                    
+                    // 确定点的类型（是否是起点或终点）
+                    let iconColor = '#A0522D'; // 默认途经城市颜色
+                    let iconSize = [30, 30];
+                    
+                    if (index === 0) {
+                        iconColor = '#4CAF50'; // 起点颜色
+                        iconSize = [40, 40];
+                    } else if (index === cities.length - 1) {
+                        iconColor = '#F5D020'; // 终点颜色
+                        iconSize = [40, 40];
+                    }
+                    
+                    // 创建自定义标记图标
+                    let iconSvg = '';
+                    if (index === 0) {
+                        // 起点图标 - 绿色旗帜
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <path d="M20 5L30 25H5z" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                            <path d="M20 5v30" stroke="#F5F5DC" stroke-width="3"/>
+                        </svg>`;
+                    } else if (index === cities.length - 1) {
+                        // 终点图标 - 金色地标
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <circle cx="20" cy="15" r="10" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                            <polygon points="20 25 10 35 30 35" fill="${iconColor}" stroke="#F5F5DC" stroke-width="2"/>
+                        </svg>`;
+                    } else {
+                        // 途经城市图标 - 位置标记
+                        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                            <path d="M15 5c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10-4.5-10-10-10zm0 15c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5zm0-8c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z" fill="${iconColor}" stroke="#F5F5DC" stroke-width="1.5"/>
+                        </svg>`;
+                    }
+                    
+                    // 创建自定义标记
+                    const marker = new AMap.Marker({
+                        position: convertedCoords,
+                        title: name,
+                        icon: new AMap.Icon({
+                            size: iconSize,
+                            image: `data:image/svg+xml;utf-8,${encodeURIComponent(iconSvg)}`,
+                            imageSize: iconSize
+                        }),
+                        extData: {
+                            name: name,
+                            type: index === 0 ? 'start' : (index === cities.length - 1 ? 'end' : 'normal'),
+                            attributes: attributes
+                        }
+                    });
+                    
+                    // 添加标记到地图
+                    marker.setMap(map);
+                    cityMarkers.push(marker);
+                    
+                    // 添加点击事件
+                    marker.on('click', function() {
+                        showCityInfo(marker.getExtData(), convertedCoords);
+                    });
+                    
+                    // 添加标签
+                    addMarkerLabel(marker, name);
+                    
+                } catch (error) {
+                    console.error(`处理城市点数据时出错: ${error}`);
+                }
+            });
+            
+            console.log('城市点显示完成');
+        }
+        
+        // 在地图上显示历史人物
+        function displayPeopleOnMap() {
+            console.log('开始在地图上显示历史人物...');
+            
+            historicalPeople.forEach((person, index) => {
+                try {
+                    // 检查数据完整性
+                    if (!person || !person.coordinates || !person.name) {
+                        console.warn(`跳过不完整的人物数据: ${index}`);
+                        return;
+                    }
+                    
+                    // 创建人物标记
+                    const marker = new AMap.Marker({
+                        position: person.coordinates,
+                        title: person.name,
+                        content: `<div class="person-marker">人</div>`,
+                        extData: person
+                    });
+                    
+                    // 添加标记到地图
+                    marker.setMap(map);
+                    personMarkers.push(marker);
+                    
+                    // 添加点击事件
+                    marker.on('click', function() {
+                        showPersonInfo(person);
+                    });
+                    
+                    // 添加标签
+                    addMarkerLabel(marker, person.name);
+                    
+                } catch (error) {
+                    console.error(`处理人物数据时出错: ${error}`);
+                }
+            });
+            
+            console.log('历史人物显示完成');
+        }
+        
+        // 在地图上显示文化遗产
+        function displayHeritageOnMap() {
+            console.log('开始在地图上显示文化遗产...');
+            
+            heritageSites.forEach((site, index) => {
+                try {
+                    // 检查数据完整性
+                    if (!site || !site.coordinates || !site.name) {
+                        console.warn(`跳过不完整的遗产数据: ${index}`);
+                        return;
+                    }
+                    
+                    // 创建遗产标记
+                    const marker = new AMap.Marker({
+                        position: site.coordinates,
+                        title: site.name,
+                        content: `<div class="heritage-marker">遗</div>`,
+                        extData: site
+                    });
+                    
+                    // 添加标记到地图
+                    marker.setMap(map);
+                    heritageMarkers.push(marker);
+                    
+                    // 添加点击事件
+                    marker.on('click', function() {
+                        showHeritageInfo(site);
+                    });
+                    
+                    // 添加标签
+                    addMarkerLabel(marker, site.name);
+                    
+                } catch (error) {
+                    console.error(`处理遗产数据时出错: ${error}`);
+                }
+            });
+            
+            console.log('文化遗产显示完成');
+        }
+        
+        // 显示城市详细信息
+        function showCityInfo(cityData, coordinates) {
+            console.log(`显示城市信息: ${cityData.name}，坐标: ${coordinates}`);
+            
+            // 获取城市在不同朝代的发展信息（模拟数据）
+            const cityDevelopment = getCityDevelopmentInfo(cityData.name);
+            
+            // 创建详细信息内容
+            const content = `
+                <h4>${cityData.name}</h4>
+                <p><strong>地理位置：</strong>经度: ${coordinates[0].toFixed(4)}，纬度: ${coordinates[1].toFixed(4)}</p>
+                <p><strong>历史背景：</strong>${getCityHistoricalBackground(cityData.name)}</p>
+                <p><strong>商贸地位：</strong>${getCityTradeStatus(cityData.name)}</p>
+                <p><strong>文化特色：</strong>${getCityCulturalFeatures(cityData.name)}</p>
+                
+                <h5 style="margin-top: 15px; border-top: 1px solid #D2B48C; padding-top: 10px;">朝代发展变迁</h5>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    ${cityDevelopment.map(item => `
+                        <div>
+                            <p style="font-weight: bold; margin: 5px 0;">${item.dynasty}：</p>
+                            <p style="margin: 0 0 0 10px;">${item.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // 显示信息面板
+            showInfoPanel(`${cityData.name}详细信息`, content);
+        }
+        
+        // 显示历史人物信息
+        function showPersonInfo(personData) {
+            console.log(`显示历史人物信息: ${personData.name}`);
+            
+            // 创建详细信息内容
+            const content = `
+                <h4>${personData.name}</h4>
+                <p><strong>朝代：</strong>${getDynastyName(personData.dynasty)}</p>
+                <p><strong>历史背景：</strong>${personData.description}</p>
+                <p><strong>主要成就：</strong>${personData.achievements}</p>
+                
+                <h5 style="margin-top: 15px; border-top: 1px solid #D2B48C; padding-top: 10px;">相关历史事件</h5>
+                <p>${getRelatedHistoricalEvents(personData.name)}</p>
+                
+
+            `;
+            
+            // 显示信息面板
+            showInfoPanel(`${personData.name} - 历史人物`, content);
+        }
+        
+        // 显示文化遗产信息
+        function showHeritageInfo(heritageData) {
+            console.log(`显示文化遗产信息: ${heritageData.name}`);
+            
+            // 创建详细信息内容
+            const content = `
+                <h4>${heritageData.name}</h4>
+                <p><strong>类型：</strong>${heritageData.type === 'World Heritage' ? '世界文化遗产' : '国家级文物保护单位'}</p>
+                <p><strong>历史价值：</strong>${heritageData.description}</p>
+                <p><strong>保护现状：</strong>${heritageData.status}</p>
+                
+
+            `;
+            
+            // 显示信息面板
+            showInfoPanel(`${heritageData.name} - 文化遗产`, content);
+        }
+        
+        // 处理照片上传
+        function handlePhotoUpload(event, heritageName) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const comparisonDiv = document.getElementById(`photo-comparison-${heritageName}`);
+                    const modernPhoto = document.getElementById(`modern-photo-${heritageName}`);
+                    modernPhoto.src = e.target.result;
+                    comparisonDiv.style.display = 'flex';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // 显示信息面板
+        function showInfoPanel(title, content) {
+            const infoPanel = document.getElementById('info-panel');
+            const infoPanelTitle = document.getElementById('info-panel-title');
+            const infoPanelContent = document.getElementById('info-panel-content');
+            
+            infoPanelTitle.textContent = title;
+            infoPanelContent.innerHTML = content;
+            infoPanel.style.display = 'block';
+        }
+        
+        // 隐藏信息面板
+        function hideInfoPanel() {
+            const infoPanel = document.getElementById('info-panel');
+            infoPanel.style.display = 'none';
+        }
+        
+        // 为标记添加标签
+        function addMarkerLabel(marker, name) {
+            marker.setLabel({
+                content: `<div style="background-color: rgba(139, 69, 19, 0.8); color: #F5F5DC; padding: 3px 8px; border-radius: 4px; font-size: 12px; border: 1px solid rgba(245, 214, 155, 0.5);">${name}</div>`,
+                offset: new AMap.Pixel(0, -30)
+            });
+        }
+        
+        // 函数已被移除：加载茶马古道路线功能已删除
+        
+        // UTM坐标转换为经纬度坐标（简化版）
+        function utmToLatLon(utmX, utmY, zoneNumber = 48, northernHemisphere = true) {
+            try {
+                // 简化的UTM转经纬度算法
+                // 注意：这是一个近似算法，适用于一般用途
+                
+                const a = 6378137.0; // 地球椭球体长半轴
+                const e = 0.081819190842622; // 偏心率
+                const eSquared = e * e;
+                const k0 = 0.9996; // 缩放因子
+                
+                let x = utmX - 500000.0; // 调整东偏移
+                let y = northernHemisphere ? utmY : utmY - 10000000.0;
+                
+                const M = y / k0;
+                const mu = M / (a * (1 - eSquared / 4 - 3 * eSquared * eSquared / 64 - 5 * Math.pow(eSquared, 3) / 256));
+                
+                const phi1Rad = mu + (3 * e * (1 - eSquared) / (2 * (1 - eSquared * eSquared)) * Math.sin(2 * mu))
+                    + (21 * eSquared * eSquared * (1 - eSquared) / (24 * (1 - eSquared * eSquared * eSquared * eSquared)) * Math.sin(4 * mu));
+                
+                const N1 = a / Math.sqrt(1 - eSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad));
+                const T1 = Math.tan(phi1Rad) * Math.tan(phi1Rad);
+                const C1 = eSquared * Math.cos(phi1Rad) * Math.cos(phi1Rad);
+                const R1 = a * (1 - eSquared) / Math.pow(1 - eSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad), 1.5);
+                const D = x / (N1 * k0);
+                
+                const lat = phi1Rad - (N1 * Math.tan(phi1Rad) / R1) * (D * D / 2 - (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * eSquared) * Math.pow(D, 4) / 24
+                    + (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * eSquared - 3 * C1 * C1) * Math.pow(D, 6) / 720);
+                
+                const lon = ((zoneNumber - 1) * 6 - 180 + 3) * Math.PI / 180 + (D - (1 + 2 * T1 + C1) * Math.pow(D, 3) / 6
+                    + (5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * eSquared + 24 * T1 * T1) * Math.pow(D, 5) / 120) / Math.cos(phi1Rad);
+                
+                // 转换为度数
+                const longitude = lon * 180 / Math.PI;
+                const latitude = lat * 180 / Math.PI;
+                
+                return [longitude, latitude];
+            } catch (error) {
+                console.error('UTM坐标转换错误:', error);
+                return null;
+            }
+        }
+        
+        // 判断坐标是否需要UTM转换
+        function needsUTMConversion(coordinates) {
+            // 简单判断：如果坐标值很大（UTM坐标通常以米为单位，数值较大）
+            return coordinates[0] > 100000 || coordinates[1] > 100000;
+        }
+        
+        // 清除所有标记
+        function clearAllMarkers() {
+            // 清除城市标记
+            cityMarkers.forEach(marker => marker.setMap(null));
+            cityMarkers = [];
+            
+            // 清除人物标记
+            personMarkers.forEach(marker => marker.setMap(null));
+            personMarkers = [];
+            
+            // 清除遗产标记
+            heritageMarkers.forEach(marker => marker.setMap(null));
+            heritageMarkers = [];
+            
+            // 清除路径
+            clearPaths();
+        }
+        
+        // 清除路径
+        function clearPaths() {
+            pathLines.forEach(line => line.setMap(null));
+            pathLines = [];
+        }
+        
+        // 显示错误信息
+        function showErrorMessage(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '50%';
+            errorDiv.style.left = '50%';
+            errorDiv.style.transform = 'translate(-50%, -50%)';
+            errorDiv.style.backgroundColor = 'rgba(220, 53, 69, 0.9)';
+            errorDiv.style.color = 'white';
+            errorDiv.style.padding = '20px';
+            errorDiv.style.borderRadius = '8px';
+            errorDiv.style.zIndex = '1000';
+            errorDiv.style.textAlign = 'center';
+            errorDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+            errorDiv.style.maxWidth = '80%';
+            errorDiv.textContent = message;
+            
+            document.body.appendChild(errorDiv);
+            
+            // 5秒后自动移除
+            setTimeout(() => {
+                errorDiv.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(errorDiv);
+                }, 500);
+            }, 5000);
+        }
+        
+        // 设置事件监听
+        function setupEventListeners() {
+            // 朝代切换按钮
+            document.getElementById('dynasties-tang').addEventListener('click', () => switchDynasty('Tang'));
+            document.getElementById('dynasties-song').addEventListener('click', () => switchDynasty('Song'));
+            document.getElementById('dynasties-ming').addEventListener('click', () => switchDynasty('Ming'));
+            document.getElementById('dynasties-qing').addEventListener('click', () => switchDynasty('Qing'));
+            
+            // 模式切换按钮
+            document.getElementById('mode-cities').addEventListener('click', () => switchMode('cities'));
+            document.getElementById('mode-people').addEventListener('click', () => switchMode('people'));
+            document.getElementById('mode-heritage').addEventListener('click', () => switchMode('heritage'));
+            
+            // 功能按钮
+            document.getElementById('btn-clear-all').addEventListener('click', clearAllMarkers);
+            document.getElementById('btn-show-info').addEventListener('click', showHistoricalBackground);
+            
+            // 信息面板关闭按钮
+            document.getElementById('info-panel-close').addEventListener('click', hideInfoPanel);
+            
+            // 时间轴滑块
+            document.getElementById('dynasties-slider').addEventListener('input', handleTimelineChange);
+        }
+        
+        // 切换朝代
+        function switchDynasty(dynasty) {
+            // 更新当前朝代
+            currentDynasty = dynasty;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.dynasties-switch button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.id === `dynasties-${dynasty.toLowerCase()}`) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // 更新时间轴滑块
+            const dynastyIndex = {'Tang': 0, 'Song': 1, 'Ming': 2, 'Qing': 3}[dynasty];
+            document.getElementById('dynasties-slider').value = dynastyIndex;
+            
+            // 加载新朝代数据
+            loadDynastyData(dynasty);
+        }
+        
+        // 切换显示模式
+        function switchMode(mode) {
+            // 更新当前模式
+            currentMode = mode;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.btn-group button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.id === `mode-${mode}`) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // 根据新模式显示内容
+            clearAllMarkers();
+            if (mode === 'cities') {
+                if (citiesData && citiesData.length > 0) {
+                    displayCitiesOnMap(citiesData);
+                }
+            } else if (mode === 'people') {
+                displayPeopleOnMap();
+            } else if (mode === 'heritage') {
+                displayHeritageOnMap();
+            }
+        }
+        
+        // 处理时间轴变化
+        function handleTimelineChange(e) {
+            const dynastyIndex = parseInt(e.target.value);
+            const dynasty = ['Tang', 'Song', 'Ming', 'Qing'][dynastyIndex];
+            switchDynasty(dynasty);
+        }
+        
+        // 显示历史背景信息
+        function showHistoricalBackground() {
+            const content = `
+                <h4>茶马古道历史背景</h4>
+                <p>茶马古道是中国历史上重要的商贸通道，兴起于唐宋时期，繁荣于明清，连接中国西南与南亚、东南亚地区。</p>
+                <p>这条古道以马帮运输茶叶、盐、糖等商品而闻名，促进了汉族与藏族等少数民族之间的经济文化交流。</p>
+                <p>茶马古道不仅是一条商贸通道，更是一条文化交流之路，通过这条古道，汉族的茶叶、丝绸等商品传入西藏和南亚，同时藏族的马匹、药材等也传入内地，形成了独特的茶马文化。</p>
+                <p>今天，茶马古道已成为重要的历史文化遗产，见证了中国古代边疆开发和民族融合的历史进程。</p>
+            `;
+            
+            showInfoPanel('茶马古道历史背景', content);
+        }
+        
+        // 获取城市历史背景（模拟数据）
+        function getCityHistoricalBackground(cityName) {
+            const backgrounds = {
+                '西安': '西安作为十三朝古都，是茶马古道的重要起点之一，汉唐时期就是中原与西域、西南地区贸易的重要枢纽。',
+                '拉萨': '拉萨是藏传佛教的圣地，也是茶马古道的重要终点，历史上是西藏政治、经济、文化中心，通过茶马古道与内地保持密切联系。',
+                '昆明': '昆明是云南省省会，地处茶马古道的十字路口，是连接内地与南亚、东南亚的重要商贸城市。',
+                '大理': '大理是白族聚居地，历史上是南诏国和大理国的都城，也是茶马古道上的重要节点。',
+                '丽江': '丽江是纳西族聚居地，保存了完整的古代城市风貌，是茶马古道上的重要商贸城市。'
+            };
+            
+            return backgrounds[cityName] || `${cityName}是茶马古道上的重要城市，有着悠久的历史和丰富的文化遗产。`;
+        }
+        
+        // 获取城市商贸地位（模拟数据）
+        function getCityTradeStatus(cityName) {
+            const statuses = {
+                '西安': '作为起点城市，西安是中原地区茶叶、丝绸等商品的集散地，通过茶马古道运往西南和西北地区。',
+                '拉萨': '拉萨是西藏地区的重要贸易中心，通过茶马古道从内地输入茶叶、丝绸等商品，同时输出马匹、药材等特产。',
+                '昆明': '昆明是茶马古道上的重要中转城市，来自内地的商品在这里集散，然后运往南亚、东南亚地区。',
+                '大理': '大理是茶马古道上的重要商贸城市，历史上以马匹、药材等商品与内地交换茶叶、丝绸等物资。',
+                '丽江': '丽江是茶马古道上的重要驿站，商队在这里休息补给，进行商品交换。'
+            };
+            
+            return statuses[cityName] || `${cityName}在茶马古道贸易中发挥了重要作用，是商品流通的重要节点。`;
+        }
+        
+        // 获取城市文化特色（模拟数据）
+        function getCityCulturalFeatures(cityName) {
+            const features = {
+                '西安': '西安是中华文明的重要发祥地之一，有着丰富的历史文化遗产，如兵马俑、大雁塔等，同时也是汉文化与少数民族文化交流的重要场所。',
+                '拉萨': '拉萨是藏传佛教的圣地，有布达拉宫、大昭寺等著名宗教建筑，形成了独特的藏文化体系。',
+                '昆明': '昆明是多民族聚居地，融合了汉、彝、白、傣等多个民族的文化特色，形成了多元的文化格局。',
+                '大理': '大理白族有着独特的民族文化，如白族三道茶、扎染技艺等，同时也是南诏大理文化的中心。',
+                '丽江': '丽江纳西族创造了东巴文化，包括东巴文字、东巴经等，同时丽江古城保存了完整的传统城市风貌。'
+            };
+            
+            return features[cityName] || `${cityName}有着独特的地域文化特色，是茶马古道文化的重要组成部分。`;
+        }
+        
+        // 获取城市发展信息（模拟数据）
+        function getCityDevelopmentInfo(cityName) {
+            const developments = {
+                '西安': [
+                    { dynasty: '唐朝', description: '作为唐朝首都长安，是当时世界上最大的城市之一，也是茶马古道的重要起点。' },
+                    { dynasty: '宋朝', description: '虽然不再是首都，但仍是西北地区的政治、经济中心，继续保持着与西南地区的贸易联系。' },
+                    { dynasty: '明朝', description: '西安是明朝西北边防的重要城市，茶马贸易进一步发展，成为汉藏贸易的重要枢纽。' },
+                    { dynasty: '清朝', description: '西安是清朝在西北地区的重要统治中心，茶马古道贸易达到鼎盛时期。' }
+                ],
+                '拉萨': [
+                    { dynasty: '唐朝', description: '吐蕃王朝的首都，松赞干布在此迎娶文成公主，开启了唐蕃之间的友好交往和贸易。' },
+                    { dynasty: '宋朝', description: '与宋朝保持着密切的政治和经济联系，茶马贸易逐渐发展。' },
+                    { dynasty: '明朝', description: '明朝在西藏设立乌思藏都司，茶马贸易进一步繁荣，拉萨成为西藏的政治、经济、文化中心。' },
+                    { dynasty: '清朝', description: '清朝加强了对西藏的管理，拉萨继续保持着西藏中心城市的地位，茶马贸易达到鼎盛。' }
+                ]
+            };
+            
+            return developments[cityName] || [
+                { dynasty: '唐朝', description: '${cityName}在唐朝时期开始成为茶马古道上的重要城市。' },
+                { dynasty: '宋朝', description: '宋朝时期，${cityName}的商贸地位进一步提升。' },
+                { dynasty: '明朝', description: '明朝时期，${cityName}成为茶马古道上的重要节点。' },
+                { dynasty: '清朝', description: '清朝时期，${cityName}的发展达到鼎盛。' }
+            ].map(item => ({
+                ...item,
+                description: item.description.replace('${cityName}', cityName)
+            }));
+        }
+        
+        // 获取城市图片URL（模拟数据）
+        function getCityImageUrl(cityName) {
+            const images = {
+                '西安': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f0e6d2"/><path d="M150 50 L50 150 L250 150 Z" fill="%238b4513"/><path d="M120 80 L80 150 L160 150 Z" fill="%23a0522d"/><path d="M180 80 L140 150 L220 150 Z" fill="%23a0522d"/></svg>',
+                '拉萨': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f0e6d2"/><path d="M150 50 L50 150 L250 150 Z" fill="%23a0522d"/><path d="M120 80 L80 150 L160 150 Z" fill="%238b4513"/><path d="M180 80 L140 150 L220 150 Z" fill="%238b4513"/><rect x="140" y="50" width="20" height="30" fill="%23d2691e"/></svg>',
+                '昆明': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f0e6d2"/><path d="M50 150 L250 150 L250 180 L50 180 Z" fill="%23a0522d"/><circle cx="100" cy="120" r="30" fill="%238b4513"/><circle cx="200" cy="120" r="30" fill="%238b4513"/></svg>',
+                '大理': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f0e6d2"/><path d="M50 150 L250 150 L250 180 L50 180 Z" fill="%23a0522d"/><path d="M100 100 L100 150 M150 80 L150 150 M200 120 L200 150" stroke="%238b4513" stroke-width="10"/></svg>',
+                '丽江': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f0e6d2"/><path d="M50 150 L250 150 L250 180 L50 180 Z" fill="%23a0522d"/><path d="M100 100 L100 150 M150 80 L150 150 M200 120 L200 150" stroke="%238b4513" stroke-width="10"/><path d="M100 100 L120 70 L140 100 M150 80 L170 50 L190 80 M200 120 L220 90 L240 120" fill="%23d2b48c"/></svg>'
+            };
+            
+            return images[cityName] || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f0e6d2"/><text x="150" y="100" text-anchor="middle" fill="%238b4513" font-size="20">${cityName}</text></svg>'.replace('${cityName}', cityName);
+        }
+        
+        // 获取朝代名称（英文转中文）
+        function getDynastyName(dynasty) {
+            const dynastyMap = {
+                'Tang': '唐朝',
+                'Song': '宋朝',
+                'Ming': '明朝',
+                'Qing': '清朝',
+                'Modern': '现代'
+            };
+            
+            return dynastyMap[dynasty] || dynasty;
+        }
+        
+        // 获取历史人物图片URL（模拟数据）
+        function getPersonImageUrl(personName) {
+            const images = {
+                '文成公主': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f0e6d2"/><circle cx="150" cy="80" r="40" fill="%23d2b48c"/><path d="M150 120 L100 180 M150 120 L200 180 M120 150 L180 150" stroke="%238b4513" stroke-width="6" fill="none"/></svg>',
+                '松赞干布': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f0e6d2"/><circle cx="150" cy="80" r="40" fill="%238b4513"/><path d="M150 120 L100 180 M150 120 L200 180 M120 150 L180 150" stroke="%23d2b48c" stroke-width="6" fill="none"/></svg>',
+                '王震将军': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f0e6d2"/><circle cx="150" cy="80" r="40" fill="%231976d2"/><path d="M150 120 L100 180 M150 120 L200 180 M120 150 L180 150" stroke="%23ffffff" stroke-width="6" fill="none"/></svg>'
+            };
+            
+            return images[personName] || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f0e6d2"/><text x="150" y="100" text-anchor="middle" fill="%238b4513" font-size="20">${personName}</text></svg>'.replace('${personName}', personName);
+        }
+        
+        // 获取相关历史事件（模拟数据）
+        function getRelatedHistoricalEvents(personName) {
+            const events = {
+                '文成公主': '贞观十五年（641年），文成公主远嫁吐蕃，松赞干布率群臣到柏海（今青海玛多县）迎接，为公主修建了布达拉宫。这次和亲促进了汉藏两族的友好关系，也推动了茶马贸易的发展。',
+                '松赞干布': '贞观八年（634年），松赞干布派使臣入唐求婚。贞观十五年（641年），迎娶文成公主，开启了唐蕃之间的友好交往。永徽元年（650年），松赞干布去世，其子贡松贡赞继位。',
+                '王震将军': '1950年，王震将军率部进军新疆，1955年被授予上将军衔。1959年，王震将军担任农垦部部长，组织开发北大荒、新疆生产建设兵团等。改革开放后，王震将军积极支持经济特区建设。',
+                '赵匡胤':'乾德三年（965年），灭后蜀，控制四川产茶区。太平兴国二年（977年），正式设立茶马司，以茶叶换取吐蕃、大理等地战马。',
+                '朱元璋':'洪武五年（1372年），下令“以茶制戎”，严惩私茶出境。洪武三十年（1397年），驸马欧阳伦因走私茶叶被处死，震慑商贩。',
+                '马锅头':'清末民初，马帮成为云南普洱茶销往藏区的主要力量。抗战时期，马帮协助运输物资，支援大后方',
+                '康巴商人':'清代康巴商队常驻打箭炉（今康定），形成贸易枢纽。20世纪初，康巴商人参与中印边境贸易，拓展古道国际线路。',
+                '莲花生大师':'约747年经尼泊尔入藏，沿途留下宗教遗迹。其传记记载中提及古道上的传教活动。',
+                '仓央嘉措':'康熙三十六年（1697年）被认定为转世灵童。诗歌中多次提及古道驿站、商旅与爱情。',
+                '约瑟夫·洛克':'1922-1949年多次考察云南、四川、西藏。其著作成为研究古道的重要资料。',
+                '埃德加·斯诺':'1930年代从云南出发，跟随马帮前往缅甸。报道中描述古道的艰险与商旅的坚韧'
+            };
+            
+            return events[personName] || '暂无详细历史事件记录。';
+        }
+        
+        // 初始化信息面板拖拽功能
+        function initInfoPanelResizer() {
+            const infoPanel = document.getElementById('info-panel');
+            const resizers = document.querySelectorAll('.info-panel-resizer');
+            let currentResizer;
+            
+            // 阻止鼠标事件冒泡到地图
+            infoPanel.addEventListener('mousedown', function(e) {
+                e.stopPropagation();
+            });
+            
+            // 添加拖拽调整大小的事件监听
+            for (let i = 0; i < resizers.length; i++) {
+                const resizer = resizers[i];
+                
+                resizer.addEventListener('mousedown', function(e) {
+                    currentResizer = resizer;
+                    
+                    let startX = e.clientX;
+                    let startY = e.clientY;
+                    let startWidth = parseInt(document.defaultView.getComputedStyle(infoPanel).width, 10);
+                    let startHeight = parseInt(document.defaultView.getComputedStyle(infoPanel).height, 10);
+                    let startRight = infoPanel.offsetLeft + startWidth;
+                    let startTop = infoPanel.offsetTop;
+                    
+                    function resize(e) {
+                        if (!currentResizer) return;
+                        
+                        e.preventDefault();
+                        
+                        if (currentResizer.classList.contains('bottom-right')) {
+                            const width = startWidth + (e.clientX - startX);
+                            const height = startHeight + (e.clientY - startY);
+                            if (width > 250) infoPanel.style.width = width + 'px';
+                            if (height > 200) infoPanel.style.height = height + 'px';
+                        }
+                        else if (currentResizer.classList.contains('bottom-left')) {
+                            const width = startWidth + (startX - e.clientX);
+                            const height = startHeight + (e.clientY - startY);
+                            if (width > 250) {
+                                infoPanel.style.width = width + 'px';
+                                infoPanel.style.left = startRight - width + 'px';
+                            }
+                            if (height > 200) infoPanel.style.height = height + 'px';
+                        }
+                        else if (currentResizer.classList.contains('top-right')) {
+                            const width = startWidth + (e.clientX - startX);
+                            const height = startHeight + (startY - e.clientY);
+                            if (width > 250) infoPanel.style.width = width + 'px';
+                            if (height > 200) {
+                                infoPanel.style.height = height + 'px';
+                                infoPanel.style.top = startTop + (e.clientY - startY) + 'px';
+                            }
+                        }
+                        else if (currentResizer.classList.contains('top-left')) {
+                            const width = startWidth + (startX - e.clientX);
+                            const height = startHeight + (startY - e.clientY);
+                            if (width > 250) {
+                                infoPanel.style.width = width + 'px';
+                                infoPanel.style.left = startRight - width + 'px';
+                            }
+                            if (height > 200) {
+                                infoPanel.style.height = height + 'px';
+                                infoPanel.style.top = startTop + (e.clientY - startY) + 'px';
+                            }
+                        }
+                        else if (currentResizer.classList.contains('right')) {
+                            const width = startWidth + (e.clientX - startX);
+                            if (width > 250) infoPanel.style.width = width + 'px';
+                        }
+                        else if (currentResizer.classList.contains('left')) {
+                            const width = startWidth + (startX - e.clientX);
+                            if (width > 250) {
+                                infoPanel.style.width = width + 'px';
+                                infoPanel.style.left = startRight - width + 'px';
+                            }
+                        }
+                        else if (currentResizer.classList.contains('bottom')) {
+                            const height = startHeight + (e.clientY - startY);
+                            if (height > 200) infoPanel.style.height = height + 'px';
+                        }
+                        else if (currentResizer.classList.contains('top')) {
+                            const height = startHeight + (startY - e.clientY);
+                            if (height > 200) {
+                                infoPanel.style.height = height + 'px';
+                                infoPanel.style.top = startTop + (e.clientY - startY) + 'px';
+                            }
+                        }
+                    }
+                    
+                    function stopResize() {
+                        currentResizer = null;
+                        window.removeEventListener('mousemove', resize);
+                        window.removeEventListener('mouseup', stopResize);
+                    }
+                    
+                    window.addEventListener('mousemove', resize);
+                    window.addEventListener('mouseup', stopResize);
+                });
+            }
+        }
+        
+        // 页面加载完成后初始化地图和信息面板拖拽功能
+        window.addEventListener('load', function() {
+            console.log('页面加载完成，准备初始化地图和窗口缩放功能...');
+            initMap();
+            initInfoPanelResizer();
+        });
+        
+        // 确保在DOM内容加载完成后执行初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('DOM内容加载完成');
+            });
+        } else {
+            console.log('DOM已准备就绪');
+        }
+    </script>
+</body>
+</html>
