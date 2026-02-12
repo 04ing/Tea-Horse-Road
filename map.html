@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>滇南古道韵悠扬—茶马古道传统村落的时空演化</title>
+    <!-- TailwindCSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+    />
+    <!-- ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
+    <style>
+      body {
+        font-family: "Microsoft YaHei", "STKaiti", "KaiTi", serif;
+        background: linear-gradient(120deg, #f0f8ff 0%, #fff7e6 100%);
+        /* 去除花纹背景，只保留渐变 */
+      }
+      .bg-primary {
+        background-color: #f0f8ff;
+      }
+      .bg-secondary {
+        background-color: #e6f7ff;
+      }
+      .bg-accent {
+        background-color: #fff7e6;
+      }
+      .text-primary {
+        color: #4b3f2f;
+      }
+      .text-dark {
+        color: #2d2212;
+      }
+      .map-container {
+        min-height: 600px;
+      }
+      .timeline-slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 4px;
+        background: #c8b08b;
+        border-radius: 2px;
+        outline: none;
+      }
+      .timeline-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        background: #8b4513;
+        border: 2px solid #e6f7ff;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      .timeline-slider::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        background: #8b4513;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      header {
+        background: linear-gradient(90deg, #e6f7ff 0%, #fff7e6 100%);
+        border-bottom: 3px solid #c8b08b;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: "STKaiti", "KaiTi", "Microsoft YaHei", serif;
+        letter-spacing: 2px;
+      }
+      .section-title {
+        border-left: 6px solid #8b4513;
+        padding-left: 12px;
+        background: linear-gradient(90deg, #fff7e6 80%, #e6f7ff 100%);
+      }
+      .btn-theme {
+        background: #c8b08b;
+        color: #4b3f2f;
+        border: 1px solid #8b4513;
+        transition: all 0.2s;
+      }
+      .btn-theme:hover {
+        background: #8b4513;
+        color: #fff7e6;
+        border-color: #c8b08b;
+      }
+      .shadow-lg {
+        box-shadow: 0 8px 24px rgba(139, 69, 19, 0.08);
+      }
+      footer {
+        background: #8b4513;
+        color: #fff7e6;
+        border-top: 3px solid #c8b08b;
+      }
+      .border-secondary {
+        border-color: #c8b08b;
+      }
+      .rounded-lg {
+        border-radius: 16px;
+      }
+      .bg-white {
+        background: #fffdf8;
+      }
+      .font-kaiti {
+        font-family: "STKaiti", "KaiTi", serif;
+      }
+      .story-block {
+        background: rgba(255, 247, 230, 0.85);
+        border-left: 4px solid #c8b08b;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 16px rgba(139, 69, 19, 0.06);
+      }
+    </style>
+  </head>
+  <body class="bg-primary">
+    <!-- 页头 -->
+    <header class="shadow">
+      <div
+        class="container mx-auto px-4 py-3 flex justify-between items-center"
+      >
+        <h1 class="text-4xl font-bold text-primary font-kaiti">
+          滇南古道韵悠扬—茶马古道传统村落时空演化
+        </h1>
+        <nav>
+          <a href="#cluster" class="text-primary hover:underline font-bold"
+            >集聚性分析</a
+          >
+          <a href="#factors" class="ml-4 text-primary hover:underline font-bold"
+            >影响因素分析</a
+          >
+          <a
+            href="#evolution"
+            class="ml-4 text-primary hover:underline font-bold"
+            >时空演化历程</a
+          >
+          <a
+            href="#prediction"
+            class="ml-4 text-primary hover:underline font-bold"
+            >未来趋势预测</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <!-- 顶部大图背景 -->
+    <div class="relative w-full h-80 mb-8 rounded-lg overflow-hidden shadow-lg">
+      <img
+        src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+        alt="茶马古道风光"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+      <div
+        class="absolute inset-0 flex flex-col justify-center items-center text-white font-kaiti px-6"
+      >
+        <h2 class="text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg">
+          滇南古道韵悠扬
+        </h2>
+        <p class="text-lg md:text-2xl drop-shadow-lg">
+          茶马古道传统村落的时空演化地图故事
+        </p>
+      </div>
+    </div>
+
+    <main class="container mx-auto px-4 py-8">
+      <!-- 地图故事引入 -->
+      <div class="story-block font-kaiti text-lg text-dark">
+        <p>
+          茶马古道，承载着滇南千年商旅的足迹。马帮铃声、茶香古韵、村落星罗棋布，串联起山川与人文的壮丽画卷。每一条古道、每一个村落，都是历史的见证者，也是时空演化的主角。
+        </p>
+        <p class="mt-2">
+          本图谱以GIS与空间分析为工具，讲述茶马古道沿线村落的分布、集聚、变迁与未来。让我们一起穿越时空，探寻古道上的村落故事。
+        </p>
+      </div>
+
+      <!-- 概览地图 -->
+      <section id="overview" class="mb-16">
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-1/3">
+            <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
+              村落分布概览
+            </h2>
+            <p class="text-lg mb-4 font-kaiti">
+              沿着茶马古道，村落如珍珠般散落于滇西、川藏的山水之间。主线与支线交织，见证着商贸、文化与迁徙的历史。
+            </p>
+            <div class="bg-white p-4 rounded-lg shadow-lg">
+              <h3 class="font-bold mb-2 text-primary">图层说明</h3>
+              <p class="text-sm text-gray-600 mb-1">
+                点击按钮切换地图图层，体验古今村落与古道主线的空间关系。
+              </p>
+              <div class="flex space-x-2">
+                <button
+                  class="px-3 py-1 btn-theme rounded"
+                  onclick="switchLayer('ancient')"
+                >
+                  古代村落
+                </button>
+                <button
+                  class="px-3 py-1 btn-theme rounded"
+                  onclick="switchLayer('modern')"
+                >
+                  现代村落
+                </button>
+                <button
+                  class="px-3 py-1 btn-theme rounded"
+                  onclick="switchLayer('road')"
+                >
+                  突出古道
+                </button>
+                <button
+                  class="px-3 py-1 btn-theme rounded"
+                  onclick="switchLayer('all')"
+                >
+                  全部显示
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="md:w-2/3 map-container">
+            <div
+              id="overviewMap"
+              class="w-full h-full rounded-lg shadow-lg"
+            ></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 集聚性分析 -->
+      <section id="cluster" class="mb-16">
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-1/3">
+            <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
+              空间集聚性分析
+            </h2>
+            <p class="text-lg mb-4 font-kaiti">
+              村落分布并非均匀，热点多聚于交通枢纽与河谷，冷点则隐于高山深处。空间自相关分析揭示了村落集聚的地理逻辑。
+            </p>
+            <div class="bg-white p-4 rounded-lg shadow-lg">
+              <h3 class="font-bold mb-2 text-primary">集聚类型划分</h3>
+              <ul class="list-disc pl-5 space-y-1 font-kaiti">
+                <li>高-高集聚（热点）：如大理古城周边、丽江束河古镇区域</li>
+                <li>低-低集聚（冷点）：高海拔山区及交通闭塞区域</li>
+                <li>随机分布区：古道支线末端的零星村落</li>
+              </ul>
+              <p class="mt-2 text-sm text-gray-700">
+                每一个集聚区，都是茶马古道故事的舞台。
+              </p>
+            </div>
+          </div>
+          <div class="md:w-2/3 map-container flex flex-col space-y-6">
+            <div id="clusterMap" class="w-full h-72 rounded-lg shadow-lg"></div>
+            <div
+              id="moranIScatter"
+              class="w-full h-72 rounded-lg shadow-lg"
+            ></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 影响因素关联 -->
+      <section id="factors" class="mb-16">
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-1/3">
+            <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
+              影响因素关联
+            </h2>
+            <p class="text-lg mb-4 font-kaiti">
+              村落的兴衰，既受自然环境眷顾，也因交通与经济而变迁。空间回归与PCA分析，揭示了村落分布背后的多重驱动力。
+            </p>
+            <div class="space-y-4">
+              <div class="bg-accent p-3 rounded">
+                <h3 class="font-bold text-primary">1. 自然环境（权重38%）</h3>
+                <p>
+                  海拔（&lt;1500m适宜）、河流密度（距水源&lt;1km）、坡度（&lt;25°）
+                </p>
+              </div>
+              <div class="bg-accent p-3 rounded">
+                <h3 class="font-bold text-primary">2. 交通条件（权重32%）</h3>
+                <p>距古道干线距离（&lt;5km为密集区）、驿站分布密度</p>
+              </div>
+              <div class="bg-accent p-3 rounded">
+                <h3 class="font-bold text-primary">3. 经济基础（权重30%）</h3>
+                <p>历史贸易节点等级、周边资源（茶叶/马匹）分布</p>
+              </div>
+              <p class="mt-2 text-sm text-gray-700">
+                村落的选择，是人与自然、交通与经济的智慧结晶。
+              </p>
+            </div>
+          </div>
+          <div class="md:w-2/3 flex flex-col space-y-6">
+            <div
+              id="factorsChart"
+              class="w-full h-72 rounded-lg shadow-lg"
+            ></div>
+            <div
+              id="correlationMap"
+              class="w-full h-56 rounded-lg shadow-lg"
+            ></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 时空演化历程 -->
+      <section id="evolution" class="mb-16">
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-1/3">
+            <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
+              时空演化历程
+            </h2>
+            <p class="text-lg mb-4 font-kaiti">
+              从清代到现代，村落分布随古道兴衰而变迁。每一次迁徙、每一次集聚，都是历史的回响。
+            </p>
+            <div class="relative">
+              <input
+                type="range"
+                min="1700"
+                max="2020"
+                step="50"
+                value="1700"
+                class="timeline-slider w-full"
+                id="timeSlider"
+              />
+              <div
+                class="flex justify-between mt-1 text-sm text-primary font-kaiti"
+              >
+                <span>1700年（清代初期）</span>
+                <span>1750年</span>
+                <span>1800年</span>
+                <span>1850年</span>
+                <span>1900年</span>
+                <span>1950年</span>
+                <span>2000年</span>
+                <span>2020年</span>
+              </div>
+            </div>
+          </div>
+          <div class="md:w-2/3 map-container">
+            <div
+              id="evolutionMap"
+              class="w-full h-full rounded-lg shadow-lg"
+            ></div>
+            <div
+              id="timeInfo"
+              class="mt-3 bg-white p-3 rounded-lg shadow text-center font-kaiti"
+            >
+              <p class="font-bold">
+                1700年：村落集中于茶马古道主线，以贸易驿站为核心
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 未来趋势预测 -->
+      <section id="prediction" class="mb-16">
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-1/3">
+            <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
+              未来分布预测
+            </h2>
+            <p class="text-lg mb-4 font-kaiti">
+              2030年，茶马古道上的村落将如何演变？MaxEnt模型结合地形保护与交通规划，描绘出未来的空间格局。
+            </p>
+            <div class="bg-white p-4 rounded-lg shadow-lg">
+              <h3 class="font-bold mb-2 text-primary">预测结论</h3>
+              <ul class="list-disc pl-5 space-y-1 font-kaiti">
+                <li>
+                  现有热点区域（如大理、丽江）将持续集聚，成为新一代文化与旅游中心。
+                </li>
+                <li>距现代公路&lt;3km的村落有扩张潜力，或将成为新兴聚落带。</li>
+                <li>生态保护区内村落将维持现状，守护自然与人文的和谐。</li>
+              </ul>
+              <p class="mt-2 text-sm text-gray-700">
+                未来的村落，不仅是历史的延续，更是生态与发展的平衡点。
+              </p>
+            </div>
+          </div>
+          <div class="md:w-2/3 map-container">
+            <div
+              id="predictionMap"
+              class="w-full h-full rounded-lg shadow-lg"
+            ></div>
+            <div class="mt-3 flex justify-center space-x-4">
+              <button
+                class="px-3 py-1 btn-theme rounded"
+                onclick="switchPrediction('current')"
+              >
+                现状分布
+              </button>
+              <button
+                class="px-3 py-1 btn-theme rounded"
+                onclick="switchPrediction('future')"
+              >
+                2030年预测
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="py-6">
+      <div class="container mx-auto px-4 text-center">
+        <p class="font-kaiti text-lg">
+          中国地质大学（武汉）团队 | 滇南古道韵悠扬—茶马古道传统村落的时空演化
+        </p>
+        <p class="mt-2 text-sm">
+          数据来源：历史文献、GIS数据库、实地调研<br />
+        </p>
+      </div>
+    </footer>
+
+    <!-- JS脚本区（保持原有功能） -->
+    <script>
+      const overviewOption = {
+        tooltip: { trigger: "item" },
+        geo: {
+          map: "china",
+          roam: true,
+          itemStyle: { areaColor: "#F5F5DC", borderColor: "#8B4513" },
+          label: { show: false },
+        },
+        series: [
+          {
+            name: "茶马古道主线",
+            type: "lines",
+            coordinateSystem: "geo",
+            polyline: true,
+            effect: { show: false },
+            lineStyle: {
+              color: "#8B4513",
+              width: 4,
+              opacity: 0.85,
+            },
+            data: [
+              {
+                coords: [
+                  [98.6, 24.9],
+                  [98.63, 24.93],
+                  [98.66, 24.97],
+                  [98.7, 24.98],
+                  [98.74, 24.94],
+                  [98.78, 24.96],
+                  [98.81, 24.99],
+                  [98.85, 25.01],
+                  [98.9, 25.05],
+                  [99.1, 25.1],
+                  [99.3, 25.2],
+                  [99.5, 25.3],
+                  [99.6, 24.5],
+                  [99.8, 24.8],
+                  [100.0, 25.0],
+                  [100.15, 25.6],
+                  [100.3, 25.1],
+                  [100.4, 25.2],
+                  [100.52, 25.38],
+                  [100.7, 25.5],
+                  [100.9, 25.7],
+                  [101.2, 26.0],
+                  [100.2, 26.9],
+                  [101.0, 27.2],
+                  [101.7, 27.8],
+                  [102.2, 29.0],
+                  [102.5, 29.5],
+                  [103.0, 30.0],
+                  [103.15, 27.18],
+                  [103.5, 30.5],
+                  [104.1, 31.5],
+                  [98.97, 28.62],
+                  [99.5, 28.9],
+                  [100.0, 29.2],
+                  [91.1, 29.7],
+                ],
+              },
+            ],
+          },
+          {
+            name: "古代村落",
+            type: "scatter",
+            coordinateSystem: "geo",
+            data: [
+              // 云南段
+              { value: [99.6, 24.5], name: "普洱" },
+              { value: [100.3, 25.1], name: "大理古城" },
+              { value: [100.2, 26.9], name: "丽江束河" },
+              { value: [101.7, 27.8], name: "香格里拉独克宗" },
+              { value: [100.52, 25.38], name: "云南驿村" },
+              { value: [99.363, 25.963], name: "诺邓村" },
+              { value: [100.15, 25.6], name: "凤阳邑" },
+              { value: [101.046, 22.924], name: "那柯里村" },
+              { value: [103.15, 27.18], name: "花桥村" },
+              // 腾冲段
+              { value: [98.660694, 24.976472], name: "橄榄坡古道石板路" },
+              { value: [98.753806, 24.968833], name: "黄竹园铺遗址" },
+              { value: [98.744861, 24.933556], name: "城门洞西坡古道" },
+              { value: [98.611194, 24.993361], name: "赤土铺古道石板路" },
+              { value: [98.557917, 25.008472], name: "玉璧坡古道石板路" },
+              { value: [98.236361, 25.023361], name: "大歇场坡古道槽谷路" },
+              { value: [98.733389, 25.29075], name: "南斋公房西坡古道" },
+              { value: [98.759278, 25.544194], name: "北斋公房西坡古道" },
+              { value: [98.186667, 25.342056], name: "得胜碉" },
+              // 镇沅段
+              {
+                value: [101.088889, 23.998333],
+                name: "小水井梁子茶马古道遗址",
+              },
+              { value: [101.151667, 24.025556], name: "哀牢山茶马古道遗址" },
+              { value: [101.130833, 23.8675], name: "恩乐江茶马古道遗址" },
+              { value: [100.718889, 23.835278], name: "老乌山茶马古道遗址" },
+              { value: [100.952222, 23.848333], name: "联盟茶马古道遗址" },
+              { value: [100.9487, 23.8832], name: "十八道河茶马古道遗址" },
+              { value: [100.754167, 24.041111], name: "英德茶马古道遗址" },
+              { value: [100.780833, 23.954722], name: "大井茶马古道遗址" },
+              // 江城段
+              {
+                value: [101.874444, 22.595833],
+                name: "山神庙丫口茶马古道（坡脚小箐）",
+              },
+              {
+                value: [101.880278, 22.598333],
+                name: "山神庙丫口茶马古道（山神庙丫口）",
+              },
+              // 四川段
+              { value: [102.95, 30.017], name: "古城村" },
+              { value: [102.99, 30.06], name: "五家村" },
+              { value: [103.0, 30.0], name: "朱场村" },
+              { value: [102.5, 30.08], name: "红星村" },
+              { value: [102.55, 30.03], name: "新添村" },
+              // 西藏段
+              { value: [98.97, 28.62], name: "盐井古村" },
+              { value: [91.1, 29.7], name: "拉萨八廓街" },
+              // 其他重要节点
+              { value: [102.2, 29.0], name: "德格" },
+              { value: [103.0, 30.0], name: "康定" },
+              { value: [104.1, 31.5], name: "理塘" },
+            ],
+            symbolSize: 10,
+            itemStyle: { color: "#CD5C5C" },
+          },
+          {
+            name: "现代村落",
+            type: "scatter",
+            coordinateSystem: "geo",
+            data: [
+              { value: [100.4, 25.2], name: "楚雄村落" },
+              { value: [101.5, 25.5], name: "普洱村落" },
+              { value: [103.6, 27.2], name: "西昌村落" },
+              { value: [104.9, 28.7], name: "理塘村落" },
+              { value: [101.55, 24.41], name: "墨江新村" },
+              { value: [100.98, 25.13], name: "祥云新村" },
+              { value: [100.23, 26.87], name: "玉龙新村" },
+              { value: [102.72, 25.04], name: "昆明新村" },
+              { value: [102.84, 29.99], name: "巴塘新村" },
+              { value: [99.99, 27.44], name: "维西新村" },
+              { value: [101.25, 27.8], name: "德钦新村" },
+              { value: [91.13, 29.65], name: "拉萨新村" },
+            ],
+            symbolSize: 8,
+            itemStyle: { color: "#228B22" },
+          },
+        ],
+      };
+      let overviewMap;
+      document.addEventListener("DOMContentLoaded", function () {
+        // 1. 村落分布地图
+        overviewMap = echarts.init(document.getElementById("overviewMap"));
+        overviewMap.setOption(overviewOption);
+
+        // 2. 空间集聚性分析（Moran's I散点图+热点地图）
+        const moranIScatter = echarts.init(
+          document.getElementById("moranIScatter")
+        );
+        moranIScatter.setOption({
+          title: { text: "Moran's I空间自相关散点图", left: "center", top: 10 },
+          xAxis: { name: "空间权重", min: -1, max: 1 },
+          yAxis: { name: "村落属性值", min: -1, max: 1 },
+          series: [
+            {
+              type: "scatter",
+              data: [
+                [-0.8, -0.7],
+                [-0.5, -0.4],
+                [0.1, 0.2],
+                [0.5, 0.6],
+                [0.8, 0.9],
+                [0.7, 0.8],
+                [0.6, 0.7],
+              ],
+              symbolSize: 16,
+              itemStyle: { color: "#8B4513" },
+            },
+          ],
+        });
+
+        const clusterMap = echarts.init(document.getElementById("clusterMap"));
+        clusterMap.setOption({
+          geo: {
+            map: "china",
+            roam: true,
+            itemStyle: { areaColor: "#F5F5DC", borderColor: "#8B4513" },
+            label: { show: false },
+          },
+          series: [
+            {
+              name: "热点村落",
+              type: "scatter",
+              coordinateSystem: "geo",
+              data: [
+                { value: [100.3, 25.1], name: "大理古城" },
+                { value: [100.2, 26.9], name: "丽江束河" },
+                { value: [101.7, 27.8], name: "香格里拉独克宗" },
+                { value: [99.6, 24.5], name: "普洱" },
+                { value: [100.52, 25.38], name: "云南驿村" },
+              ],
+              symbolSize: 18,
+              itemStyle: { color: "#FF5722" },
+            },
+            {
+              name: "冷点村落",
+              type: "scatter",
+              coordinateSystem: "geo",
+              data: [
+                { value: [102.95, 30.017], name: "古城村" },
+                { value: [102.99, 30.06], name: "五家村" },
+                { value: [98.186667, 25.342056], name: "得胜碉" },
+              ],
+              symbolSize: 12,
+              itemStyle: { color: "#2196F3" },
+            },
+          ],
+        });
+
+        // 3. 影响因素关联（饼图+相关性地图）
+        const factorsChart = echarts.init(
+          document.getElementById("factorsChart")
+        );
+        factorsChart.setOption({
+          title: { text: "影响因素权重占比（PCA分析）", left: "center" },
+          legend: { orient: "horizontal", bottom: 10 },
+          tooltip: { trigger: "item" },
+          series: [
+            {
+              type: "pie",
+              radius: "45%",
+              data: [
+                { value: 40, name: "自然环境" },
+                { value: 35, name: "交通条件" },
+                { value: 25, name: "经济基础" },
+              ],
+              itemStyle: {
+                color: function (params) {
+                  const colors = ["#8BC34A", "#FFC107", "#795548"];
+                  return colors[params.dataIndex];
+                },
+              },
+            },
+          ],
+        });
+
+        const correlationMap = echarts.init(
+          document.getElementById("correlationMap")
+        );
+        correlationMap.setOption({
+          geo: {
+            map: "china",
+            roam: true,
+            itemStyle: { areaColor: "#F5F5DC", borderColor: "#8B4513" },
+            label: { show: false },
+          },
+          series: [
+            {
+              name: "交通密集区",
+              type: "scatter",
+              coordinateSystem: "geo",
+              data: [
+                { value: [100.3, 25.1], name: "大理古城" },
+                { value: [100.2, 26.9], name: "丽江束河" },
+                { value: [102.72, 25.04], name: "昆明新村" },
+              ],
+              symbolSize: 16,
+              itemStyle: { color: "#FFC107" },
+            },
+            {
+              name: "经济节点",
+              type: "scatter",
+              coordinateSystem: "geo",
+              data: [
+                { value: [99.6, 24.5], name: "普洱" },
+                { value: [100.52, 25.38], name: "云南驿村" },
+              ],
+              symbolSize: 14,
+              itemStyle: { color: "#795548" },
+            },
+          ],
+        });
+
+        // 4. 时空演化历程（随时间变化的村落分布地图）
+        const evolutionMap = echarts.init(
+          document.getElementById("evolutionMap")
+        );
+        const timeStages = {
+          1700: [
+            { value: [99.6, 24.5], name: "普洱" },
+            { value: [100.3, 25.1], name: "大理古城" },
+            { value: [100.52, 25.38], name: "云南驿村" },
+            { value: [98.660694, 24.976472], name: "橄榄坡古道石板路" },
+          ],
+          1800: [
+            { value: [99.6, 24.5], name: "普洱" },
+            { value: [100.3, 25.1], name: "大理古城" },
+            { value: [100.2, 26.9], name: "丽江束河" },
+            { value: [100.52, 25.38], name: "云南驿村" },
+            { value: [99.363, 25.963], name: "诺邓村" },
+            { value: [98.753806, 24.968833], name: "黄竹园铺遗址" },
+          ],
+          1900: [
+            { value: [99.6, 24.5], name: "普洱" },
+            { value: [100.3, 25.1], name: "大理古城" },
+            { value: [100.2, 26.9], name: "丽江束河" },
+            { value: [101.7, 27.8], name: "香格里拉独克宗" },
+            { value: [99.363, 25.963], name: "诺邓村" },
+            { value: [100.15, 25.6], name: "凤阳邑" },
+            { value: [103.15, 27.18], name: "花桥村" },
+          ],
+          2020: [
+            { value: [99.6, 24.5], name: "普洱" },
+            { value: [100.3, 25.1], name: "大理古城" },
+            { value: [100.2, 26.9], name: "丽江束河" },
+            { value: [101.7, 27.8], name: "香格里拉独克宗" },
+            { value: [102.2, 29.0], name: "德格" },
+            { value: [100.4, 25.2], name: "楚雄村落" },
+            { value: [102.72, 25.04], name: "昆明新村" },
+            { value: [104.9, 28.7], name: "理塘村落" },
+            { value: [91.13, 29.65], name: "拉萨新村" },
+          ],
+        };
+        function updateEvolutionMap(year) {
+          evolutionMap.setOption({
+            geo: {
+              map: "china",
+              roam: true,
+              itemStyle: { areaColor: "#F5F5DC", borderColor: "#8B4513" },
+              label: { show: false },
+            },
+            series: [
+              {
+                name: "村落分布",
+                type: "scatter",
+                coordinateSystem: "geo",
+                data: timeStages[year] || [],
+                symbolSize: 14,
+                itemStyle: { color: "#CD5C5C" },
+              },
+            ],
+          });
+          // 更新下方说明
+          const info = {
+            1700: "1700年：村落集中于茶马古道主线，以贸易驿站为核心",
+            1800: "1800年：村落分布向枢纽扩展，交通节点增多",
+            1900: "1900年：古道沿线村落数量增加，经济节点突出",
+            2020: "2020年：村落分布多样化，部分区域现代化发展",
+          };
+          document.getElementById(
+            "timeInfo"
+          ).innerHTML = `<p class="font-bold">${info[year] || ""}</p>`;
+        }
+        // 初始化
+        updateEvolutionMap("1700");
+        document
+          .getElementById("timeSlider")
+          .addEventListener("input", function (e) {
+            updateEvolutionMap(e.target.value);
+          });
+      });
+
+      function switchLayer(type) {
+        let option = JSON.parse(JSON.stringify(overviewOption));
+        if (type === "ancient") {
+          // 只显示古代村落和主线
+          option.series[2].data = [];
+        } else if (type === "modern") {
+          // 只显示现代村落和主线
+          option.series[1].data = [];
+        } else if (type === "road") {
+          // 只显示主线
+          option.series[1].data = [];
+          option.series[2].data = [];
+        } else if (type === "all") {
+          // 全部显示
+        }
+        overviewMap.setOption(option, true);
+      }
+
+      const predictionMap = echarts.init(
+        document.getElementById("predictionMap")
+      );
+      const predictionStages = {
+        current: [
+          // 现有热点村落
+          { value: [100.3, 25.1], name: "大理古城" },
+          { value: [100.2, 26.9], name: "丽江束河" },
+          { value: [101.7, 27.8], name: "香格里拉独克宗" },
+          { value: [99.6, 24.5], name: "普洱" },
+          { value: [100.52, 25.38], name: "云南驿村" },
+        ],
+        future: [
+          // 2030年预测：热点持续集聚+公路扩张区
+          { value: [100.3, 25.1], name: "大理古城" },
+          { value: [100.2, 26.9], name: "丽江束河" },
+          { value: [101.7, 27.8], name: "香格里拉独克宗" },
+          { value: [99.6, 24.5], name: "普洱" },
+          { value: [100.52, 25.38], name: "云南驿村" },
+          { value: [102.72, 25.04], name: "昆明新村" }, // 公路扩张区
+          { value: [100.98, 25.13], name: "祥云新村" }, // 公路扩张区
+          { value: [104.9, 28.7], name: "理塘村落" }, // 公路扩张区
+          // 生态保护区（不变，灰色显示）
+          {
+            value: [102.5, 30.08],
+            name: "红星村",
+            itemStyle: { color: "#BDBDBD" },
+          },
+        ],
+      };
+      function switchPrediction(type) {
+        predictionMap.setOption({
+          geo: {
+            map: "china",
+            roam: true,
+            itemStyle: { areaColor: "#F5F5DC", borderColor: "#8B4513" },
+            label: { show: false },
+          },
+          series: [
+            {
+              name: "村落分布预测",
+              type: "scatter",
+              coordinateSystem: "geo",
+              data: predictionStages[type] || [],
+              symbolSize: 14,
+              itemStyle: { color: "#CD5C5C" },
+            },
+          ],
+        });
+      }
+
+      // 初始化未来分布预测地图，默认显示2030年预测
+      switchPrediction("future");
+    </script>
+  </body>
+</html>
