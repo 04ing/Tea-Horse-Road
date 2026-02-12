@@ -15,23 +15,32 @@
 ## 项目结构
 
 ```
-├── model/             # 3D模型文件
-├── json/              # 地图数据文件
-├── css/               # 样式文件
-├── js/                # JavaScript脚本
-├── libs/              # 第三方库
+├── .idea/             # IDE配置文件
+├── .trae/             # Trae IDE配置
+├── .vscode/           # VS Code配置
 ├── Build/             # SuperMap3D构建文件
+├── css/               # 样式文件
 ├── dist/              # 构建输出
+├── js/                # JavaScript脚本
+├── json/              # 地图数据文件
+├── libs/              # 第三方库
 ├── locales/           # 多语言文件
+├── model/             # 3D模型文件
+├── node_modules/      # Node.js依赖
 ├── src/               # 源代码
 ├── .gitignore         # Git忽略文件
 ├── README.md          # 项目说明文档
+├── chamagudao.mp4     # 项目视频
 ├── comparison.html    # 朝代对比页面
 ├── historical-culture.html # 历史文化页面
+├── index.html         # 首页重定向
 ├── model.html         # 3D模型展示页面
+├── package.json       # Node.js配置
+├── package-lock.json  # 依赖版本锁定
 ├── road.html          # 路线页面
 ├── route.html         # 主页面
 ├── style.css          # 主样式文件
+├── tour.mp4           # 旅游视频
 └── tourism_significance.html # 旅游意义页面
 ```
 
@@ -49,7 +58,7 @@
 
 1. **克隆仓库**
    ```bash
-   git clone https://github.com/04ing/chamagudao.git
+   git clone https://github.com/04ing/Tea-Horse-Road.git
    ```
 
 2. **启动本地服务器**
@@ -121,7 +130,8 @@
 如果您对项目有任何问题或建议，请通过以下方式联系：
 
 - GitHub: [04ing](https://github.com/04ing)
-- 项目地址: [https://github.com/04ing/chamagudao](https://github.com/04ing/chamagudao)
+- 项目地址: [https://github.com/04ing/Tea-Horse-Road](https://github.com/04ing/Tea-Horse-Road)
+- GitHub Pages: [https://04ing.github.io/Tea-Horse-Road](https://04ing.github.io/Tea-Horse-Road)
 
 ## 致谢
 
