@@ -18,12 +18,14 @@
 ```
 ├── Build/             # SuperMap3D构建文件
 ├── css/               # 样式文件
+├── img/               # 图片资源
 ├── js/                # JavaScript脚本
 ├── json/              # 地图数据文件
 ├── libs/              # 第三方库
 ├── .gitignore         # Git忽略文件
 ├── README.md          # 项目说明文档
 ├── comparison.html    # 朝代对比页面
+├── dataset.html       # 数据集页面
 ├── historical-culture.html # 历史文化页面
 ├── index.html         # 首页重定向
 ├── map.html           # 地图分析页面
@@ -67,6 +69,7 @@
 - **historical-culture.html**：历史文化页面，介绍茶马古道的历史文化
 - **comparison.html**：朝代对比页面，对比不同朝代茶马古道的变化
 - **tourism_significance.html**：旅游意义页面，介绍茶马古道的现代旅游价值
+- **dataset.html**：数据集页面，分类整理茶马古道相关数据并提供下载功能
 
 ## 功能说明
 
@@ -134,6 +137,10 @@
 - **按钮调整**：减小了 map.html 图层说明的四个按钮字体，确保四个字在同一行显示
 - **功能添加**：在 map.html 页面右下角添加了返回顶部按钮
 - **页面清理**：从 tourism_significance.html 底部删除了“查看历史时间轴”按钮
+- **数据集页面**：创建了 dataset.html 页面，分类整理茶马古道相关数据并提供下载功能
+- **影像资料**：在 dataset.html 页面添加了茶马古道相关的重要影像资料
+- **历史文献**：在 dataset.html 页面添加了茶马古道相关的历史文献书籍
+- **样式文件**：创建了 css/dataset.css 文件，为数据集页面提供样式支持
 
 ### 2026-03-02
 - **图片更新**：修复了 tourism_significance.html 中的经典路线推荐部分的占位图片，更新为对应的风景图
