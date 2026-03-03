@@ -155,7 +155,7 @@
       </section>
 
       <!-- 集聚性分析 -->
-      <section id="cluster" class="mb-16">
+      <section id="cluster" class="mb-8">
         <div class="flex flex-col md:flex-row gap-6">
           <div class="md:w-1/3">
             <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
@@ -640,7 +640,8 @@
       // 检查 echarts 是否已加载
       function checkECharts() {
         if (typeof echarts !== 'undefined') {
-          initMaps();
+          // 等待DOM完全渲染
+          setTimeout(initMaps, 100);
         } else {
           setTimeout(checkECharts, 100);
         }
