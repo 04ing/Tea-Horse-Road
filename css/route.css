@@ -1,0 +1,517 @@
+/* 工具栏按钮美化 */
+.btn-group button {
+    margin-bottom: 5px;
+}
+
+/* 加载完成消息样式优化 */
+#statusMessage {
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+/* 图例信息面板样式 - 移动到右下角并设置透明背景 */
+.info-panel {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    transform: none;
+    background-color: transparent;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: none;
+    z-index: 100;
+    width: 200px;
+    cursor: move;
+}
+
+.info-panel h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #fff;
+    text-align: center;
+}
+
+.legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #fff;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+}
+
+.route-color {
+    background-color: #e91212f1;
+}
+
+.point-color {
+    background-color: #eec00796;
+}
+
+.start-color {
+    background-color: #52c41a;
+}
+
+.end-color {
+    background-color: #faad14;
+}
+
+/* 页面底部横向时间轴样式 */
+.bottom-timeline-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: transparent;
+    padding: 20px;
+    text-align: center;
+    z-index: 1000;
+}
+
+.bottom-timeline-container h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.horizontal-timeline {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    margin: 10px 0;
+    padding: 10px 0;
+}
+
+.timeline-line {
+    position: absolute;
+    top: 50%;
+    left: 30%;
+    right: 30%;
+    height: 3px;
+    background-color: #ddd;
+    z-index: 1;
+    transform: translateY(-50%);
+}
+
+.horizontal-timeline-item {
+    position: relative;
+    padding: 8px 18px;
+    background-color: white;
+    border: 2px solid #ddd;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 2;
+}
+
+.horizontal-timeline-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-color: #1890ff;
+}
+
+.horizontal-timeline-item.active {
+    background-color: #1890ff;
+    color: white;
+    border-color: #1890ff;
+    box-shadow: 0 5px 15px rgba(24, 144, 255, 0.3);
+}
+
+/* 适配移动端 */
+@media (max-width: 768px) {
+    .horizontal-timeline {
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .horizontal-timeline-item {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+/* 底部时间轴容器样式 */
+.bottom-timeline-container h3 {
+    color: #fff;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* 历史事件弹窗样式 */
+.events-modal {
+    position: fixed;
+    top: 250px;
+    left: 20px;
+    width: auto;
+    height: auto;
+    background-color: transparent;
+    z-index: 2000;
+}
+
+.events-modal-content {
+    background-color: #6B4226; /* 深棕色背景 */
+    border-radius: 10px;
+    width: clamp(280px, 22vw, 380px);
+    min-height: 200px;
+    max-height: clamp(200px, 25vh, 280px);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    border: 2px solid rgba(210, 180, 140, 0.8);
+}
+
+/* 统计信息面板样式 */
+.stats {
+    position: fixed;
+    top: 470px;
+    left: 20px;
+    width: clamp(280px, 22vw, 380px);
+    min-height: 220px;
+    max-height: clamp(220px, 30vh, 300px);
+    background-color: #6B4226;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    border: 2px solid rgba(210, 180, 140, 0.8);
+    z-index: 1900;
+    overflow: auto;
+}
+
+/* 城市列表样式 */
+.cities-container {
+    position: fixed;
+    top: 250px;
+    right: 20px;
+    width: clamp(280px, 20vw, 350px);
+    min-height: 280px;
+    max-height: clamp(280px, 45vh, 400px);
+    background-color: #6B4226;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    border: 2px solid rgba(210, 180, 140, 0.8);
+    z-index: 1800;
+    overflow: hidden;
+}
+
+/* 图例信息面板样式调整 */
+.info-panel {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    transform: none;
+    background-color: transparent;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: none;
+    z-index: 1700;
+    width: 200px;
+    cursor: move;
+}
+
+/* 导航栏和标题栏样式调整 */
+.header {
+    position: relative;
+    z-index: 2100;
+    background-color: rgba(107, 66, 38, 0.9);
+    padding: 20px;
+    border-bottom: 2px solid rgba(210, 180, 140, 0.8);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.header h1 {
+    color: #D4AF37;
+    font-family: 'SimSun', serif;
+    margin-bottom: 10px;
+}
+
+.header p {
+    color: #F5F5DC;
+    max-width: 800px;
+}
+
+.header-nav-buttons {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.header-nav-btn {
+    background-color: rgba(210, 180, 140, 0.2);
+    color: #F5F5DC;
+    padding: 8px 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    border: 1px solid rgba(210, 180, 140, 0.8);
+    transition: all 0.3s ease;
+}
+
+.header-nav-btn:hover {
+    background-color: rgba(210, 180, 140, 0.3);
+    color: #D4AF37;
+}
+
+.cities-container h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #D4AF37;
+    font-family: 'SimSun', serif;
+    padding: 10px 20px;
+    border-bottom: 1px solid #a0522d;
+}
+
+.cities-list {
+    padding: 10px 20px;
+    max-height: 300px;
+    overflow-y: auto;
+    color: #F5F5DC;
+}
+
+.cities-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cities-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(210, 180, 140, 0.3);
+}
+
+.cities-list li:last-child {
+    border-bottom: none;
+}
+
+.cities-list li strong {
+    color: #D4AF37;
+}
+
+.coordinates {
+    font-size: 12px;
+    color: #d2b48c;
+    margin-left: 10px;
+}
+
+/* 关闭按钮样式 */
+.close-btn {
+    background: none;
+    border: 1px solid rgba(210, 180, 140, 0.8);
+    font-size: 24px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+    color: #F5F5DC;
+}
+
+.close-btn:hover {
+    background-color: rgba(210, 180, 140, 0.2);
+    color: #D4AF37;
+}
+
+/* 统计信息网格样式 */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 10px;
+    background-color: rgba(139, 90, 43, 0.3);
+    border-radius: 5px;
+    border: 1px solid rgba(210, 180, 140, 0.5);
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #D4AF37;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #F5F5DC;
+}
+
+/* 缩放句柄样式 */
+.resize-handle {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 15px;
+    height: 15px;
+    background-color: #D4AF37;
+    border-radius: 3px;
+    cursor: nwse-resize;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.resize-handle:hover {
+    opacity: 1;
+}
+
+.events-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #a0522d;
+}
+
+.events-modal-title {
+    margin: 0;
+    font-size: 20px;
+    color: #D4AF37; /* 古金色字体 */
+    font-family: 'SimSun', serif;
+}
+
+.close-events-modal-btn {
+    background: none;
+    border: 1px solid rgba(210, 180, 140, 0.8);
+    font-size: 24px;
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+    color: #F5F5DC; /* 米色字体 */
+}
+
+.close-events-modal-btn:hover {
+    background-color: rgba(210, 180, 140, 0.2);
+    color: #D4AF37;
+}
+
+.events-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex-grow: 1;
+    color: #fff; /* 白色字体 */
+}
+
+.events-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.event-item {
+    padding: 15px;
+    border: 1px solid rgba(210, 180, 140, 0.5);
+    border-radius: 8px;
+    background-color: rgba(139, 90, 43, 0.3);
+    color: #F5F5DC; /* 米色字体 */
+}
+
+.event-year {
+    font-size: 16px;
+    font-weight: bold;
+    color: #D4AF37; /* 古金色字体 */
+    margin-bottom: 8px;
+}
+
+.event-content {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #F5F5DC; /* 米色字体 */
+}
+
+/* 空事件提示样式 */
+.empty-events {
+    text-align: center;
+    color: #fff;
+    font-size: 16px;
+    padding: 20px;
+}
+
+/* 统计信息面板标题区域样式 */
+.stats-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 隐藏元素 */
+.hidden-element {
+    visibility: hidden;
+}
+
+/* 城市列表标题区域样式 */
+.cities-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 标记标签样式 */
+.marker-label {
+    background-color: rgba(139, 69, 19, 0.8);
+    color: #F5F5DC;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    border: 1px solid rgba(245, 214, 155, 0.5);
+}
+
+/* 城市信息窗口样式 */
+.city-info-window {
+    padding: 15px;
+    background-color: #f5e6d3;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+    border: 2px solid #8B4513;
+}
+
+.city-info-window h3 {
+    margin: 0 0 10px 0;
+    color: #8B4513;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    border-bottom: 1px solid #d2b48c;
+    padding-bottom: 5px;
+}
+
+.city-info-window p {
+    margin: 8px 0;
+    font-size: 15px;
+    color: #5d4037;
+}
+
+/* API密钥链接样式 */
+.api-key-link {
+    color: #007bff;
+    text-decoration: underline;
+}

@@ -4,24 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>茶马古道传统村落的时空演化</title>
+    <!-- 预加载关键资源 -->
+    <link rel="preload" href="js/echarts.min.js" as="script">
+    <link rel="preload" href="js/china.js" as="script">
+    <link rel="preload" href="css/map.css" as="style">
+    
     <!-- TailwindCSS -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      media="print"
+      onload="this.media='all'"
     />
     <!-- Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" media="print" onload="this.media='all'" />
+    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <!-- proj4js 库 -->
-    <script src="https://cdn.jsdelivr.net/npm/proj4@2.9.0/dist/proj4.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/proj4@2.9.0/dist/proj4.min.js"></script>
     <!-- ECharts -->
-    <script src="js/echarts.min.js"></script>
-    <script src="js/china.js"></script>
+    <script defer src="js/echarts.min.js"></script>
+    <script defer src="js/china.js"></script>
     <!-- CDN 备用 -->
-    <script>
+    <script defer>
       if (typeof echarts === 'undefined') {
-        document.write('<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"><\/script>');
-        document.write('<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/map/js/china.js"><\/script>');
+        const script1 = document.createElement('script');
+        script1.src = 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js';
+        document.head.appendChild(script1);
+        
+        const script2 = document.createElement('script');
+        script2.src = 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/map/js/china.js';
+        document.head.appendChild(script2);
       }
     </script>
     <link rel="stylesheet" href="css/map.css">
@@ -35,6 +47,7 @@
     <!-- 顶部大图背景 -->
     <div class="relative w-full h-80 mb-8 rounded-lg overflow-hidden shadow-lg">
       <img
+        loading="lazy"
         src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
         alt="茶马古道风光"
         class="absolute inset-0 w-full h-full object-cover"
@@ -340,7 +353,8 @@
 
     <!-- JS脚本区（保持原有功能） -->
     <script>
-      const overviewOption = {
+      // 初始化概览地图选项
+      let overviewOption = {
         tooltip: { trigger: "item" },
         geo: {
           map: "china",
@@ -367,37 +381,7 @@
             name: "古代村落",
             type: "scatter",
             coordinateSystem: "geo",
-            data: [
-              // 云南段
-              { value: [99.6, 24.5], name: "普洱" },
-              { value: [100.3, 25.1], name: "大理古城" },
-              { value: [100.2, 26.9], name: "丽江束河" },
-              { value: [101.7, 27.8], name: "香格里拉独克宗" },
-              { value: [100.52, 25.38], name: "云南驿村" },
-              { value: [99.363, 25.963], name: "诺邓村" },
-              { value: [100.15, 25.6], name: "凤阳邑" },
-              { value: [101.046, 22.924], name: "那柯里村" },
-              { value: [103.15, 27.18], name: "花桥村" },
-              // 四川段
-              { value: [102.95, 30.017], name: "古城村" },
-              { value: [102.99, 30.06], name: "五家村" },
-              { value: [103.0, 30.0], name: "朱场村" },
-              { value: [102.5, 30.08], name: "红星村" },
-              { value: [102.55, 30.03], name: "新添村" },
-              // 西藏段
-              { value: [98.97, 28.62], name: "盐井古村" },
-              { value: [91.1, 29.7], name: "拉萨八廓街" },
-              // 其他重要节点
-              { value: [102.2, 29.0], name: "德格" },
-              { value: [103.0, 30.0], name: "康定" },
-              { value: [104.1, 31.5], name: "理塘" },
-              // 新增：CostPath_Ming.json 附近的古代村落
-              { value: [98.58, 31.81], name: "昌都古村" },
-              { value: [98.22, 31.50], name: "江达古村" },
-              { value: [101.96, 30.00], name: "康定古村" },
-              { value: [101.01, 30.03], name: "雅江古村" },
-              { value: [100.27, 30.00], name: "理塘古村" },
-            ],
+            data: [], // 数据将从 JSON 文件加载
             symbolSize: 12,
             itemStyle: { color: "#CD5C5C" },
             emphasis: {
@@ -409,26 +393,7 @@
             name: "现代村落",
             type: "scatter",
             coordinateSystem: "geo",
-            data: [
-              { value: [100.4, 25.2], name: "楚雄村落" },
-              { value: [101.5, 25.5], name: "普洱村落" },
-              { value: [103.6, 27.2], name: "西昌村落" },
-              { value: [104.9, 28.7], name: "理塘村落" },
-              { value: [101.55, 24.41], name: "墨江新村" },
-              { value: [100.98, 25.13], name: "祥云新村" },
-              { value: [100.23, 26.87], name: "玉龙新村" },
-              { value: [102.72, 25.04], name: "昆明新村" },
-              { value: [102.84, 29.99], name: "巴塘新村" },
-              { value: [99.99, 27.44], name: "维西新村" },
-              { value: [101.25, 27.8], name: "德钦新村" },
-              { value: [91.13, 29.65], name: "拉萨新村" },
-              // 新增：CostPath_Ming.json 附近的现代村落
-              { value: [98.59, 31.82], name: "昌都新村" },
-              { value: [98.23, 31.51], name: "江达新村" },
-              { value: [101.97, 30.01], name: "康定新村" },
-              { value: [101.02, 30.04], name: "雅江新村" },
-              { value: [100.28, 30.01], name: "理塘新村" },
-            ],
+            data: [], // 数据将从 JSON 文件加载
             symbolSize: 10,
             itemStyle: { color: "#228B22" },
             emphasis: {
@@ -678,32 +643,105 @@
         checkECharts();
       });
       
+      // 数据缓存对象
+      const dataCache = {
+        route: null,
+        ancientVillages: null,
+        modernVillages: null,
+        cityQing: null,
+        pathQing: null
+      };
+
+      // 检查本地存储中的缓存数据
+      function checkLocalStorage() {
+        try {
+          const cachedData = localStorage.getItem('茶马古道数据缓存');
+          if (cachedData) {
+            const parsedData = JSON.parse(cachedData);
+            if (parsedData.timestamp && (Date.now() - parsedData.timestamp) < 24 * 60 * 60 * 1000) { // 24小时缓存
+              Object.assign(dataCache, parsedData.data);
+              return true;
+            }
+          }
+        } catch (error) {
+          console.error('读取本地存储失败:', error);
+        }
+        return false;
+      }
+
+      // 保存数据到本地存储
+      function saveToLocalStorage() {
+        try {
+          const cacheData = {
+            timestamp: Date.now(),
+            data: dataCache
+          };
+          localStorage.setItem('茶马古道数据缓存', JSON.stringify(cacheData));
+        } catch (error) {
+          console.error('保存本地存储失败:', error);
+        }
+      }
+
       function initMaps() {
         if (typeof echarts === 'undefined') return;
+        
+        // 检查本地存储缓存
+        const hasCachedData = checkLocalStorage();
         
         // 1. 村落分布地图
         if (document.getElementById("overviewMap")) {
           overviewMap = echarts.init(document.getElementById("overviewMap"));
           
-          // 加载 CostPath_Ming.json 数据
-          fetch('json/CostPath_Ming.json')
-            .then(response => response.json())
-            .then(data => {
-              // 提取路线数据
-              routeData = data.features.map(feature => ({
+          // 显示加载指示器
+          overviewMap.setOption({
+            title: {
+              text: '加载中...',
+              left: 'center',
+              top: 'center'
+            }
+          });
+          
+          // 加载所有数据
+          Promise.all([
+            dataCache.route ? Promise.resolve({ features: dataCache.route }) : fetch('json/CostPath_Ming.json').then(response => response.json()),
+            dataCache.ancientVillages ? Promise.resolve({ villages: dataCache.ancientVillages }) : fetch('json/ancient_villages.json').then(response => response.json()),
+            dataCache.modernVillages ? Promise.resolve({ villages: dataCache.modernVillages }) : fetch('json/modern_villages.json').then(response => response.json())
+          ]).then(([pathData, ancientData, modernData]) => {
+            // 提取路线数据
+            if (!dataCache.route) {
+              dataCache.route = pathData.features.map(feature => ({
                 coords: feature.geometry.paths[0].map(coord => [coord[0], coord[1]])
               }));
-              
-              // 更新概览地图数据
-              const updatedOption = JSON.parse(JSON.stringify(overviewOption));
-              updatedOption.series[0].data = routeData;
-              overviewMap.setOption(updatedOption);
-            })
-            .catch(error => {
-              console.error('加载 CostPath_Ming.json 失败:', error);
-              // 加载失败时使用默认数据
-              overviewMap.setOption(overviewOption);
-            });
+            }
+            routeData = dataCache.route;
+            
+            // 提取古代村落数据
+            if (!dataCache.ancientVillages) {
+              dataCache.ancientVillages = ancientData.villages;
+            }
+            ancientVillagesData = dataCache.ancientVillages;
+            
+            // 提取现代村落数据
+            if (!dataCache.modernVillages) {
+              dataCache.modernVillages = modernData.villages;
+            }
+            modernVillagesData = dataCache.modernVillages;
+            
+            // 保存数据到本地存储
+            saveToLocalStorage();
+            
+            // 更新概览地图数据
+            const updatedOption = JSON.parse(JSON.stringify(overviewOption));
+            updatedOption.series[0].data = routeData;
+            updatedOption.series[1].data = ancientVillagesData;
+            updatedOption.series[2].data = modernVillagesData;
+            overviewMap.setOption(updatedOption);
+          })
+          .catch(error => {
+            console.error('加载数据失败:', error);
+            // 加载失败时使用默认数据
+            overviewMap.setOption(overviewOption);
+          });
         }
 
         // 空间分析工具函数
@@ -1983,6 +2021,10 @@
         }
       }
 
+      // 存储加载的村落数据
+      let ancientVillagesData = [];
+      let modernVillagesData = [];
+
       window.switchLayer = function(type) {
         if (!overviewMap) return;
         let option = JSON.parse(JSON.stringify(overviewOption));
@@ -1990,16 +2032,20 @@
         option.series[0].data = routeData;
         if (type === "ancient") {
           // 只显示古代村落和主线
+          option.series[1].data = ancientVillagesData;
           option.series[2].data = [];
         } else if (type === "modern") {
           // 只显示现代村落和主线
           option.series[1].data = [];
+          option.series[2].data = modernVillagesData;
         } else if (type === "road") {
           // 只显示主线
           option.series[1].data = [];
           option.series[2].data = [];
         } else if (type === "all") {
           // 全部显示
+          option.series[1].data = ancientVillagesData;
+          option.series[2].data = modernVillagesData;
         }
         overviewMap.setOption(option, true);
       };
