@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>茶马古道数据集</title>
+    <!-- TailwindCSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      media="print"
+      onload="this.media='all'"
+    />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dataset.css">
+  </head>
+  <body class="bg-primary">
+    <!-- 导航栏将通过JavaScript加载 -->
+    <script src="js/navbar.js"></script>
+
+    <!-- 顶部大图背景 -->
+    <div class="relative w-full h-80 mb-8 rounded-lg overflow-hidden shadow-lg">
+      <img
+        loading="lazy"
+        src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+        alt="茶马古道风光"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+      <div
+        class="absolute inset-0 flex flex-col justify-center items-center text-white font-kaiti px-6"
+      >
+        <h2 class="text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg">
+         茶马古道数据集
+        </h2>
+        <p class="text-lg md:text-2xl drop-shadow-lg">
+          分类整理的历史文献、地理信息、考古资料和影像资料
+        </p>
+      </div>
+    </div>
+
+    <main class="container mx-auto px-4 py-8">
+      <!-- 数据集介绍 -->
+      <div class="story-block font-kaiti text-lg text-dark mb-12">
+        <p>
+          茶马古道数据集旨在整合与茶马古道相关的多源数据，包括历史文献、地理信息、考古资料和影像资料等。这些数据为研究人员、教育工作者和历史爱好者提供了丰富的研究素材，有助于深入了解茶马古道的历史、文化和地理特征。
+        </p>
+        <p class="mt-2">
+          数据集按照不同类别进行分类整理，方便用户快速找到所需资料。所有数据均可免费下载使用，希望能为茶马古道的研究与传承做出贡献。
+        </p>
+      </div>
+
+      <!-- 数据集分类 -->
+      <section class="mb-16">
+        <h2 class="section-title text-2xl font-bold text-primary mb-8 pb-2">
+          数据分类
+        </h2>
+
+        <!-- 历史文献 -->
+        <div class="data-category mb-10">
+          <h3 class="text-xl font-bold text-primary mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            历史文献
+          </h3>
+          <div class="bg-white p-6 rounded-lg shadow-lg">
+            <p class="mb-4 font-kaiti">
+              包括与茶马古道相关的历史文献记载，如地方志、游记、官方文档等，为研究茶马古道的历史提供了重要的文字资料。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="data-item p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                <h4 class="font-bold mb-2">历史人物数据</h4>
+                <p class="text-sm text-gray-600 mb-3">包含茶马古道相关历史人物的基本信息和关系网络</p>
+                <a href="json/historical_people.json" download="historical_people.json" class="inline-flex items-center px-4 py-2 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载 JSON
+                </a>
+              </div>
+              <div class="data-item p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                <h4 class="font-bold mb-2">人物关系数据</h4>
+                <p class="text-sm text-gray-600 mb-3">记录历史人物之间的关系网络数据</p>
+                <a href="json/people_relations.json" download="people_relations.json" class="inline-flex items-center px-4 py-2 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载 JSON
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 地理信息 -->
+        <div class="data-category mb-10">
+          <h3 class="text-xl font-bold text-primary mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            地理信息
+          </h3>
+          <div class="bg-white p-6 rounded-lg shadow-lg">
+            <p class="mb-4 font-kaiti">
+              包含茶马古道的路线数据、城市分布、驿站位置等地理信息，为研究茶马古道的空间分布提供了重要数据。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="data-item p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                <h4 class="font-bold mb-2">唐代城市数据</h4>
+                <p class="text-sm text-gray-600 mb-3">唐代茶马古道沿线城市分布数据</p>
+                <a href="json/City_Tang.json" download="City_Tang.json" class="inline-flex items-center px-4 py-2 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载 JSON
+                </a>
+              </div>
+              <div class="data-item p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                <h4 class="font-bold mb-2">唐代路线数据</h4>
+                <p class="text-sm text-gray-600 mb-3">唐代茶马古道路线数据</p>
+                <a href="json/CostPath_Tang.json" download="CostPath_Tang.json" class="inline-flex items-center px-4 py-2 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载 JSON
+                </a>
+              </div>
+              <div class="data-item p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                <h4 class="font-bold mb-2">宋代城市数据</h4>
+                <p class="text-sm text-gray-600 mb-3">宋代茶马古道沿线城市分布数据</p>
+                <a href="json/City_Song.json" download="City_Song.json" class="inline-flex items-center px-4 py-2 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载 JSON
+                </a>
+              </div>
+              <div class="data-item p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                <h4 class="font-bold mb-2">宋代路线数据</h4>
+                <p class="text-sm text-gray-600 mb-3">宋代茶马古道路线数据</p>
+                <a href="json/CostPath_Song.json" download="CostPath_Song.json" class="inline-flex items-center px-4 py-2 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载 JSON
+                </a>
+              </div>
+              <div class="data-item p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                <h4 class="font-bold mb-2">明代城市数据</h4>
+                <p class="text-sm text-gray-600 mb-3">明代茶马古道沿线城市分布数据</p>
+                <a href="json/City_Ming.json" download="City_Ming.json" class="inline-flex items-center px-4 py-2 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载 JSON
+                </a>
+              </div>
+              <div class="data-item p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                <h4 class="font-bold mb-2">明代路线数据</h4>
+                <p class="text-sm text-gray-600 mb-3">明代茶马古道路线数据</p>
+                <a href="json/CostPath_Ming.json" download="CostPath_Ming.json" class="inline-flex items-center px-4 py-2 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载 JSON
+                </a>
+              </div>
+              <div class="data-item p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                <h4 class="font-bold mb-2">清代城市数据</h4>
+                <p class="text-sm text-gray-600 mb-3">清代茶马古道沿线城市分布数据</p>
+                <a href="json/City_Qing.json" download="City_Qing.json" class="inline-flex items-center px-4 py-2 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载 JSON
+                </a>
+              </div>
+              <div class="data-item p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                <h4 class="font-bold mb-2">清代路线数据</h4>
+                <p class="text-sm text-gray-600 mb-3">清代茶马古道路线数据</p>
+                <a href="json/CostPath_Qing.json" download="CostPath_Qing.json" class="inline-flex items-center px-4 py-2 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载 JSON
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 考古资料 -->
+        <div class="data-category mb-10">
+          <h3 class="text-xl font-bold text-primary mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            考古资料
+          </h3>
+          <div class="bg-white p-6 rounded-lg shadow-lg">
+            <p class="mb-4 font-kaiti">
+              包含茶马古道沿线的考古发现，如驿站遗址、文物等资料，为研究茶马古道的历史提供了实物证据。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="data-item p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                <h4 class="font-bold mb-2">文化遗产数据</h4>
+                <p class="text-sm text-gray-600 mb-3">茶马古道沿线文化遗产数据</p>
+                <a href="json/heritage_sites.json" download="heritage_sites.json" class="inline-flex items-center px-4 py-2 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载 JSON
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 影像资料 -->
+        <div class="data-category">
+          <h3 class="text-xl font-bold text-primary mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            影像资料
+          </h3>
+          <div class="bg-white p-6 rounded-lg shadow-lg">
+            <p class="mb-4 font-kaiti">
+              包含茶马古道的历史照片、现代影像等可视化资料，为研究茶马古道的历史和现状提供了直观的视觉资料。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="data-item p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                <h4 class="font-bold mb-2">图片资料</h4>
+                <p class="text-sm text-gray-600 mb-3">茶马古道相关图片资料</p>
+                <a href="img/" class="inline-flex items-center px-4 py-2 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  查看图片
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 数据使用说明 -->
+      <section class="mb-16">
+        <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
+          数据使用说明
+        </h2>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+          <h3 class="font-bold mb-3">使用条款</h3>
+          <ul class="list-disc pl-5 space-y-2 font-kaiti">
+            <li>本数据集仅供学术研究、教育教学和非商业用途使用</li>
+            <li>使用本数据集时，请注明数据来源：茶马古道数据集</li>
+            <li>如需商业使用，请联系数据集管理员获得授权</li>
+            <li>数据集可能存在误差，使用时请自行验证</li>
+          </ul>
+          <h3 class="font-bold mt-6 mb-3">数据格式说明</h3>
+          <ul class="list-disc pl-5 space-y-2 font-kaiti">
+            <li>JSON格式：结构化数据，可使用任何JSON解析工具打开</li>
+            <li>图片格式：JPG格式，可直接查看</li>
+            <li>坐标系统：WGS84经纬度坐标系</li>
+          </ul>
+          <h3 class="font-bold mt-6 mb-3">联系我们</h3>
+          <p class="font-kaiti">
+            如有数据相关问题或建议，请联系数据集管理员：
+            <a href="mailto:example@example.com" class="text-blue-600 hover:underline">example@example.com</a>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="py-6">
+      <div class="container mx-auto px-4 text-center">
+        <p class="font-kaiti text-lg">
+        茶马古道历史文化研究 | @2025 历史地理信息系统
+        </p>
+        <p class="mt-2 text-sm">
+          数据来源：历史文献、GIS数据库、实地调研<br />
+        </p>
+      </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</div>
+  </body>
+</html>
