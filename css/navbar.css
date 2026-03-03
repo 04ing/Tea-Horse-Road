@@ -1,0 +1,213 @@
+/* 导航栏样式 */
+.navbar {
+    background: linear-gradient(90deg, #8B4513 0%, #A0522D 100%);
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', serif;
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    height: 80px;
+}
+
+.navbar-brand {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: #F5D020;
+    font-weight: bold;
+}
+
+.navbar-logo {
+    font-size: 24px;
+    letter-spacing: 2px;
+}
+
+.navbar-subtitle {
+    font-size: 12px;
+    opacity: 0.9;
+    letter-spacing: 1px;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar-link {
+    color: #F5F5DC;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.navbar-link:hover {
+    color: #F5D020;
+    background-color: rgba(245, 208, 32, 0.1);
+    transform: translateY(-2px);
+}
+
+.navbar-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #F5D020;
+    transition: width 0.3s ease;
+}
+
+.navbar-link:hover::after {
+    width: 100%;
+}
+
+.navbar-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+}
+
+.navbar-toggle-icon {
+    width: 30px;
+    height: 2px;
+    background-color: #F5D020;
+    border-radius: 1px;
+    transition: all 0.3s ease;
+}
+
+/* 登录/注册按钮样式 */
+.navbar-auth {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar-auth-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.navbar-auth-button {
+    background-color: #F5D020;
+    color: #8B4513;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', serif;
+}
+
+.navbar-auth-button:hover {
+    background-color: #F5F5DC;
+    transform: translateY(-2px);
+}
+
+/* 下拉菜单样式 */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #8B4513;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+    display: none;
+    min-width: 120px;
+    z-index: 1001;
+    margin-top: 5px;
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    text-align: left;
+    background: none;
+    border: none;
+    color: #F5F5DC;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', serif;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(245, 208, 32, 0.1);
+    color: #F5D020;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .navbar-toggle {
+        display: flex;
+    }
+    
+    .navbar-links {
+        position: absolute;
+        top: 80px;
+        left: 0;
+        right: 0;
+        background: linear-gradient(180deg, #8B4513 0%, #A0522D 100%);
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        gap: 15px;
+        box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+        transform: translateY(-100%);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s ease;
+    }
+    
+    .navbar-links.active {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+    }
+    
+    .navbar-link {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+    
+    .navbar-auth {
+        position: absolute;
+        top: 20px;
+        right: 100px;
+    }
+    
+    .navbar-auth-buttons {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .navbar-auth-button {
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+}

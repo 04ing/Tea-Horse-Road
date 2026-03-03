@@ -13,16 +13,18 @@ function loadNavbar() {
                 body.insertBefore(navbarContainer, body.firstChild);
             }
             
-            // 执行导航栏中的JavaScript代码
+            // 提取导航栏中的JavaScript代码
             const scripts = navbarContainer.querySelectorAll('script');
             scripts.forEach(script => {
-                const newScript = document.createElement('script');
-                if (script.src) {
-                    newScript.src = script.src;
-                } else {
-                    newScript.textContent = script.textContent;
+                const scriptContent = script.textContent;
+                if (scriptContent) {
+                    try {
+                        // 直接执行脚本内容，不使用setTimeout延迟
+                        eval(scriptContent);
+                    } catch (error) {
+                        console.error('执行导航栏脚本失败:', error);
+                    }
                 }
-                document.head.appendChild(newScript);
             });
         })
         .catch(error => {

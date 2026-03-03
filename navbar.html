@@ -1,4 +1,5 @@
 <!-- 导航栏模板 -->
+<link rel="stylesheet" href="css/navbar.css">
 <nav class="navbar">
     <div class="navbar-container">
         <a href="route.html" class="navbar-brand">
@@ -36,227 +37,10 @@
     </div>
 </nav>
 
-<!-- 导航栏CSS样式 -->
-<style>
-    /* 导航栏样式 */
-    .navbar {
-        background: linear-gradient(90deg, #8B4513 0%, #A0522D 100%);
-        box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', serif;
-    }
-    
-    .navbar-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-        height: 80px;
-    }
-    
-    .navbar-brand {
-        display: flex;
-        flex-direction: column;
-        text-decoration: none;
-        color: #F5D020;
-        font-weight: bold;
-    }
-    
-    .navbar-logo {
-        font-size: 24px;
-        letter-spacing: 2px;
-    }
-    
-    .navbar-subtitle {
-        font-size: 12px;
-        opacity: 0.9;
-        letter-spacing: 1px;
-    }
-    
-    .navbar-links {
-        display: flex;
-        gap: 20px;
-    }
-    
-    .navbar-link {
-        color: #F5F5DC;
-        text-decoration: none;
-        font-size: 16px;
-        font-weight: 500;
-        padding: 8px 12px;
-        border-radius: 4px;
-        transition: all 0.3s ease;
-        position: relative;
-    }
-    
-    .navbar-link:hover {
-        color: #F5D020;
-        background-color: rgba(245, 208, 32, 0.1);
-        transform: translateY(-2px);
-    }
-    
-    .navbar-link::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background-color: #F5D020;
-        transition: width 0.3s ease;
-    }
-    
-    .navbar-link:hover::after {
-        width: 100%;
-    }
-    
-    .navbar-toggle {
-        display: none;
-        flex-direction: column;
-        justify-content: space-around;
-        width: 30px;
-        height: 24px;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-        z-index: 10;
-    }
-    
-    .navbar-toggle-icon {
-        width: 30px;
-        height: 2px;
-        background-color: #F5D020;
-        border-radius: 1px;
-        transition: all 0.3s ease;
-    }
-    
-    /* 登录/注册按钮样式 */
-    .navbar-auth {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .navbar-auth-buttons {
-        display: flex;
-        gap: 10px;
-    }
-    
-    .navbar-auth-button {
-        background-color: #F5D020;
-        color: #8B4513;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 4px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', serif;
-    }
-    
-    .navbar-auth-button:hover {
-        background-color: #F5F5DC;
-        transform: translateY(-2px);
-    }
-    
-    /* 下拉菜单样式 */
-    .dropdown {
-        position: relative;
-    }
-    
-    .dropdown-menu {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background-color: #8B4513;
-        border-radius: 4px;
-        box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
-        display: none;
-        min-width: 120px;
-        z-index: 1000;
-        margin-top: 5px;
-    }
-    
-    .dropdown-item {
-        display: block;
-        width: 100%;
-        padding: 10px 15px;
-        text-align: left;
-        background: none;
-        border: none;
-        color: #F5F5DC;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', serif;
-    }
-    
-    .dropdown-item:hover {
-        background-color: rgba(245, 208, 32, 0.1);
-        color: #F5D020;
-    }
-    
-    /* 响应式设计 */
-    @media (max-width: 768px) {
-        .navbar-toggle {
-            display: flex;
-        }
-        
-        .navbar-links {
-            position: absolute;
-            top: 80px;
-            left: 0;
-            right: 0;
-            background: linear-gradient(180deg, #8B4513 0%, #A0522D 100%);
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 0;
-            gap: 15px;
-            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
-            transform: translateY(-100%);
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-        
-        .navbar-links.active {
-            transform: translateY(0);
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .navbar-link {
-            width: 100%;
-            text-align: center;
-            padding: 10px;
-        }
-        
-        .navbar-auth {
-            position: absolute;
-            top: 20px;
-            right: 100px;
-        }
-        
-        .navbar-auth-buttons {
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .navbar-auth-button {
-            padding: 5px 10px;
-            font-size: 14px;
-        }
-    }
-</style>
-
 <!-- 导航栏JavaScript -->
 <script>
     // 导航栏切换功能
-    document.addEventListener('DOMContentLoaded', function() {
+    function initNavbar() {
         const navbarToggle = document.getElementById('navbar-toggle');
         const navbarLinks = document.querySelector('.navbar-links');
         
@@ -308,12 +92,14 @@
                 box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
                 max-width: 400px;
                 width: 100%;
+                color: #8B4513;
             `;
             
             // 添加标题
             const loginTitle = document.createElement('h3');
             loginTitle.textContent = '用户登录';
             loginTitle.style.marginBottom = '30px';
+            loginTitle.style.color = '#8B4513';
             loginContent.appendChild(loginTitle);
             
             // 添加登录表单
@@ -323,18 +109,20 @@
                 display: flex;
                 flex-direction: column;
                 gap: 20px;
+                color: #8B4513;
             `;
             
             // 添加邮箱输入
             const emailInput = document.createElement('div');
             emailInput.innerHTML = `
-                <label for="login-email">邮箱：</label>
+                <label for="login-email" style="color: #8B4513;">邮箱：</label>
                 <input type="email" id="login-email" name="email" required style="
                     width: 100%;
                     padding: 12px;
                     border: 1px solid #ddd;
                     border-radius: 5px;
                     font-size: 16px;
+                    color: #8B4513;
                 ">
             `;
             loginForm.appendChild(emailInput);
@@ -342,13 +130,14 @@
             // 添加密码输入
             const passwordInput = document.createElement('div');
             passwordInput.innerHTML = `
-                <label for="login-password">密码：</label>
+                <label for="login-password" style="color: #8B4513;">密码：</label>
                 <input type="password" id="login-password" name="password" required style="
                     width: 100%;
                     padding: 12px;
                     border: 1px solid #ddd;
                     border-radius: 5px;
                     font-size: 16px;
+                    color: #8B4513;
                 ">
             `;
             loginForm.appendChild(passwordInput);
@@ -382,7 +171,7 @@
             // 添加注册链接
             const registerLink = document.createElement('div');
             registerLink.innerHTML = `
-                <p>还没有账号？<a href="javascript:void(0)" id="switch-to-register">立即注册</a></p>
+                <p style="color: #8B4513;">还没有账号？<a href="javascript:void(0)" id="switch-to-register" style="color: #8B4513; text-decoration: underline;">立即注册</a></p>
             `;
             registerLink.style.marginTop = '20px';
             loginForm.appendChild(registerLink);
@@ -451,12 +240,14 @@
                 box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
                 max-width: 400px;
                 width: 100%;
+                color: #8B4513;
             `;
             
             // 添加标题
             const registerTitle = document.createElement('h3');
             registerTitle.textContent = '用户注册';
             registerTitle.style.marginBottom = '30px';
+            registerTitle.style.color = '#8B4513';
             registerContent.appendChild(registerTitle);
             
             // 添加注册表单
@@ -466,18 +257,20 @@
                 display: flex;
                 flex-direction: column;
                 gap: 20px;
+                color: #8B4513;
             `;
             
             // 添加用户名输入
             const usernameInput = document.createElement('div');
             usernameInput.innerHTML = `
-                <label for="register-username">用户名：</label>
+                <label for="register-username" style="color: #8B4513;">用户名：</label>
                 <input type="text" id="register-username" name="username" required style="
                     width: 100%;
                     padding: 12px;
                     border: 1px solid #ddd;
                     border-radius: 5px;
                     font-size: 16px;
+                    color: #8B4513;
                 ">
             `;
             registerForm.appendChild(usernameInput);
@@ -485,13 +278,14 @@
             // 添加邮箱输入
             const emailInput = document.createElement('div');
             emailInput.innerHTML = `
-                <label for="register-email">邮箱：</label>
+                <label for="register-email" style="color: #8B4513;">邮箱：</label>
                 <input type="email" id="register-email" name="email" required style="
                     width: 100%;
                     padding: 12px;
                     border: 1px solid #ddd;
                     border-radius: 5px;
                     font-size: 16px;
+                    color: #8B4513;
                 ">
             `;
             registerForm.appendChild(emailInput);
@@ -499,13 +293,14 @@
             // 添加密码输入
             const passwordInput = document.createElement('div');
             passwordInput.innerHTML = `
-                <label for="register-password">密码：</label>
+                <label for="register-password" style="color: #8B4513;">密码：</label>
                 <input type="password" id="register-password" name="password" required style="
                     width: 100%;
                     padding: 12px;
                     border: 1px solid #ddd;
                     border-radius: 5px;
                     font-size: 16px;
+                    color: #8B4513;
                 ">
             `;
             registerForm.appendChild(passwordInput);
@@ -513,13 +308,14 @@
             // 添加密码确认输入
             const confirmPasswordInput = document.createElement('div');
             confirmPasswordInput.innerHTML = `
-                <label for="register-confirm-password">确认密码：</label>
+                <label for="register-confirm-password" style="color: #8B4513;">确认密码：</label>
                 <input type="password" id="register-confirm-password" name="confirmPassword" required style="
                     width: 100%;
                     padding: 12px;
                     border: 1px solid #ddd;
                     border-radius: 5px;
                     font-size: 16px;
+                    color: #8B4513;
                 ">
             `;
             registerForm.appendChild(confirmPasswordInput);
@@ -553,7 +349,7 @@
             // 添加登录链接
             const loginLink = document.createElement('div');
             loginLink.innerHTML = `
-                <p>已有账号？<a href="javascript:void(0)" id="switch-to-login">立即登录</a></p>
+                <p style="color: #8B4513;">已有账号？<a href="javascript:void(0)" id="switch-to-login" style="color: #8B4513; text-decoration: underline;">立即登录</a></p>
             `;
             loginLink.style.marginTop = '20px';
             registerForm.appendChild(loginLink);
@@ -850,5 +646,8 @@
         
         // 初始化用户认证功能
         initUserAuth();
-    });
+    }
+    
+    // 立即执行初始化函数
+    initNavbar();
 </script>
