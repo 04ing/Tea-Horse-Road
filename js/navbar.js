@@ -12,6 +12,18 @@ function loadNavbar() {
             if (body) {
                 body.insertBefore(navbarContainer, body.firstChild);
             }
+            
+            // 执行导航栏中的JavaScript代码
+            const scripts = navbarContainer.querySelectorAll('script');
+            scripts.forEach(script => {
+                const newScript = document.createElement('script');
+                if (script.src) {
+                    newScript.src = script.src;
+                } else {
+                    newScript.textContent = script.textContent;
+                }
+                document.head.appendChild(newScript);
+            });
         })
         .catch(error => {
             console.error('加载导航栏失败:', error);
