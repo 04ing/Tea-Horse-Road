@@ -1,0 +1,58 @@
+[
+    {
+        "name": "布达拉宫",
+        "coordinates": [91.13, 29.67],
+        "type": "World Heritage",
+        "description": "世界文化遗产，藏传佛教圣地，始建于7世纪松赞干布时期，是吐蕃王朝的宫堡建筑，也是西藏政教合一的统治中心。",
+        "status": "保护良好",
+        "imageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23f0e6d2'/><path d='M150 50 L50 150 L250 150 Z' fill='%23a0522d'/><path d='M120 80 L80 150 L160 150 Z' fill='%238b4513'/><path d='M180 80 L140 150 L220 150 Z' fill='%238b4513'/><rect x='140' y='50' width='20' height='30' fill='%23d2691e'/></svg>"
+    },
+    {
+        "name": "丽江古城",
+        "coordinates": [100.25, 26.86],
+        "type": "World Heritage",
+        "description": "世界文化遗产，纳西族聚居地，是茶马古道上的重要商贸城市，保存了完整的古代城市风貌和民族文化。",
+        "status": "保护良好",
+        "imageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23f0e6d2'/><path d='M50 150 L250 150 L250 180 L50 180 Z' fill='%23a0522d'/><path d='M100 100 L100 150 M150 80 L150 150 M200 120 L200 150' stroke='%238b4513' stroke-width='10'/><path d='M100 100 L120 70 L140 100 M150 80 L170 50 L190 80 M200 120 L220 90 L240 120' fill='%23d2b48c'/></svg>"
+    },
+    {
+        "name": "茶马古道遗址",
+        "coordinates": [102.71, 25.04],
+        "type": "National Heritage",
+        "description": "国家级文物保护单位，保存了古代茶马贸易的重要历史遗迹，包括古栈道、驿站、马店等设施，见证了茶马古道的繁荣历史。",
+        "status": "部分损毁，正在修复",
+        "imageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23f0e6d2'/><path d='M50 150 Q150 100 250 150' stroke='%238b4513' stroke-width='8' fill='none'/><path d='M80 140 L80 170 M120 130 L120 170 M160 145 L160 170 M200 135 L200 170 M240 145 L240 170' stroke='%23a0522d' stroke-width='4'/></svg>"
+    },
+    {
+        "name": "大理古城",
+        "coordinates": [100.19, 25.69],
+        "type": "National Heritage",
+        "description": "国家级历史文化名城，是茶马古道上的重要节点，保存了完整的白族建筑风格和文化遗产。",
+        "status": "保护良好",
+        "imageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23f0e6d2'/><path d='M50 150 L250 150 L250 180 L50 180 Z' fill='%23a0522d'/><path d='M100 100 L100 150 M150 80 L150 150 M200 120 L200 150' stroke='%238b4513' stroke-width='10'/></svg>"
+    },
+    {
+        "name": "松赞林寺",
+        "coordinates": [99.70, 27.83],
+        "type": "National Heritage",
+        "description": "藏传佛教格鲁派寺院，是茶马古道上的重要宗教场所，见证了汉藏文化的交流与融合。",
+        "status": "保护良好",
+        "imageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23f0e6d2'/><path d='M150 50 L50 150 L250 150 Z' fill='%23a0522d'/><path d='M120 80 L80 150 L160 150 Z' fill='%238b4513'/><path d='M180 80 L140 150 L220 150 Z' fill='%238b4513'/></svg>"
+    },
+    {
+        "name": "盐井古盐田",
+        "coordinates": [98.62, 29.03],
+        "type": "National Heritage",
+        "description": "千年古盐田，是茶马古道上的重要盐产地，见证了盐业贸易的历史。",
+        "status": "保护良好",
+        "imageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23f0e6d2'/><path d='M50 150 L250 150 L250 180 L50 180 Z' fill='%23a0522d'/><rect x='60' y='100' width='40' height='50' fill='%23d2691e'/><rect x='110' y='100' width='40' height='50' fill='%23d2691e'/><rect x='160' y='100' width='40' height='50' fill='%23d2691e'/><rect x='210' y='100' width='40' height='50' fill='%23d2691e'/></svg>"
+    },
+    {
+        "name": "剑川石宝山",
+        "coordinates": [99.85, 26.48],
+        "type": "National Heritage",
+        "description": "国家级风景名胜区，保存了大量古代石刻艺术，是茶马古道上的重要文化景点。",
+        "status": "保护良好",
+        "imageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='300' height='200' fill='%23f0e6d2'/><path d='M150 50 L50 150 L250 150 Z' fill='%23a0522d'/><path d='M120 80 L80 150 L160 150 Z' fill='%238b4513'/><path d='M180 80 L140 150 L220 150 Z' fill='%238b4513'/><circle cx='150' cy='70' r='10' fill='%23d2691e'/></svg>"
+    }
+]

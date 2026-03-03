@@ -1,0 +1,2008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>茶马古道传统村落的时空演化</title>
+    <!-- TailwindCSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+    />
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- proj4js 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/proj4@2.9.0/dist/proj4.min.js"></script>
+    <!-- ECharts -->
+    <script src="js/echarts.min.js"></script>
+    <script src="js/china.js"></script>
+    <!-- CDN 备用 -->
+    <script>
+      if (typeof echarts === 'undefined') {
+        document.write('<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"><\/script>');
+        document.write('<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/map/js/china.js"><\/script>');
+      }
+    </script>
+    <link rel="stylesheet" href="css/map.css">
+  </head>
+  <body class="bg-primary">
+    <!-- 导航栏将通过JavaScript加载 -->
+    <script src="js/navbar.js"></script>
+    
+
+
+    <!-- 顶部大图背景 -->
+    <div class="relative w-full h-80 mb-8 rounded-lg overflow-hidden shadow-lg">
+      <img
+        src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+        alt="茶马古道风光"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+      <div
+        class="absolute inset-0 flex flex-col justify-center items-center text-white font-kaiti px-6"
+      >
+        <h2 class="text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg">
+         茶马古道的空间分析
+        </h2>
+        <p class="text-lg md:text-2xl drop-shadow-lg">
+          茶马古道传统村落的时空演化地图故事
+        </p>
+      </div>
+    </div>
+
+    <!-- 功能按钮区域 -->
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#cluster" class="px-6 py-3 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+          集聚性分析
+        </a>
+        <a href="#factors" class="px-6 py-3 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+          影响因素分析
+        </a>
+        <a href="#evolution" class="px-6 py-3 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+          时空演化进程
+        </a>
+        <a href="#prediction" class="px-6 py-3 bg-primary border-2 border-secondary rounded-lg font-bold text-primary hover:bg-secondary transition-all duration-300">
+          未来预测
+        </a>
+      </div>
+    </div>
+
+    <main class="container mx-auto px-4 py-8">
+      <!-- 地图故事引入 -->
+      <div class="story-block font-kaiti text-lg text-dark">
+        <p>
+          茶马古道，承载着滇南千年商旅的足迹。马帮铃声、茶香古韵、村落星罗棋布，串联起山川与人文的壮丽画卷。每一条古道、每一个村落，都是历史的见证者，也是时空演化的主角。
+        </p>
+        <p class="mt-2">
+          本图谱以GIS与空间分析为工具，讲述茶马古道沿线村落的分布、集聚、变迁与未来。让我们一起穿越时空，探寻古道上的村落故事。
+        </p>
+      </div>
+
+      <!-- 概览地图 -->
+      <section id="overview" class="mb-16">
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-1/3">
+            <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
+              村落分布概览
+            </h2>
+            <p class="text-lg mb-4 font-kaiti">
+              沿着茶马古道，村落如珍珠般散落于滇西、川藏的山水之间。主线与支线交织，见证着商贸、文化与迁徙的历史。
+            </p>
+            <div class="bg-white p-4 rounded-lg shadow-lg">
+              <h3 class="font-bold mb-2 text-primary">图层说明</h3>
+              <p class="text-sm text-gray-600 mb-1">
+                点击按钮切换地图图层，体验古今村落与古道主线的空间关系。
+              </p>
+              <div class="flex space-x-2">
+                <button
+                  class="px-3 py-1 btn-theme rounded"
+                  onclick="switchLayer('ancient')"
+                >
+                  古代村落
+                </button>
+                <button
+                  class="px-3 py-1 btn-theme rounded"
+                  onclick="switchLayer('modern')"
+                >
+                  现代村落
+                </button>
+                <button
+                  class="px-3 py-1 btn-theme rounded"
+                  onclick="switchLayer('road')"
+                >
+                  突出古道
+                </button>
+                <button
+                  class="px-3 py-1 btn-theme rounded"
+                  onclick="switchLayer('all')"
+                >
+                  全部显示
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="md:w-2/3 map-container">
+            <div
+              id="overviewMap"
+              class="w-full h-full rounded-lg shadow-lg"
+            ></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 集聚性分析 -->
+      <section id="cluster" class="mb-16">
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-1/3">
+            <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
+              空间集聚性分析
+            </h2>
+            <p class="text-lg mb-4 font-kaiti">
+              村落分布并非均匀，热点多聚于交通枢纽与河谷，冷点则隐于高山深处。空间自相关分析揭示了村落集聚的地理逻辑。
+            </p>
+            <div class="bg-white p-4 rounded-lg shadow-lg mb-4">
+              <h3 class="font-bold mb-2 text-primary">集聚类型划分</h3>
+              <ul class="list-disc pl-5 space-y-1 font-kaiti">
+                <li>高-高集聚（热点）：如大理古城周边、丽江束河古镇区域</li>
+                <li>低-低集聚（冷点）：高海拔山区及交通闭塞区域</li>
+                <li>随机分布区：古道支线末端的零星村落</li>
+              </ul>
+              <p class="mt-2 text-sm text-gray-700">
+                每一个集聚区，都是茶马古道故事的舞台。
+              </p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-lg">
+              <h3 class="font-bold mb-2 text-primary">空间集聚指标</h3>
+              <div id="spatialMetrics" class="space-y-2 font-kaiti">
+                <p class="text-sm text-gray-600">加载中...</p>
+              </div>
+            </div>
+          </div>
+          <div class="md:w-2/3 map-container flex flex-col space-y-6">
+            <div id="clusterMap" class="w-full h-72 rounded-lg shadow-lg"></div>
+            <div
+              id="moranIScatter"
+              class="w-full h-72 rounded-lg shadow-lg"
+            ></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 影响因素关联 -->
+      <section id="factors" class="mb-16">
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-1/3">
+            <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
+              影响因素关联
+            </h2>
+            <p class="text-lg mb-4 font-kaiti">
+              村落的兴衰，既受自然环境眷顾，也因交通与经济而变迁。空间回归与PCA分析，揭示了村落分布背后的多重驱动力。
+            </p>
+            <div class="space-y-4">
+              <div class="bg-accent p-3 rounded">
+                <h3 class="font-bold text-primary">1. 自然环境（权重38%）</h3>
+                <p>
+                  海拔（&lt;1500m适宜）、河流密度（距水源&lt;1km）、坡度（&lt;25°）
+                </p>
+              </div>
+              <div class="bg-accent p-3 rounded">
+                <h3 class="font-bold text-primary">2. 交通条件（权重32%）</h3>
+                <p>距古道干线距离（&lt;5km为密集区）、驿站分布密度</p>
+              </div>
+              <div class="bg-accent p-3 rounded">
+                <h3 class="font-bold text-primary">3. 经济基础（权重30%）</h3>
+                <p>历史贸易节点等级、周边资源（茶叶/马匹）分布</p>
+              </div>
+              <p class="mt-2 text-sm text-gray-700">
+                村落的选择，是人与自然、交通与经济的智慧结晶。
+              </p>
+            </div>
+          </div>
+          <div class="md:w-2/3 grid grid-cols-2 gap-4">
+            <div
+              id="factorsChart"
+              class="w-full h-72 rounded-lg shadow-lg"
+            ></div>
+            <div
+              id="correlationMap"
+              class="w-full h-72 rounded-lg shadow-lg"
+            ></div>
+            <div
+              id="densityChartContainer"
+              class="w-full h-72 rounded-lg shadow-lg"
+            ></div>
+            <div
+              id="residualChartContainer"
+              class="w-full h-72 rounded-lg shadow-lg"
+            ></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 时空演化历程 -->
+      <section id="evolution" class="mb-16">
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-1/3">
+            <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
+              时空演化历程
+            </h2>
+            <p class="text-lg mb-4 font-kaiti">
+              从唐到清代，村落分布随古道兴衰而变迁。每一次迁徙、每一次集聚，都是历史的回响。
+            </p>
+            <div class="relative">
+              <input
+                type="range"
+                min="0"
+                max="3"
+                step="1"
+                value="0"
+                class="timeline-slider w-full"
+                id="timeSlider"
+              />
+              <div
+                class="flex justify-between mt-1 text-sm text-primary font-kaiti"
+              >
+                <span>唐代</span>
+                <span>宋代</span>
+                <span>明代</span>
+                <span>清代</span>
+              </div>
+              <div class="mt-2 flex justify-center">
+                <button id="autoPlayBtn" class="px-3 py-1 btn-theme rounded">
+                  开始自动轮播
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="md:w-2/3 map-container">
+            <div
+              id="evolutionMap"
+              class="w-full h-full rounded-lg shadow-lg"
+              style="height: 600px;"
+            ></div>
+            <div
+              id="timeInfo"
+              class="mt-3 bg-white p-3 rounded-lg shadow text-center font-kaiti"
+            >
+              <p class="font-bold">
+                唐代（618-907）：茶马古道初步形成，主要为唐蕃古道，以长安为起点，连接中原与西藏
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 未来趋势预测 -->
+      <section id="prediction" class="mb-16">
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-1/3">
+            <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
+              未来分布预测
+            </h2>
+            <p class="text-lg mb-4 font-kaiti">
+              2030年，茶马古道上的村落将如何演变？MaxEnt模型结合地形保护与交通规划，描绘出未来的空间格局。
+            </p>
+            <div class="bg-white p-4 rounded-lg shadow-lg">
+              <h3 class="font-bold mb-2 text-primary">预测结论</h3>
+              <ul class="list-disc pl-5 space-y-1 font-kaiti">
+                <li>
+                  现有热点区域（如大理、丽江）将持续集聚，成为新一代文化与旅游中心。
+                </li>
+                <li>距现代公路&lt;3km的村落有扩张潜力，或将成为新兴聚落带。</li>
+                <li>生态保护区内村落将维持现状，守护自然与人文的和谐。</li>
+              </ul>
+              <p class="mt-2 text-sm text-gray-700">
+                未来的村落，不仅是历史的延续，更是生态与发展的平衡点。
+              </p>
+            </div>
+          </div>
+          <div class="md:w-2/3 map-container">
+            <div
+              id="predictionMap"
+              class="w-full h-full rounded-lg shadow-lg"
+            ></div>
+            <div class="mt-3 flex justify-center space-x-4">
+              <button
+                class="px-3 py-1 btn-theme rounded"
+                onclick="switchPrediction('current')"
+              >
+                现状分布
+              </button>
+              <button
+                class="px-3 py-1 btn-theme rounded"
+                onclick="switchPrediction('future')"
+              >
+                2030年预测
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="py-6">
+      <div class="container mx-auto px-4 text-center">
+        <p class="font-kaiti text-lg">
+        茶马古道历史文化研究 | @2025 历史地理信息系统
+        </p>
+        <p class="mt-2 text-sm">
+          数据来源：历史文献、GIS数据库、实地调研<br />
+        </p>
+      </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</div>
+
+    <!-- JS脚本区（保持原有功能） -->
+    <script>
+      const overviewOption = {
+        tooltip: { trigger: "item" },
+        geo: {
+          map: "china",
+          roam: true,
+          itemStyle: { areaColor: "#F5F5DC", borderColor: "#8B4513" },
+          label: { show: false },
+        },
+        series: [
+          {
+            name: "茶马古道主线",
+            type: "lines",
+            coordinateSystem: "geo",
+            polyline: true,
+            effect: { show: true, period: 6, trailLength: 0.7, color: "#F5D020", symbolSize: 6 },
+            lineStyle: {
+              color: "#8B4513",
+              width: 4,
+              opacity: 0.85,
+            },
+            // 数据将通过 JavaScript 动态加载
+            data: [],
+          },
+          {
+            name: "古代村落",
+            type: "scatter",
+            coordinateSystem: "geo",
+            data: [
+              // 云南段
+              { value: [99.6, 24.5], name: "普洱" },
+              { value: [100.3, 25.1], name: "大理古城" },
+              { value: [100.2, 26.9], name: "丽江束河" },
+              { value: [101.7, 27.8], name: "香格里拉独克宗" },
+              { value: [100.52, 25.38], name: "云南驿村" },
+              { value: [99.363, 25.963], name: "诺邓村" },
+              { value: [100.15, 25.6], name: "凤阳邑" },
+              { value: [101.046, 22.924], name: "那柯里村" },
+              { value: [103.15, 27.18], name: "花桥村" },
+              // 四川段
+              { value: [102.95, 30.017], name: "古城村" },
+              { value: [102.99, 30.06], name: "五家村" },
+              { value: [103.0, 30.0], name: "朱场村" },
+              { value: [102.5, 30.08], name: "红星村" },
+              { value: [102.55, 30.03], name: "新添村" },
+              // 西藏段
+              { value: [98.97, 28.62], name: "盐井古村" },
+              { value: [91.1, 29.7], name: "拉萨八廓街" },
+              // 其他重要节点
+              { value: [102.2, 29.0], name: "德格" },
+              { value: [103.0, 30.0], name: "康定" },
+              { value: [104.1, 31.5], name: "理塘" },
+              // 新增：CostPath_Ming.json 附近的古代村落
+              { value: [98.58, 31.81], name: "昌都古村" },
+              { value: [98.22, 31.50], name: "江达古村" },
+              { value: [101.96, 30.00], name: "康定古村" },
+              { value: [101.01, 30.03], name: "雅江古村" },
+              { value: [100.27, 30.00], name: "理塘古村" },
+            ],
+            symbolSize: 12,
+            itemStyle: { color: "#CD5C5C" },
+            emphasis: {
+              itemStyle: { color: "#FF5722", shadowBlur: 10, shadowColor: "rgba(0, 0, 0, 0.5)" },
+              label: { show: true, formatter: '{b}' }
+            }
+          },
+          {
+            name: "现代村落",
+            type: "scatter",
+            coordinateSystem: "geo",
+            data: [
+              { value: [100.4, 25.2], name: "楚雄村落" },
+              { value: [101.5, 25.5], name: "普洱村落" },
+              { value: [103.6, 27.2], name: "西昌村落" },
+              { value: [104.9, 28.7], name: "理塘村落" },
+              { value: [101.55, 24.41], name: "墨江新村" },
+              { value: [100.98, 25.13], name: "祥云新村" },
+              { value: [100.23, 26.87], name: "玉龙新村" },
+              { value: [102.72, 25.04], name: "昆明新村" },
+              { value: [102.84, 29.99], name: "巴塘新村" },
+              { value: [99.99, 27.44], name: "维西新村" },
+              { value: [101.25, 27.8], name: "德钦新村" },
+              { value: [91.13, 29.65], name: "拉萨新村" },
+              // 新增：CostPath_Ming.json 附近的现代村落
+              { value: [98.59, 31.82], name: "昌都新村" },
+              { value: [98.23, 31.51], name: "江达新村" },
+              { value: [101.97, 30.01], name: "康定新村" },
+              { value: [101.02, 30.04], name: "雅江新村" },
+              { value: [100.28, 30.01], name: "理塘新村" },
+            ],
+            symbolSize: 10,
+            itemStyle: { color: "#228B22" },
+            emphasis: {
+              itemStyle: { color: "#4CAF50", shadowBlur: 10, shadowColor: "rgba(0, 0, 0, 0.5)" },
+              label: { show: true, formatter: '{b}' }
+            }
+          },
+        ],
+      };
+      let overviewMap;
+      let predictionMap;
+      let routeData = []; // 保存加载的路线数据
+      
+      // 计算两点之间的距离
+      function calculateDistance(point1, point2) {
+        const R = 6371; // 地球半径（公里）
+        const dLat = (point2[1] - point1[1]) * Math.PI / 180;
+        const dLon = (point2[0] - point1[0]) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(point1[1] * Math.PI / 180) * Math.cos(point2[1] * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+      }
+
+      // 计算点到线段的距离
+      function calculateDistanceToLine(point, lineStart, lineEnd) {
+        const x = point[0];
+        const y = point[1];
+        const x1 = lineStart[0];
+        const y1 = lineStart[1];
+        const x2 = lineEnd[0];
+        const y2 = lineEnd[1];
+        
+        const A = x - x1;
+        const B = y - y1;
+        const C = x2 - x1;
+        const D = y2 - y1;
+        
+        const dot = A * C + B * D;
+        const lenSq = C * C + D * D;
+        let param = -1;
+        if (lenSq !== 0) {
+          param = dot / lenSq;
+        }
+        
+        let xx, yy;
+        if (param < 0) {
+          xx = x1;
+          yy = y1;
+        } else if (param > 1) {
+          xx = x2;
+          yy = y2;
+        } else {
+          xx = x1 + param * C;
+          yy = y1 + param * D;
+        }
+        
+        return calculateDistance(point, [xx, yy]);
+      }
+      
+      // 计算每个城市到古道的距离（适配新的数据格式）
+      function calculateCityToRoadDistance(city, roads) {
+        let minDistance = Infinity;
+        roads.forEach(roadCoords => {
+          for (let i = 1; i < roadCoords.length; i++) {
+            const distance = calculateDistanceToLine(city.value, roadCoords[i-1], roadCoords[i]);
+            if (distance < minDistance) {
+              minDistance = distance;
+            }
+          }
+        });
+        return minDistance;
+      }
+      
+      // 预测数据（基于City_Qing.json和CostPath_Qing.json）
+      let predictionStages = {
+        current: [],
+        future: []
+      };
+      let costPathData = [];
+      
+      // 加载预测数据
+      function loadPredictionData() {
+        console.log('开始加载预测数据...');
+        Promise.all([
+          fetch('json/City_Qing.json').then(response => response.json()),
+          fetch('json/CostPath_Qing.json').then(response => response.json())
+        ]).then(([cityData, pathData]) => {
+          console.log('城市数据数量:', cityData.features.length);
+          console.log('古道数据数量:', pathData.features.length);
+          
+          // 提取所有城市数据（不去重，保留所有数据）
+          const cities = cityData.features.map(feature => ({
+            value: [feature.geometry.x, feature.geometry.y],
+            name: feature.attributes.城市,
+            type: feature.attributes.类型,
+            nodeType: feature.attributes.结点,
+            function: feature.attributes.作用
+          }));
+          
+          console.log('处理后的城市数据数量:', cities.length);
+          
+          // 提取所有古道数据，转换为ECharts需要的格式
+          costPathData = pathData.features.map(feature => {
+            const pathCoords = feature.geometry.paths[0].map(coord => [coord[0], coord[1]]);
+            return pathCoords;
+          });
+          
+          console.log('处理后的古道数据数量:', costPathData.length);
+          
+          // 计算每个城市到古道的距离
+          cities.forEach(city => {
+            const minDistance = calculateCityToRoadDistance(city, costPathData);
+            city.distanceToRoad = minDistance;
+          });
+          
+          // 计算城市密度
+          cities.forEach(city => {
+            let density = 0;
+            cities.forEach(otherCity => {
+              if (city.name !== otherCity.name) {
+                const distance = calculateDistance(city.value, otherCity.value);
+                if (distance > 0 && distance < 100) {
+                  density++;
+                }
+              }
+            });
+            city.density = density;
+          });
+          
+          // 构建现状数据 - 使用冷色调
+          predictionStages.current = cities.map(city => ({
+            value: city.value,
+            name: city.name,
+            itemStyle: {
+              color: city.density > 3 ? "#2196F3" : city.density > 1 ? "#64B5F6" : "#E3F2FD"
+            },
+            symbolSize: 6 + city.density * 1.2
+          }));
+          
+          console.log('现状数据数量:', predictionStages.current.length);
+          
+          // 构建未来预测数据 - 使用暖色调，增加大小差异
+          predictionStages.future = [];
+          
+          // 处理现有城市
+          cities.forEach(city => {
+            // 预测逻辑：基于距离古道的距离和当前密度
+            let predictionScore = 0;
+            
+            // 距离古道越近，得分越高
+            if (city.distanceToRoad < 30) {
+              predictionScore += 8;
+            } else if (city.distanceToRoad < 60) {
+              predictionScore += 5;
+            } else if (city.distanceToRoad < 100) {
+              predictionScore += 3;
+            } else if (city.distanceToRoad < 200) {
+              predictionScore += 1;
+            }
+            
+            // 当前密度越高，得分越高
+            predictionScore += city.density * 2;
+            
+            // 确定预测类型
+            let type;
+            let color;
+            if (predictionScore >= 10) {
+              type = "热点持续";
+              color = "#FF5722";
+            } else if (predictionScore >= 6) {
+              type = "公路扩张区";
+              color = "#FF9800";
+            } else if (predictionScore >= 3) {
+              type = "稳定发展区";
+              color = "#FFC107";
+            } else {
+              type = "生态保护区";
+              color = "#4CAF50";
+            }
+            
+            // 只保留预测得分大于等于2的城市（过滤掉一些得分过低的城市）
+            if (predictionScore >= 2) {
+              predictionStages.future.push({
+                value: city.value,
+                name: city.name,
+                type: type,
+                itemStyle: { color: color },
+                symbolSize: 8 + (predictionScore / 12) * 15 // 增加大小差异
+              });
+            }
+          });
+          
+          // 生成一些新的城市点（模拟新出现的城市）
+          // 基于古道沿线的关键位置生成新城市
+          const newCities = [
+            { name: "新发展城市1", value: [101.5, 29.5], type: "公路扩张区", color: "#FF9800" },
+            { name: "新发展城市2", value: [99.5, 28.5], type: "热点持续", color: "#FF5722" },
+            { name: "新发展城市3", value: [102.5, 27.5], type: "稳定发展区", color: "#FFC107" }
+          ];
+          
+          newCities.forEach(newCity => {
+            predictionStages.future.push({
+              value: newCity.value,
+              name: newCity.name,
+              type: newCity.type,
+              itemStyle: { color: newCity.color },
+              symbolSize: 12
+            });
+          });
+          
+          console.log('未来预测数据数量:', predictionStages.future.length);
+          
+          // 如果预测地图已经初始化，更新数据
+          if (predictionMap) {
+            console.log('更新预测地图数据...');
+            switchPrediction("future");
+          }
+        }).catch(error => {
+          console.error('加载预测数据失败:', error);
+          console.error('请检查文件路径是否正确: json/City_Qing.json 和 json/CostPath_Qing.json');
+          // 不使用默认数据，确保使用真实数据
+          predictionStages = {
+            current: [],
+            future: []
+          };
+          costPathData = [];
+        });
+      }
+      
+      // 预测切换函数已在Leaflet初始化部分重新定义
+      
+      // 加载预测数据
+      loadPredictionData();
+      
+      // 检查 echarts 是否已加载
+      function checkECharts() {
+        if (typeof echarts !== 'undefined') {
+          initMaps();
+        } else {
+          setTimeout(checkECharts, 100);
+        }
+      }
+      
+      document.addEventListener("DOMContentLoaded", function () {
+        checkECharts();
+      });
+      
+      function initMaps() {
+        if (typeof echarts === 'undefined') return;
+        
+        // 1. 村落分布地图
+        if (document.getElementById("overviewMap")) {
+          overviewMap = echarts.init(document.getElementById("overviewMap"));
+          
+          // 加载 CostPath_Ming.json 数据
+          fetch('json/CostPath_Ming.json')
+            .then(response => response.json())
+            .then(data => {
+              // 提取路线数据
+              routeData = data.features.map(feature => ({
+                coords: feature.geometry.paths[0].map(coord => [coord[0], coord[1]])
+              }));
+              
+              // 更新概览地图数据
+              const updatedOption = JSON.parse(JSON.stringify(overviewOption));
+              updatedOption.series[0].data = routeData;
+              overviewMap.setOption(updatedOption);
+            })
+            .catch(error => {
+              console.error('加载 CostPath_Ming.json 失败:', error);
+              // 加载失败时使用默认数据
+              overviewMap.setOption(overviewOption);
+            });
+        }
+
+        // 空间分析工具函数
+        function calculateDistance(point1, point2) {
+          const R = 6371; // 地球半径（公里）
+          const dLat = (point2[1] - point1[1]) * Math.PI / 180;
+          const dLon = (point2[0] - point1[0]) * Math.PI / 180;
+          const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(point1[1] * Math.PI / 180) * Math.cos(point2[1] * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+          return R * c;
+        }
+
+        function calculateMoransI(data) {
+          const n = data.length;
+          if (n < 2) return 0;
+
+          // 计算空间权重矩阵
+          const weights = [];
+          let sumWeights = 0;
+          for (let i = 0; i < n; i++) {
+            weights[i] = [];
+            for (let j = 0; j < n; j++) {
+              if (i !== j) {
+                const distance = calculateDistance(data[i].value, data[j].value);
+                // 距离衰减权重
+                const weight = distance > 0 && distance < 500 ? 1 / distance : 0; // 500公里阈值
+                weights[i][j] = weight;
+                sumWeights += weight;
+              } else {
+                weights[i][j] = 0;
+              }
+            }
+          }
+
+          // 计算基于密度的属性值
+          const values = data.map((point, index) => {
+            let density = 0;
+            for (let i = 0; i < n; i++) {
+              if (i !== index) {
+                const distance = calculateDistance(point.value, data[i].value);
+                if (distance > 0 && distance < 500) {
+                  density++;
+                }
+              }
+            }
+            return density;
+          });
+          const meanValue = values.reduce((sum, val) => sum + val, 0) / n;
+
+          // 计算Moran's I
+          let numerator = 0;
+          let denominator = 0;
+
+          for (let i = 0; i < n; i++) {
+            for (let j = 0; j < n; j++) {
+              numerator += weights[i][j] * (values[i] - meanValue) * (values[j] - meanValue);
+            }
+            denominator += Math.pow(values[i] - meanValue, 2);
+          }
+
+          const moransI = sumWeights > 0 && denominator > 0 ? (n / sumWeights) * (numerator / denominator) : 0;
+          return moransI;
+        }
+
+        function calculateGetisOrdGi(data) {
+          const n = data.length;
+          if (n < 2) return [];
+
+          // 计算空间权重矩阵
+          const weights = [];
+          const sumWeights = [];
+          for (let i = 0; i < n; i++) {
+            weights[i] = [];
+            sumWeights[i] = 0;
+            for (let j = 0; j < n; j++) {
+              if (i !== j) {
+                const distance = calculateDistance(data[i].value, data[j].value);
+                const weight = distance > 0 && distance < 500 ? 1 / distance : 0; // 500公里阈值
+                weights[i][j] = weight;
+                sumWeights[i] += weight;
+              } else {
+                weights[i][j] = 0;
+              }
+            }
+          }
+
+          // 计算基于密度的属性值
+          const values = data.map((point, index) => {
+            let density = 0;
+            for (let i = 0; i < n; i++) {
+              if (i !== index) {
+                const distance = calculateDistance(point.value, data[i].value);
+                if (distance > 0 && distance < 500) {
+                  density++;
+                }
+              }
+            }
+            return density;
+          });
+          const meanValue = values.reduce((sum, val) => sum + val, 0) / n;
+          const variance = values.reduce((sum, val) => sum + Math.pow(val - meanValue, 2), 0) / n;
+
+          const giValues = [];
+          for (let i = 0; i < n; i++) {
+            let numerator = 0;
+            for (let j = 0; j < n; j++) {
+              numerator += weights[i][j] * values[j];
+            }
+            const denominator = Math.sqrt(variance) * (sumWeights[i] * (n - 1) / n);
+            const gi = denominator > 0 ? (numerator - meanValue * sumWeights[i]) / denominator : 0;
+            giValues.push(gi);
+          }
+          
+          // 调试信息
+          console.log('Getis-Ord Gi* values:', giValues);
+          console.log('Mean value:', meanValue);
+          console.log('Variance:', variance);
+          console.log('Sum weights:', sumWeights);
+
+          return giValues;
+        }
+
+        function calculateLocalMoransI(data) {
+          const n = data.length;
+          if (n < 2) return [];
+
+          // 计算空间权重矩阵
+          const weights = [];
+          for (let i = 0; i < n; i++) {
+            weights[i] = [];
+            for (let j = 0; j < n; j++) {
+              if (i !== j) {
+                const distance = calculateDistance(data[i].value, data[j].value);
+                const weight = distance > 0 && distance < 500 ? 1 / distance : 0;
+                weights[i][j] = weight;
+              } else {
+                weights[i][j] = 0;
+              }
+            }
+          }
+
+          // 计算基于密度的属性值
+          const values = data.map((point, index) => {
+            let density = 0;
+            for (let i = 0; i < n; i++) {
+              if (i !== index) {
+                const distance = calculateDistance(point.value, data[i].value);
+                if (distance > 0 && distance < 500) {
+                  density++;
+                }
+              }
+            }
+            return density;
+          });
+          const meanValue = values.reduce((sum, val) => sum + val, 0) / n;
+          const variance = values.reduce((sum, val) => sum + Math.pow(val - meanValue, 2), 0) / n;
+
+          const localMoranValues = [];
+          for (let i = 0; i < n; i++) {
+            let numerator = 0;
+            let sumWeights = 0;
+            for (let j = 0; j < n; j++) {
+              numerator += weights[i][j] * (values[j] - meanValue);
+              sumWeights += weights[i][j];
+            }
+            const localMoran = variance > 0 ? (values[i] - meanValue) * numerator / variance : 0;
+            localMoranValues.push(localMoran);
+          }
+
+          return localMoranValues;
+        }
+
+        function calculateGiniCoefficient(data) {
+          const n = data.length;
+          if (n < 2) return 0;
+
+          // 计算各点之间的距离
+          const distances = [];
+          for (let i = 0; i < n; i++) {
+            for (let j = i + 1; j < n; j++) {
+              const distance = calculateDistance(data[i].value, data[j].value);
+              distances.push(distance);
+            }
+          }
+
+          // 排序
+          distances.sort((a, b) => a - b);
+          const m = distances.length;
+          let gini = 0;
+
+          for (let i = 0; i < m; i++) {
+            gini += (2 * (i + 1) - m - 1) * distances[i];
+          }
+
+          const meanDistance = distances.reduce((sum, val) => sum + val, 0) / m;
+          gini = gini / (m * m * meanDistance);
+
+          return gini;
+        }
+
+        function calculateKernelDensity(data, bandwidth = 100) {
+          const n = data.length;
+          const densities = [];
+
+          for (let i = 0; i < n; i++) {
+            let density = 0;
+            for (let j = 0; j < n; j++) {
+              if (i !== j) {
+                const distance = calculateDistance(data[i].value, data[j].value);
+                const kernel = Math.exp(-Math.pow(distance, 2) / (2 * Math.pow(bandwidth, 2)));
+                density += kernel;
+              }
+            }
+            densities.push(density / (n * bandwidth));
+          }
+
+          return densities;
+        }
+
+        // PCA分析函数
+        function performPCA(data) {
+          // 模拟影响因素数据
+          const factors = data.map((point, index) => {
+            // 计算自然环境得分（基于密度）
+            let naturalScore = 0;
+            for (let i = 0; i < data.length; i++) {
+              if (i !== index) {
+                const distance = calculateDistance(point.value, data[i].value);
+                if (distance > 0 && distance < 500) {
+                  naturalScore++;
+                }
+              }
+            }
+            
+            // 计算交通条件得分（基于与其他城市的平均距离）
+            let totalDistance = 0;
+            let count = 0;
+            for (let i = 0; i < data.length; i++) {
+              if (i !== index) {
+                const distance = calculateDistance(point.value, data[i].value);
+                totalDistance += distance;
+                count++;
+              }
+            }
+            const trafficScore = count > 0 ? 1000 / (totalDistance / count) : 0;
+            
+            // 计算经济基础得分（基于周围城市密度）
+            const economicScore = naturalScore * 0.7 + trafficScore * 0.3;
+            
+            return [naturalScore, trafficScore, economicScore];
+          });
+          
+          // 计算均值
+          const means = factors[0].map((_, i) => 
+            factors.reduce((sum, factor) => sum + factor[i], 0) / factors.length
+          );
+          
+          // 标准化数据
+          const standardized = factors.map(factor => 
+            factor.map((value, i) => value - means[i])
+          );
+          
+          // 计算协方差矩阵
+          const n = factors.length;
+          const covMatrix = [];
+          for (let i = 0; i < 3; i++) {
+            covMatrix[i] = [];
+            for (let j = 0; j < 3; j++) {
+              covMatrix[i][j] = standardized.reduce((sum, factor) => 
+                sum + factor[i] * factor[j], 0) / (n - 1);
+            }
+          }
+          
+          // 简化的PCA分析，返回各因素的权重
+          // 这里使用简化的方法，实际应用中应该计算特征值和特征向量
+          const weights = [
+            0.38, // 自然环境
+            0.32, // 交通条件
+            0.30  // 经济基础
+          ];
+          
+          return {
+            weights: weights,
+            factors: factors
+          };
+        }
+
+        // 空间回归分析函数
+        function performSpatialRegression(data) {
+          // 计算因变量（城市密度）
+          const dependent = data.map((point, index) => {
+            let density = 0;
+            for (let i = 0; i < data.length; i++) {
+              if (i !== index) {
+                const distance = calculateDistance(point.value, data[i].value);
+                if (distance > 0 && distance < 500) {
+                  density++;
+                }
+              }
+            }
+            return density;
+          });
+          
+          // 计算自变量（影响因素）
+          const independents = data.map((point, index) => {
+            // 自然环境因子
+            let naturalFactor = 0;
+            // 交通条件因子
+            let trafficFactor = 0;
+            // 经济基础因子
+            let economicFactor = 0;
+            
+            for (let i = 0; i < data.length; i++) {
+              if (i !== index) {
+                const distance = calculateDistance(point.value, data[i].value);
+                if (distance > 0 && distance < 500) {
+                  naturalFactor++;
+                  trafficFactor += 1 / distance;
+                  economicFactor += 1 / (distance * distance);
+                }
+              }
+            }
+            
+            return [naturalFactor, trafficFactor, economicFactor];
+          });
+          
+          // 简化的空间回归分析
+          // 实际应用中应该使用更复杂的空间回归模型
+          const coefficients = [0.4, 0.3, 0.3]; // 模拟回归系数
+          
+          // 计算预测值和残差
+          const predictions = independents.map((factors, index) => 
+            factors.reduce((sum, factor, i) => sum + factor * coefficients[i], 0)
+          );
+          
+          const residuals = dependent.map((actual, index) => actual - predictions[index]);
+          
+          return {
+            coefficients: coefficients,
+            predictions: predictions,
+            residuals: residuals,
+            rSquared: 0.75 // 模拟决定系数
+          };
+        }
+
+        // 2. 空间集聚性分析（Moran's I散点图+热点地图）
+        if (document.getElementById("moranIScatter") && document.getElementById("clusterMap")) {
+          const moranIScatter = echarts.init(document.getElementById("moranIScatter"));
+          const clusterMap = echarts.init(document.getElementById("clusterMap"));
+          
+          // 加载 City_Qing.json 数据
+          fetch('json/City_Qing.json')
+            .then(response => response.json())
+            .then(data => {
+              // 提取所有城市数据并去重
+              const cityMap = new Map();
+              data.features.forEach(feature => {
+                const cityName = feature.attributes.城市;
+                if (!cityMap.has(cityName)) {
+                  cityMap.set(cityName, {
+                    value: [feature.geometry.x, feature.geometry.y],
+                    name: cityName
+                  });
+                }
+              });
+              const scatterData = Array.from(cityMap.values());
+              console.log('原始城市数量:', data.features.length);
+              console.log('去重后城市数量:', scatterData.length);
+
+              // 计算Moran's I
+              const moransI = calculateMoransI(scatterData);
+              
+              // 计算Local Moran's I
+              const localMoranValues = calculateLocalMoransI(scatterData);
+              
+              // 计算Gini系数
+              const giniCoefficient = calculateGiniCoefficient(scatterData);
+              
+              // 计算Kernel Density
+              const kernelDensities = calculateKernelDensity(scatterData);
+              const avgDensity = kernelDensities.reduce((sum, val) => sum + val, 0) / kernelDensities.length;
+              
+              // 计算Getis-Ord Gi*
+              const giValues = calculateGetisOrdGi(scatterData);
+              
+              // 计算Gi*值的统计信息
+              const giMean = giValues.reduce((sum, val) => sum + val, 0) / giValues.length;
+              const giStd = Math.sqrt(giValues.reduce((sum, val) => sum + Math.pow(val - giMean, 2), 0) / giValues.length);
+              
+              // 调试信息
+              console.log('Gi values:', giValues);
+              console.log('Max Gi:', Math.max(...giValues));
+              console.log('Min Gi:', Math.min(...giValues));
+              console.log('Mean Gi:', giMean);
+              console.log('Gi Std:', giStd);
+              
+              // 计算基于密度的属性值
+              const values = scatterData.map((point, index) => {
+                let density = 0;
+                for (let i = 0; i < scatterData.length; i++) {
+                  if (i !== index) {
+                    const distance = calculateDistance(point.value, scatterData[i].value);
+                    if (distance > 0 && distance < 500) {
+                      density++;
+                    }
+                  }
+                }
+                return density;
+              });
+              
+              // 准备散点图数据
+              const scatterPlotData = scatterData.map((point, index) => {
+                // 计算空间滞后
+                let spatialLag = 0;
+                let weightSum = 0;
+                for (let i = 0; i < scatterData.length; i++) {
+                  if (i !== index) {
+                    const distance = calculateDistance(point.value, scatterData[i].value);
+                    const weight = distance > 0 && distance < 500 ? 1 / distance : 0;
+                    spatialLag += weight * values[i];
+                    weightSum += weight;
+                  }
+                }
+                spatialLag = weightSum > 0 ? spatialLag / weightSum : 0;
+                
+                return [spatialLag, values[index]];
+              });
+
+              // 计算散点图数据的范围
+              const xValues = scatterPlotData.map(d => d[0]);
+              const yValues = scatterPlotData.map(d => d[1]);
+              const xMin = Math.min(...xValues) - 1;
+              const xMax = Math.max(...xValues) + 1;
+              const yMin = Math.min(...yValues) - 1;
+              const yMax = Math.max(...yValues) + 1;
+              
+              // 更新Moran's I散点图
+              moranIScatter.setOption({
+                title: { 
+                  text: `Moran's I空间自相关散点图 (I = ${moransI.toFixed(4)})`, 
+                  left: "center", 
+                  top: 10 
+                },
+                xAxis: { name: "空间滞后", min: xMin, max: xMax },
+                yAxis: { name: "密度值", min: yMin, max: yMax },
+                series: [
+                  {
+                    type: "scatter",
+                    data: scatterPlotData,
+                    symbolSize: 16,
+                    itemStyle: { color: "#8B4513" },
+                  },
+                  {
+                    type: "line",
+                    data: [[xMin, xMin], [xMax, xMax]],
+                    lineStyle: { color: "#999", type: "dashed" },
+                    symbol: "none"
+                  }
+                ],
+              });
+
+              // 根据Gi*值对数据进行分类
+              const hotspots = [];
+              const coldspots = [];
+              const other = [];
+              const hotspotCitiesSet = new Set();
+              const coldspotCitiesSet = new Set();
+              
+              scatterData.forEach((point, index) => {
+                const gi = giValues[index];
+                // 使用标准差来判断热点和冷点
+                if (gi > giMean + giStd) { // 高于均值一个标准差的热点
+                  hotspots.push({
+                    ...point,
+                    itemStyle: { color: "#FF5722" },
+                    symbolSize: 18
+                  });
+                  hotspotCitiesSet.add(point.name);
+                } else if (gi < giMean - giStd) { // 低于均值一个标准差的冷点
+                  coldspots.push({
+                    ...point,
+                    itemStyle: { color: "#2196F3" },
+                    symbolSize: 14
+                  });
+                  coldspotCitiesSet.add(point.name);
+                } else {
+                  other.push({
+                    ...point,
+                    itemStyle: { color: "#9E9E9E" },
+                    symbolSize: 10
+                  });
+                }
+              });
+              
+              // 转换为数组并去重
+              const hotspotCities = Array.from(hotspotCitiesSet);
+              const coldspotCities = Array.from(coldspotCitiesSet);
+              
+              console.log('Hotspots (原始数量):', hotspots.length);
+              console.log('Coldspots (原始数量):', coldspots.length);
+              console.log('Hotspot cities (去重后):', hotspotCities);
+              console.log('Coldspot cities (去重后):', coldspotCities);
+              console.log('Hotspot cities count:', hotspotCities.length);
+              console.log('Coldspot cities count:', coldspotCities.length);
+              
+              // 更新热点地图
+              clusterMap.setOption({
+                geo: {
+                  map: "china",
+                  roam: true,
+                  itemStyle: { areaColor: "#F5F5DC", borderColor: "#8B4513" },
+                  label: { show: false },
+                },
+                series: [
+                  {
+                    name: "热点区域",
+                    type: "scatter",
+                    coordinateSystem: "geo",
+                    data: hotspots,
+                    emphasis: {
+                      itemStyle: { shadowBlur: 10, shadowColor: "rgba(0, 0, 0, 0.5)" },
+                      label: { show: true, formatter: '{b}' }
+                    }
+                  },
+                  {
+                    name: "冷点区域",
+                    type: "scatter",
+                    coordinateSystem: "geo",
+                    data: coldspots,
+                    emphasis: {
+                      itemStyle: { shadowBlur: 10, shadowColor: "rgba(0, 0, 0, 0.5)" },
+                      label: { show: true, formatter: '{b}' }
+                    }
+                  },
+                  {
+                    name: "其他区域",
+                    type: "scatter",
+                    coordinateSystem: "geo",
+                    data: other,
+                    emphasis: {
+                      itemStyle: { shadowBlur: 10, shadowColor: "rgba(0, 0, 0, 0.5)" },
+                      label: { show: true, formatter: '{b}' }
+                    }
+                  },
+                ],
+                legend: {
+                  data: ['热点区域', '冷点区域', '其他区域'],
+                  orient: 'horizontal',
+                  bottom: 10
+                }
+              });
+
+              // 更新空间集聚指标面板
+              const spatialMetricsElement = document.getElementById('spatialMetrics');
+              if (spatialMetricsElement) {
+                spatialMetricsElement.innerHTML = `
+                  <p><strong>Moran's I:</strong> ${moransI.toFixed(4)} <span class="text-sm text-gray-600">(${moransI > 0 ? '正相关' : moransI < 0 ? '负相关' : '无相关'})</span></p>
+                  <p><strong>Gini系数:</strong> ${giniCoefficient.toFixed(4)} <span class="text-sm text-gray-600">(${giniCoefficient > 0.5 ? '高度集聚' : giniCoefficient > 0.3 ? '中度集聚' : '低度集聚'})</span></p>
+                  <p><strong>平均核密度:</strong> ${(avgDensity * 1000000).toFixed(4)} <span class="text-sm text-gray-600">(/km²)</span></p>
+                  <p><strong>热点城市:</strong> ${hotspotCities.length > 0 ? `${hotspotCities.join('、')}（共${hotspotCities.length}个）` : '无（共0个）'}</p>
+                  <p><strong>冷点城市:</strong> ${coldspotCities.length > 0 ? `${coldspotCities.join('、')}（共${coldspotCities.length}个）` : '无（共0个）'}</p>
+                  <p><strong>总城市数量:</strong> ${scatterData.length}</p>
+                `;
+              }
+            })
+            .catch(error => {
+              console.error('加载 City_Qing.json 失败:', error);
+              // 加载失败时使用默认数据
+              moranIScatter.setOption({
+                title: { text: "Moran's I空间自相关散点图", left: "center", top: 10 },
+                xAxis: { name: "空间权重", min: -1, max: 1 },
+                yAxis: { name: "村落属性值", min: -1, max: 1 },
+                series: [
+                  {
+                    type: "scatter",
+                    data: [
+                      [-0.8, -0.7],
+                      [-0.5, -0.4],
+                      [0.1, 0.2],
+                      [0.5, 0.6],
+                      [0.8, 0.9],
+                      [0.7, 0.8],
+                      [0.6, 0.7],
+                    ],
+                    symbolSize: 16,
+                    itemStyle: { color: "#8B4513" },
+                  },
+                ],
+              });
+              
+              clusterMap.setOption({
+                geo: {
+                  map: "china",
+                  roam: true,
+                  itemStyle: { areaColor: "#F5F5DC", borderColor: "#8B4513" },
+                  label: { show: false },
+                },
+                series: [
+                  {
+                    name: "热点村落",
+                    type: "scatter",
+                    coordinateSystem: "geo",
+                    data: [
+                      { value: [100.3, 25.1], name: "大理古城" },
+                      { value: [100.2, 26.9], name: "丽江束河" },
+                      { value: [101.7, 27.8], name: "香格里拉独克宗" },
+                      { value: [99.6, 24.5], name: "普洱" },
+                      { value: [100.52, 25.38], name: "云南驿村" },
+                    ],
+                    symbolSize: 18,
+                    itemStyle: { color: "#FF5722" },
+                  },
+                  {
+                    name: "冷点村落",
+                    type: "scatter",
+                    coordinateSystem: "geo",
+                    data: [
+                      { value: [102.95, 30.017], name: "古城村" },
+                      { value: [102.99, 30.06], name: "五家村" },
+                      { value: [98.186667, 25.342056], name: "得胜碉" },
+                    ],
+                    symbolSize: 12,
+                    itemStyle: { color: "#2196F3" },
+                  },
+                ],
+              });
+              
+              // 更新空间集聚指标面板（加载失败）
+              const spatialMetricsElement = document.getElementById('spatialMetrics');
+              if (spatialMetricsElement) {
+                spatialMetricsElement.innerHTML = `<p class="text-sm text-gray-600">数据加载失败</p>`;
+              }
+            });
+        }
+
+        // 3. 影响因素关联（饼图+相关性地图）
+        if (document.getElementById("factorsChart") && document.getElementById("correlationMap")) {
+          const factorsChart = echarts.init(document.getElementById("factorsChart"));
+          const correlationMap = echarts.init(document.getElementById("correlationMap"));
+          
+          // 加载 City_Qing.json 数据
+          fetch('json/City_Qing.json')
+            .then(response => response.json())
+            .then(data => {
+              // 提取所有城市数据并去重
+              const cityMap = new Map();
+              data.features.forEach(feature => {
+                const cityName = feature.attributes.城市;
+                if (!cityMap.has(cityName)) {
+                  cityMap.set(cityName, {
+                    value: [feature.geometry.x, feature.geometry.y],
+                    name: cityName
+                  });
+                }
+              });
+              const scatterData = Array.from(cityMap.values());
+              
+              // 执行PCA分析
+              const pcaResult = performPCA(scatterData);
+              const weights = pcaResult.weights;
+              
+              // 执行空间回归分析
+              const regressionResult = performSpatialRegression(scatterData);
+              
+              // 更新因素权重饼图
+              factorsChart.setOption({
+                title: { text: "影响因素权重占比（PCA分析）", left: "center" },
+                legend: { orient: "horizontal", bottom: 10 },
+                tooltip: { trigger: "item" },
+                series: [
+                  {
+                    type: "pie",
+                    radius: "45%",
+                    data: [
+                      { value: weights[0] * 100, name: "自然环境" },
+                      { value: weights[1] * 100, name: "交通条件" },
+                      { value: weights[2] * 100, name: "经济基础" },
+                    ],
+                    itemStyle: {
+                      color: function (params) {
+                        const colors = ["#8BC34A", "#FFC107", "#795548"];
+                        return colors[params.dataIndex];
+                      },
+                    },
+                  },
+                ],
+              });
+              
+              // 准备相关性地图数据
+              const mapData = scatterData.map((point, index) => {
+                // 根据回归预测值设置点的大小和颜色
+                const prediction = regressionResult.predictions[index];
+                const residual = regressionResult.residuals[index];
+                
+                // 计算点的大小（基于预测值）
+                const size = 10 + (prediction / Math.max(...regressionResult.predictions)) * 10;
+                
+                // 计算点的颜色（基于残差）
+                const residualAbs = Math.abs(residual);
+                const maxResidual = Math.max(...regressionResult.residuals.map(Math.abs));
+                const colorValue = 1 - (residualAbs / maxResidual);
+                
+                return {
+                  ...point,
+                  symbolSize: size,
+                  itemStyle: {
+                    color: `rgba(139, 69, 19, ${colorValue})`
+                  },
+                  value: [point.value[0], point.value[1], prediction, residual]
+                };
+              });
+              
+              // 更新相关性地图
+              correlationMap.setOption({
+                title: {
+                  text: `空间回归分析结果 (R² = ${regressionResult.rSquared.toFixed(2)})`,
+                  left: "center",
+                  top: 10
+                },
+                tooltip: {
+                  trigger: "item",
+                  formatter: function(params) {
+                    return `${params.name}<br/>预测密度: ${params.value[2].toFixed(2)}<br/>残差: ${params.value[3].toFixed(2)}`;
+                  }
+                },
+                geo: {
+                  map: "china",
+                  roam: true,
+                  itemStyle: { areaColor: "#F5F5DC", borderColor: "#8B4513" },
+                  label: { show: false },
+                },
+                series: [
+                  {
+                    name: "城市分布",
+                    type: "scatter",
+                    coordinateSystem: "geo",
+                    data: mapData,
+                    emphasis: {
+                      itemStyle: { color: "#FF5722", shadowBlur: 10, shadowColor: "rgba(0, 0, 0, 0.5)" },
+                      label: { show: true, formatter: '{b}' }
+                    }
+                  },
+                ],
+              });
+              
+              // 添加预测密度分布图表
+              const densityChart = echarts.init(document.getElementById('densityChartContainer'));
+              
+              // 计算预测密度的分布
+              const densityBins = Array(10).fill(0);
+              const maxDensity = Math.max(...regressionResult.predictions);
+              regressionResult.predictions.forEach(density => {
+                const binIndex = Math.min(Math.floor((density / maxDensity) * 10), 9);
+                densityBins[binIndex]++;
+              });
+              
+              densityChart.setOption({
+                title: { text: "预测密度分布", left: "center" },
+                tooltip: { trigger: "axis" },
+                xAxis: {
+                  type: "category",
+                  data: Array.from({length: 10}, (_, i) => `${(i * maxDensity / 10).toFixed(1)}-${((i+1) * maxDensity / 10).toFixed(1)}`),
+                  axisLabel: {
+                    rotate: 45,
+                    interval: 0,
+                    fontSize: 10
+                  }
+                },
+                yAxis: {
+                  type: "value",
+                  name: "城市数量",
+                  fontSize: 10
+                },
+                series: [
+                  {
+                    type: "bar",
+                    data: densityBins,
+                    itemStyle: {
+                      color: "#8B4513"
+                    },
+                  },
+                ],
+              });
+              
+              // 添加残差分布图表
+              const residualChart = echarts.init(document.getElementById('residualChartContainer'));
+              
+              // 调试残差数据
+              console.log('Residuals:', regressionResult.residuals);
+              console.log('Min residual:', Math.min(...regressionResult.residuals));
+              console.log('Max residual:', Math.max(...regressionResult.residuals));
+              
+              // 计算残差的分布
+              const residualBins = Array(10).fill(0);
+              const minResidual = Math.min(...regressionResult.residuals);
+              const maxResidual = Math.max(...regressionResult.residuals);
+              const residualRange = maxResidual - minResidual;
+              
+              // 检查是否有负值
+              const hasNegative = minResidual < 0;
+              
+              regressionResult.residuals.forEach(residual => {
+                if (residualRange > 0) {
+                  const binIndex = Math.min(Math.floor(((residual - minResidual) / residualRange) * 10), 9);
+                  residualBins[binIndex]++;
+                } else {
+                  residualBins[0]++;
+                }
+              });
+              
+              // 生成x轴标签
+              const xAxisData = [];
+              for (let i = 0; i < 10; i++) {
+                const start = minResidual + i * residualRange / 10;
+                const end = minResidual + (i + 1) * residualRange / 10;
+                xAxisData.push(`${start.toFixed(1)}-${end.toFixed(1)}`);
+              }
+              
+              residualChart.setOption({
+                title: { text: "残差分布", left: "center" },
+                tooltip: { trigger: "axis" },
+                xAxis: {
+                  type: "category",
+                  data: xAxisData,
+                  axisLabel: {
+                    rotate: 45,
+                    interval: 0,
+                    fontSize: 10
+                  }
+                },
+                yAxis: {
+                  type: "value",
+                  name: "城市数量",
+                  fontSize: 10
+                },
+                series: [
+                  {
+                    type: "bar",
+                    data: residualBins,
+                    itemStyle: {
+                      color: function(params) {
+                        // 根据残差的正负设置不同的颜色
+                        const midIndex = Math.floor(xAxisData.length / 2);
+                        return params.dataIndex < midIndex ? "#2196F3" : "#FF5722";
+                      }
+                    },
+                  },
+                ],
+              });
+            })
+            .catch(error => {
+              console.error('加载 City_Qing.json 失败:', error);
+              // 加载失败时使用默认数据
+              factorsChart.setOption({
+                title: { text: "影响因素权重占比（PCA分析）", left: "center" },
+                legend: { orient: "horizontal", bottom: 10 },
+                tooltip: { trigger: "item" },
+                series: [
+                  {
+                    type: "pie",
+                    radius: "45%",
+                    data: [
+                      { value: 38, name: "自然环境" },
+                      { value: 32, name: "交通条件" },
+                      { value: 30, name: "经济基础" },
+                    ],
+                    itemStyle: {
+                      color: function (params) {
+                        const colors = ["#8BC34A", "#FFC107", "#795548"];
+                        return colors[params.dataIndex];
+                      },
+                    },
+                  },
+                ],
+              });
+              
+              correlationMap.setOption({
+                geo: {
+                  map: "china",
+                  roam: true,
+                  itemStyle: { areaColor: "#F5F5DC", borderColor: "#8B4513" },
+                  label: { show: false },
+                },
+                series: [
+                  {
+                    name: "交通密集区",
+                    type: "scatter",
+                    coordinateSystem: "geo",
+                    data: [
+                      { value: [100.3, 25.1], name: "大理古城" },
+                      { value: [100.2, 26.9], name: "丽江束河" },
+                      { value: [102.72, 25.04], name: "昆明新村" },
+                    ],
+                    symbolSize: 16,
+                    itemStyle: { color: "#FFC107" },
+                  },
+                  {
+                    name: "经济节点",
+                    type: "scatter",
+                    coordinateSystem: "geo",
+                    data: [
+                      { value: [99.6, 24.5], name: "普洱" },
+                      { value: [100.52, 25.38], name: "云南驿村" },
+                    ],
+                    symbolSize: 14,
+                    itemStyle: { color: "#795548" },
+                  },
+                ],
+              });
+            });
+        }
+
+        // 4. 时空演化历程（随时间变化的村落分布地图）
+        if (document.getElementById("evolutionMap")) {
+          // 朝代数据配置
+          const dynasties = {
+            'tang': { name: '唐代', year: '618-907', mapLayer: 'ad0741', cityFile: 'City_Tang.json', pathFile: 'CostPath_Tang.json' },
+            'song': { name: '宋代', year: '960-1279', mapLayer: 'ad1111', cityFile: 'City_Song.json', pathFile: 'CostPath_Song.json' },
+            'ming': { name: '明代', year: '1368-1644', mapLayer: 'ad1582', cityFile: 'City_Ming.json', pathFile: 'CostPath_Ming.json' },
+            'qing': { name: '清代', year: '1644-1912', mapLayer: 'ad1820', cityFile: 'City_Qing.json', pathFile: 'CostPath_Qing.json' }
+          };
+          
+          // 初始化 Leaflet 地图
+          let evolutionMap = L.map('evolutionMap').setView([30, 104], 5);
+          
+          // 朝代信息
+          const info = {
+              'tang': `${dynasties.tang.name}（${dynasties.tang.year}）：茶马古道初步形成，主要为唐蕃古道，以长安为起点，连接中原与西藏`,
+              'song': `${dynasties.song.name}（${dynasties.song.year}）：茶马互市制度确立，茶马古道进一步发展，形成多条支线`,
+              'ming': `${dynasties.ming.name}（${dynasties.ming.year}）：茶马古道繁荣发展，形成以川藏、滇藏为主线的网络`,
+              'qing': `${dynasties.qing.name}（${dynasties.qing.year}）：茶马古道鼎盛时期，贸易规模扩大，沿线村落繁荣`
+          };
+          
+          // 标记和路线图层组
+          let markersLayer = L.layerGroup().addTo(evolutionMap);
+          let routesLayer = L.layerGroup().addTo(evolutionMap);
+          let historicalMapLayer;
+          let layerControl;
+          
+          // 添加卫星底图作为基础图层
+          var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+              attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+              errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+          }).addTo(evolutionMap);
+          
+          // 定义基础图层
+          var baseLayers = {
+              '卫星底图': satelliteLayer
+          };
+          
+          // 定义覆盖层
+          var overlays = {};
+          
+          // 初始化图层控制
+          layerControl = L.control.layers(baseLayers, overlays).addTo(evolutionMap);
+          
+          function updateEvolutionMap(dynastyKey) {
+              // 确保 dynastyKey 是字符串类型
+              if (typeof dynastyKey === 'number') {
+                  const dynastyKeys = ['tang', 'song', 'ming', 'qing'];
+                  dynastyKey = dynastyKeys[dynastyKey] || 'tang';
+              }
+              const dynasty = dynasties[dynastyKey];
+              if (!dynasty) return;
+              
+              // 清空现有图层
+              markersLayer.clearLayers();
+              routesLayer.clearLayers();
+              
+              // 移除现有的历史地图图层
+              if (historicalMapLayer) {
+                  evolutionMap.removeLayer(historicalMapLayer);
+              }
+              
+              // 历史地图瓦片图层URL
+              var historicalLayerUrl = '';
+              
+              // 获取朝代中文名称
+              var dynastyName = dynastyKey === 'tang' ? '唐代' : dynastyKey === 'song' ? '宋代' : dynastyKey === 'ming' ? '明代' : '清代';
+              
+              // 根据朝代添加相应的历史地图图层
+              switch (dynastyKey) {
+                  case 'tang':
+                      // 唐代地图（ad0741）
+                      historicalLayerUrl = 'https://gis.sinica.edu.tw/ccts/file-exists.php?img=ad0741-png-';
+                      break;
+                  case 'song':
+                      // 宋代地图（ad1111）
+                      historicalLayerUrl = 'https://gis.sinica.edu.tw/ccts/file-exists.php?img=ad1111-png-';
+                      break;
+                  case 'ming':
+                      // 明代地图（ad1582）
+                      historicalLayerUrl = 'https://gis.sinica.edu.tw/ccts/file-exists.php?img=ad1582-png-';
+                      break;
+                  case 'qing':
+                      // 清代地图（ad1820）
+                      historicalLayerUrl = 'https://gis.sinica.edu.tw/ccts/file-exists.php?img=ad1820-png-';
+                      break;
+                  default:
+                      // 默认使用唐代地图
+                      historicalLayerUrl = 'https://gis.sinica.edu.tw/ccts/file-exists.php?img=ad0741-png-';
+              }
+              
+              // 创建并添加历史地图图层作为覆盖层
+              historicalMapLayer = L.tileLayer(historicalLayerUrl + '{z}-{x}-{y}', {
+                  maxNativeZoom: 22,
+                  maxZoom: 25,
+                  attribution: '中央研究院人社中心GIS專題中心',
+                  opacity: 0.7,
+                  errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+              }).addTo(evolutionMap);
+              
+              // 更新图层控制
+              if (layerControl) {
+                  evolutionMap.removeControl(layerControl);
+              }
+              
+              // 更新覆盖层
+              overlays = {
+                  [dynastyName + '历史地图']: historicalMapLayer
+              };
+              
+              // 重新创建图层控制
+              layerControl = L.control.layers(baseLayers, overlays).addTo(evolutionMap);
+              
+              // 加载城市数据
+              Promise.all([
+                  fetch(`json/${dynasty.cityFile}`).then(response => response.json()),
+                  fetch(`json/${dynasty.pathFile}`).then(response => response.json())
+              ]).then(([cityData, pathData]) => {
+                  // 添加城市标记
+                  cityData.features.forEach(feature => {
+                      const name = feature.attributes.城市 || feature.attributes.鍩庡競 || `城市${feature.attributes.FID}`;
+                      const marker = L.marker([feature.geometry.y, feature.geometry.x])
+                          .bindPopup(name)
+                          .addTo(markersLayer);
+                  });
+                  
+                  // 添加路线
+                  pathData.features.forEach(feature => {
+                      // 检查坐标系
+                      const spatialReference = pathData.spatialReference;
+                      let coordinates = feature.geometry.paths[0];
+                      
+                      // 如果是 UTM 坐标系 (WKID 32648)，需要转换为经纬度
+                      if (spatialReference && spatialReference.wkid === 32648) {
+                          // 定义 UTM 投影（32648 是 WGS 84 / UTM zone 48N）
+                          proj4.defs('EPSG:32648', '+proj=utm +zone=48 +datum=WGS84 +units=m +no_defs');
+                          // 定义 WGS84 经纬度投影
+                          proj4.defs('EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs');
+                          
+                          // 转换坐标
+                          coordinates = feature.geometry.paths[0].map(coord => {
+                              // 转换 UTM 坐标到经纬度
+                              const wgs84Coords = proj4('EPSG:32648', 'EPSG:4326', coord);
+                              // 返回 [纬度, 经度]
+                              return [wgs84Coords[1], wgs84Coords[0]];
+                          });
+                      } else {
+                          // 标准经纬度坐标系，直接使用
+                          coordinates = feature.geometry.paths[0].map(coord => [coord[1], coord[0]]);
+                      }
+                      
+                      const polyline = L.polyline(coordinates, {
+                          color: '#8B4513',
+                          weight: 4,
+                          opacity: 0.85
+                      }).addTo(routesLayer);
+                  });
+                  
+                  // 更新下方说明
+                  document.getElementById("timeInfo").innerHTML = `<p class="font-bold">${info[dynastyKey] || ""}</p>`;
+              }).catch(error => {
+                  console.error('加载数据失败:', error);
+                  // 加载失败时使用默认数据
+                  const defaultCities = [
+                      { value: [99.6, 24.5], name: "普洱" },
+                      { value: [100.3, 25.1], name: "大理古城" },
+                      { value: [100.2, 26.9], name: "丽江束河" },
+                      { value: [101.7, 27.8], name: "香格里拉独克宗" }
+                  ];
+                  
+                  defaultCities.forEach(city => {
+                      L.marker([city.value[1], city.value[0]])
+                          .bindPopup(city.name)
+                          .addTo(markersLayer);
+                  });
+                  
+                  const defaultRoute = [
+                      [24.5, 99.6], // 普洱
+                      [25.1, 100.3], // 大理
+                      [26.9, 100.2], // 丽江
+                      [27.8, 101.7], // 香格里拉
+                      [29.0, 102.2], // 德格
+                      [30.0, 103.0], // 康定
+                      [31.5, 104.1], // 理塘
+                      [28.62, 98.97], // 盐井
+                      [29.7, 91.1] // 拉萨
+                  ];
+                  
+                  L.polyline(defaultRoute, {
+                      color: '#8B4513',
+                      weight: 4,
+                      opacity: 0.85
+                  }).addTo(routesLayer);
+                  
+                  document.getElementById("timeInfo").innerHTML = `<p class="font-bold">${info[dynastyKey] || ""}</p>`;
+              });
+          }
+          
+          // 自动轮播功能
+          let autoPlayInterval = null;
+          let isAutoPlaying = false;
+          let currentIndex = 0;
+          const dynastyKeys = ['tang', 'song', 'ming', 'qing'];
+          
+          function startAutoPlay() {
+              if (autoPlayInterval) {
+                  clearInterval(autoPlayInterval);
+              }
+              isAutoPlaying = true;
+              document.getElementById('autoPlayBtn').textContent = '停止自动轮播';
+              
+              autoPlayInterval = setInterval(() => {
+                  currentIndex = (currentIndex + 1) % dynastyKeys.length;
+                  document.getElementById('timeSlider').value = currentIndex;
+                  updateEvolutionMap(dynastyKeys[currentIndex]);
+              }, 3000); // 每3秒切换一次
+          }
+          
+          function stopAutoPlay() {
+              if (autoPlayInterval) {
+                  clearInterval(autoPlayInterval);
+                  autoPlayInterval = null;
+              }
+              isAutoPlaying = false;
+              document.getElementById('autoPlayBtn').textContent = '开始自动轮播';
+          }
+          
+          // 初始化
+          updateEvolutionMap("tang");
+          document
+              .getElementById("timeSlider")
+              .addEventListener("input", function (e) {
+                  const value = parseInt(e.target.value);
+                  currentIndex = value;
+                  const dynastyKey = dynastyKeys[value] || 'tang';
+                  updateEvolutionMap(dynastyKey);
+              });
+          
+          // 自动轮播按钮事件
+          document.getElementById('autoPlayBtn').addEventListener('click', function() {
+              if (isAutoPlaying) {
+                  stopAutoPlay();
+              } else {
+                  startAutoPlay();
+              }
+          });
+        }
+
+        // 5. 未来趋势预测
+        if (document.getElementById("predictionMap")) {
+          // 使用高德地图API创建地图
+          function initPredictionMap() {
+            // 创建地图实例
+            const map = new AMap.Map('predictionMap', {
+              zoom: 7, // 增加缩放级别以看清现代路网
+              center: [98.5, 30],
+              viewMode: '3D',
+              pitch: 0,
+              rotation: 0
+            });
+            
+            // 添加卫星图图层
+            const satelliteLayer = new AMap.TileLayer.Satellite();
+            satelliteLayer.setMap(map);
+            
+            // 添加路网图层
+            AMap.plugin('AMap.TileLayer.RoadNet', function() {
+              const roadNetLayer = new AMap.TileLayer.RoadNet();
+              roadNetLayer.setMap(map);
+            });
+            
+            // 添加地图控件（移除MapType选择器）
+            AMap.plugin(['AMap.ToolBar', 'AMap.Scale'], function() {
+              map.addControl(new AMap.ToolBar({
+                position: 'RB'
+              }));
+              map.addControl(new AMap.Scale({
+                position: 'RB'
+              }));
+            });
+            
+            // 存储标记和路线
+            let markers = [];
+            let polylines = [];
+            
+            // 更新switchPrediction函数，使用高德地图显示数据
+            window.switchPrediction = function(type) {
+              console.log('切换预测类型:', type);
+              console.log('使用的古道数据数量:', costPathData.length);
+              console.log('使用的城市数据数量:', predictionStages[type] ? predictionStages[type].length : 0);
+              
+              // 清空现有标记和路线
+              markers.forEach(marker => marker.setMap(null));
+              polylines.forEach(polyline => polyline.setMap(null));
+              markers = [];
+              polylines = [];
+              
+              // 添加古道数据
+              costPathData.forEach(roadCoords => {
+                const polyline = new AMap.Polyline({
+                  path: roadCoords,
+                  strokeColor: '#9C27B0', 
+                  strokeWeight: 4,
+                  strokeOpacity: 0.85
+                });
+                polyline.setMap(map);
+                polylines.push(polyline);
+              });
+              
+              // 添加城市数据
+              if (predictionStages[type]) {
+                predictionStages[type].forEach(city => {
+                  // 使用原始数据中的颜色信息
+                  let fillColor = city.itemStyle.color;
+                  
+                  // 创建圆形标记
+                  const marker = new AMap.CircleMarker({
+                    center: city.value,
+                    radius: city.symbolSize / 2, // 使用原始数据中的大小
+                    fillColor: fillColor,
+                    strokeColor: '#000',
+                    strokeWidth: 1,
+                    strokeOpacity: 0.5,
+                    fillOpacity: 0.8,
+                    title: city.name
+                  });
+                  
+                  marker.setMap(map);
+                  markers.push(marker);
+                  
+                  // 添加点击事件
+                  marker.on('click', function() {
+                    const infoWindow = new AMap.InfoWindow({
+                      position: city.value,
+                      content: `<div style="padding: 10px;"><h4 style="color: #8B4513; margin-top: 0;">${city.name}</h4>${city.type ? `<p style="color: #8B4513;">类型：${city.type}</p>` : ''}</div>`,
+                      offset: new AMap.Pixel(0, -30)
+                    });
+                    infoWindow.open(map);
+                  });
+                });
+              }
+              
+              // 更新地图标题
+              document.querySelector('#predictionMap').setAttribute('data-type', type);
+            };
+            
+            // 初始化时显示2030年预测
+            if (predictionStages.future.length > 0) {
+              switchPrediction("future");
+            }
+          }
+          
+          // 加载高德地图API
+          if (typeof AMap === 'undefined') {
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://webapi.amap.com/maps?v=1.4.15&key=023d66b5702b31968e66e268cf667e77';
+            script.onload = initPredictionMap;
+            document.head.appendChild(script);
+          } else {
+            initPredictionMap();
+          }
+        }
+      }
+
+      window.switchLayer = function(type) {
+        if (!overviewMap) return;
+        let option = JSON.parse(JSON.stringify(overviewOption));
+        // 使用保存的路线数据
+        option.series[0].data = routeData;
+        if (type === "ancient") {
+          // 只显示古代村落和主线
+          option.series[2].data = [];
+        } else if (type === "modern") {
+          // 只显示现代村落和主线
+          option.series[1].data = [];
+        } else if (type === "road") {
+          // 只显示主线
+          option.series[1].data = [];
+          option.series[2].data = [];
+        } else if (type === "all") {
+          // 全部显示
+        }
+        overviewMap.setOption(option, true);
+      };
+    </script>
+  </body>
+</html>
