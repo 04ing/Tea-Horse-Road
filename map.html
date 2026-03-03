@@ -20,7 +20,15 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" media="print" onload="this.media='all'" />
     <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <!-- proj4js 库 -->
-    <script defer src="https://cdn.jsdelivr.net/npm/proj4@2.9.0/dist/proj4.min.js"></script>
+    <script src="node_modules/proj4/dist/proj4.js"></script>
+    <!-- 为 proj4 添加 CDN 备用 -->
+    <script>
+      if (typeof proj4 === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/proj4@2.9.0/dist/proj4.min.js';
+        document.head.appendChild(script);
+      }
+    </script>
     <!-- ECharts -->
     <script defer src="js/echarts.min.js"></script>
     <script defer src="js/china.js"></script>
@@ -140,7 +148,7 @@
           <div class="md:w-2/3 map-container">
             <div
               id="overviewMap"
-              class="w-full h-full rounded-lg shadow-lg"
+              class="w-full h-96 rounded-lg shadow-lg"
             ></div>
           </div>
         </div>
@@ -273,8 +281,7 @@
           <div class="md:w-2/3 map-container">
             <div
               id="evolutionMap"
-              class="w-full h-full rounded-lg shadow-lg"
-              style="height: 600px;"
+              class="w-full h-96 rounded-lg shadow-lg"
             ></div>
             <div
               id="timeInfo"
@@ -315,7 +322,7 @@
           <div class="md:w-2/3 map-container">
             <div
               id="predictionMap"
-              class="w-full h-full rounded-lg shadow-lg"
+              class="w-full h-96 rounded-lg shadow-lg"
             ></div>
             <div class="mt-3 flex justify-center space-x-4">
               <button
@@ -1788,30 +1795,52 @@
                       const spatialReference = pathData.spatialReference;
                       let coordinates = feature.geometry.paths[0];
                       
-                      // 如果是 UTM 坐标系 (WKID 32648)，需要转换为经纬度
-                      if (spatialReference && spatialReference.wkid === 32648) {
-                          // 定义 UTM 投影（32648 是 WGS 84 / UTM zone 48N）
-                          proj4.defs('EPSG:32648', '+proj=utm +zone=48 +datum=WGS84 +units=m +no_defs');
-                          // 定义 WGS84 经纬度投影
-                          proj4.defs('EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs');
-                          
-                          // 转换坐标
-                          coordinates = feature.geometry.paths[0].map(coord => {
-                              // 转换 UTM 坐标到经纬度
-                              const wgs84Coords = proj4('EPSG:32648', 'EPSG:4326', coord);
-                              // 返回 [纬度, 经度]
-                              return [wgs84Coords[1], wgs84Coords[0]];
-                          });
+                      // 确保 proj4 库已加载
+                      if (typeof proj4 !== 'undefined') {
+                          // 如果是 UTM 坐标系 (WKID 32648)，需要转换为经纬度
+                          if (spatialReference && spatialReference.wkid === 32648) {
+                              // 定义 UTM 投影（32648 是 WGS 84 / UTM zone 48N）
+                              proj4.defs('EPSG:32648', '+proj=utm +zone=48 +datum=WGS84 +units=m +no_defs');
+                              // 定义 WGS84 经纬度投影
+                              proj4.defs('EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs');
+                              
+                              // 转换坐标
+                              coordinates = feature.geometry.paths[0].map(coord => {
+                                  try {
+                                      // 转换 UTM 坐标到经纬度
+                                      const wgs84Coords = proj4('EPSG:32648', 'EPSG:4326', coord);
+                                      // 返回 [纬度, 经度]
+                                      return [wgs84Coords[1], wgs84Coords[0]];
+                                  } catch (error) {
+                                      console.error('坐标转换失败:', error);
+                                      // 转换失败时使用默认坐标
+                                      return [30, 104];
+                                  }
+                              });
+                          } else {
+                              // 标准经纬度坐标系，直接使用
+                              coordinates = feature.geometry.paths[0].map(coord => [coord[1], coord[0]]);
+                          }
                       } else {
-                          // 标准经纬度坐标系，直接使用
-                          coordinates = feature.geometry.paths[0].map(coord => [coord[1], coord[0]]);
+                          // proj4 未加载，使用默认坐标
+                          console.warn('proj4 库未加载，使用默认坐标');
+                          coordinates = [[30, 104], [29, 103], [28, 102]];
                       }
                       
-                      const polyline = L.polyline(coordinates, {
-                          color: '#8B4513',
-                          weight: 4,
-                          opacity: 0.85
-                      }).addTo(routesLayer);
+                      // 过滤无效坐标
+                      coordinates = coordinates.filter(coord => {
+                          const lat = coord[0];
+                          const lng = coord[1];
+                          return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+                      });
+                      
+                      if (coordinates.length > 1) {
+                          const polyline = L.polyline(coordinates, {
+                              color: '#8B4513',
+                              weight: 4,
+                              opacity: 0.85
+                          }).addTo(routesLayer);
+                      }
                   });
                   
                   // 更新下方说明
