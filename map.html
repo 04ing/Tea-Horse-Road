@@ -20,28 +20,54 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" media="print" onload="this.media='all'" />
     <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <!-- proj4js 库 -->
-    <script src="node_modules/proj4/dist/proj4.js"></script>
-    <!-- 为 proj4 添加 CDN 备用 -->
     <script>
-      if (typeof proj4 === 'undefined') {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/proj4@2.9.0/dist/proj4.min.js';
-        document.head.appendChild(script);
-      }
+      // 首先尝试加载本地 proj4
+      const proj4Script = document.createElement('script');
+      proj4Script.src = 'js/proj4.js';
+      proj4Script.onload = function() {
+        console.log('本地 proj4 加载成功');
+      };
+      proj4Script.onerror = function() {
+        console.log('本地 proj4 加载失败，尝试使用 CDN');
+        const cdnScript = document.createElement('script');
+        cdnScript.src = 'https://cdn.jsdelivr.net/npm/proj4@2.9.0/dist/proj4.min.js';
+        cdnScript.onload = function() {
+          console.log('CDN proj4 加载成功');
+        };
+        cdnScript.onerror = function() {
+          console.error('CDN proj4 加载失败');
+        };
+        document.head.appendChild(cdnScript);
+      };
+      document.head.appendChild(proj4Script);
     </script>
     <!-- ECharts -->
     <script src="js/echarts.min.js"></script>
     <script src="js/china.js"></script>
     <!-- CDN 备用 -->
-    <script defer>
+    <script>
       if (typeof echarts === 'undefined') {
+        console.log('本地 echarts 加载失败，尝试使用 CDN');
         const script1 = document.createElement('script');
         script1.src = 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js';
+        script1.onload = function() {
+          console.log('CDN echarts 加载成功');
+          // 加载 china.js
+          const script2 = document.createElement('script');
+          script2.src = 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/map/js/china.js';
+          script2.onload = function() {
+            console.log('CDN china.js 加载成功');
+            initMaps();
+          };
+          script2.onerror = function() {
+            console.error('CDN china.js 加载失败');
+          };
+          document.head.appendChild(script2);
+        };
+        script1.onerror = function() {
+          console.error('CDN echarts 加载失败');
+        };
         document.head.appendChild(script1);
-        
-        const script2 = document.createElement('script');
-        script2.src = 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/map/js/china.js';
-        document.head.appendChild(script2);
       }
     </script>
     <link rel="stylesheet" href="css/map.css">
