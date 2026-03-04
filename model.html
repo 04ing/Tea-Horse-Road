@@ -15,7 +15,7 @@
         
         .params-setting-container {
             position: absolute;
-            top: 10px;
+            top: 90px;
             left: 10px;
             z-index: 1000;
             background-color: rgba(255, 255, 255, 0.8);
@@ -96,10 +96,10 @@
 		}
             });
             
-            // 调整时间轴位置，上移一些
+            // 调整时间轴位置，确保在页面底部但不被任务栏挡住
             if (viewer.timeline) {
                 var timeline = viewer.timeline.container;
-                timeline.style.bottom = '80px';
+                timeline.style.bottom = '120px';
             }
             viewer.scenePromise.then(function (scene) {
                 init(SuperMap3D, scene, viewer);
