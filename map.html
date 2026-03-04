@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>茶马古道传统村落的时空演化</title>
+    <title>茶马古道传统居民点的时空演化</title>
     <!-- 预加载关键资源 -->
     <link rel="preload" href="js/echarts.min.js" as="script">
     <link rel="preload" href="js/china.js" as="script">
@@ -94,7 +94,7 @@
          茶马古道的空间分析
         </h2>
         <p class="text-lg md:text-2xl drop-shadow-lg">
-          茶马古道传统村落的时空演化地图故事
+          茶马古道传统居民点的时空演化地图故事
         </p>
       </div>
     </div>
@@ -121,10 +121,10 @@
       <!-- 地图故事引入 -->
       <div class="story-block font-kaiti text-lg text-dark">
         <p>
-          茶马古道，承载着滇南千年商旅的足迹。马帮铃声、茶香古韵、村落星罗棋布，串联起山川与人文的壮丽画卷。每一条古道、每一个村落，都是历史的见证者，也是时空演化的主角。
+          茶马古道，承载着滇南千年商旅的足迹。马帮铃声、茶香古韵、居民点星罗棋布，串联起山川与人文的壮丽画卷。每一条古道、每一个居民点，都是历史的见证者，也是时空演化的主角。
         </p>
         <p class="mt-2">
-          本图谱以GIS与空间分析为工具，讲述茶马古道沿线村落的分布、集聚、变迁与未来。让我们一起穿越时空，探寻古道上的村落故事。
+          本图谱以GIS与空间分析为工具，讲述茶马古道沿线居民点的分布、集聚、变迁与未来。让我们一起穿越时空，探寻古道上的居民点故事。
         </p>
       </div>
 
@@ -133,28 +133,28 @@
         <div class="flex flex-col md:flex-row gap-6">
           <div class="md:w-1/3">
             <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
-              村落分布概览
+              居民点分布概览
             </h2>
             <p class="text-lg mb-4 font-kaiti">
-              沿着茶马古道，村落如珍珠般散落于滇西、川藏的山水之间。主线与支线交织，见证着商贸、文化与迁徙的历史。
+              沿着茶马古道，居民点如珍珠般散落于滇西、川藏的山水之间。主线与支线交织，见证着商贸、文化与迁徙的历史。
             </p>
             <div class="bg-white p-4 rounded-lg shadow-lg">
               <h3 class="font-bold mb-2 text-primary">图层说明</h3>
               <p class="text-sm text-gray-600 mb-1">
-                点击按钮切换地图图层，体验古今村落与古道主线的空间关系。
+                点击按钮切换地图图层，体验古今居民点与古道主线的空间关系。
               </p>
               <div class="flex space-x-2">
                 <button
                   class="px-3 py-1 btn-theme rounded"
                   onclick="switchLayer('ancient')"
                 >
-                  古代村落
+                  古代居民点
                 </button>
                 <button
                   class="px-3 py-1 btn-theme rounded"
                   onclick="switchLayer('modern')"
                 >
-                  现代村落
+                  现代居民点
                 </button>
                 <button
                   class="px-3 py-1 btn-theme rounded"
@@ -188,14 +188,14 @@
               空间集聚性分析
             </h2>
             <p class="text-lg mb-4 font-kaiti">
-              村落分布并非均匀，热点多聚于交通枢纽与河谷，冷点则隐于高山深处。空间自相关分析揭示了村落集聚的地理逻辑。
+              居民点分布并非均匀，热点多聚于交通枢纽与河谷，冷点则隐于高山深处。空间自相关分析揭示了居民点集聚的地理逻辑。
             </p>
             <div class="bg-white p-4 rounded-lg shadow-lg mb-4">
               <h3 class="font-bold mb-2 text-primary">集聚类型划分</h3>
               <ul class="list-disc pl-5 space-y-1 font-kaiti">
                 <li>高-高集聚（热点）：如大理古城周边、丽江束河古镇区域</li>
                 <li>低-低集聚（冷点）：高海拔山区及交通闭塞区域</li>
-                <li>随机分布区：古道支线末端的零星村落</li>
+                <li>随机分布区：古道支线末端的零星居民点</li>
               </ul>
               <p class="mt-2 text-sm text-gray-700">
                 每一个集聚区，都是茶马古道故事的舞台。
@@ -226,7 +226,7 @@
               影响因素关联
             </h2>
             <p class="text-lg mb-4 font-kaiti">
-              村落的兴衰，既受自然环境眷顾，也因交通与经济而变迁。空间回归与PCA分析，揭示了村落分布背后的多重驱动力。
+              居民点的兴衰，既受自然环境眷顾，也因交通与经济而变迁。空间回归与PCA分析，揭示了居民点分布背后的多重驱动力。
             </p>
             <div class="space-y-4">
               <div class="bg-accent p-3 rounded">
@@ -244,7 +244,7 @@
                 <p>历史贸易节点等级、周边资源（茶叶/马匹）分布</p>
               </div>
               <p class="mt-2 text-sm text-gray-700">
-                村落的选择，是人与自然、交通与经济的智慧结晶。
+                居民点的选择，是人与自然、交通与经济的智慧结晶。
               </p>
             </div>
           </div>
@@ -277,7 +277,7 @@
               时空演化历程
             </h2>
             <p class="text-lg mb-4 font-kaiti">
-              从唐到清代，村落分布随古道兴衰而变迁。每一次迁徙、每一次集聚，都是历史的回响。
+              从唐到清代，居民点分布随古道兴衰而变迁。每一次迁徙、每一次集聚，都是历史的回响。
             </p>
             <div class="relative">
               <input
@@ -329,7 +329,7 @@
               未来分布预测
             </h2>
             <p class="text-lg mb-4 font-kaiti">
-              2030年，茶马古道上的村落将如何演变？MaxEnt模型结合地形保护与交通规划，描绘出未来的空间格局。
+              2030年，茶马古道上的居民点将如何演变？MaxEnt模型结合地形保护与交通规划，描绘出未来的空间格局。
             </p>
             <div class="bg-white p-4 rounded-lg shadow-lg">
               <h3 class="font-bold mb-2 text-primary">预测结论</h3>
@@ -337,11 +337,11 @@
                 <li>
                   现有热点区域（如大理、丽江）将持续集聚，成为新一代文化与旅游中心。
                 </li>
-                <li>距现代公路&lt;3km的村落有扩张潜力，或将成为新兴聚落带。</li>
-                <li>生态保护区内村落将维持现状，守护自然与人文的和谐。</li>
+                <li>距现代公路&lt;3km的居民点有扩张潜力，或将成为新兴聚落带。</li>
+                <li>生态保护区内居民点将维持现状，守护自然与人文的和谐。</li>
               </ul>
               <p class="mt-2 text-sm text-gray-700">
-                未来的村落，不仅是历史的延续，更是生态与发展的平衡点。
+                未来的居民点，不仅是历史的延续，更是生态与发展的平衡点。
               </p>
             </div>
           </div>
@@ -411,7 +411,7 @@
             data: [],
           },
           {
-            name: "古代村落",
+            name: "古代居民点",
             type: "scatter",
             coordinateSystem: "geo",
             data: [], // 数据将从 JSON 文件加载
@@ -423,7 +423,7 @@
             }
           },
           {
-            name: "现代村落",
+            name: "现代居民点",
             type: "scatter",
             coordinateSystem: "geo",
             data: [], // 数据将从 JSON 文件加载
@@ -722,7 +722,7 @@
         // 检查本地存储缓存
         const hasCachedData = checkLocalStorage();
         
-        // 1. 村落分布地图
+        // 1. 居民点分布地图
         if (document.getElementById("overviewMap")) {
           overviewMap = echarts.init(document.getElementById("overviewMap"));
           
@@ -749,13 +749,13 @@
             }
             routeData = dataCache.route;
             
-            // 提取古代村落数据
+            // 提取古代居民点数据
             if (!dataCache.ancientVillages) {
               dataCache.ancientVillages = ancientData.villages;
             }
             ancientVillagesData = dataCache.ancientVillages;
             
-            // 提取现代村落数据
+            // 提取现代居民点数据
             if (!dataCache.modernVillages) {
               dataCache.modernVillages = modernData.villages;
             }
@@ -1349,7 +1349,7 @@
               moranIScatter.setOption({
                 title: { text: "Moran's I空间自相关散点图", left: "center", top: 10 },
                 xAxis: { name: "空间权重", min: -1, max: 1 },
-                yAxis: { name: "村落属性值", min: -1, max: 1 },
+                yAxis: { name: "居民点属性值", min: -1, max: 1 },
                 series: [
                   {
                     type: "scatter",
@@ -1377,7 +1377,7 @@
                 },
                 series: [
                   {
-                    name: "热点村落",
+                    name: "热点居民点",
                     type: "scatter",
                     coordinateSystem: "geo",
                     data: [
@@ -1391,7 +1391,7 @@
                     itemStyle: { color: "#FF5722" },
                   },
                   {
-                    name: "冷点村落",
+                    name: "冷点居民点",
                     type: "scatter",
                     coordinateSystem: "geo",
                     data: [
@@ -1690,7 +1690,7 @@
             });
         }
 
-        // 4. 时空演化历程（随时间变化的村落分布地图）
+        // 4. 时空演化历程（随时间变化的居民点分布地图）
         if (document.getElementById("evolutionMap")) {
           // 朝代数据配置
           const dynasties = {
@@ -1708,7 +1708,7 @@
               'tang': `${dynasties.tang.name}（${dynasties.tang.year}）：茶马古道初步形成，主要为唐蕃古道，以长安为起点，连接中原与西藏`,
               'song': `${dynasties.song.name}（${dynasties.song.year}）：茶马互市制度确立，茶马古道进一步发展，形成多条支线`,
               'ming': `${dynasties.ming.name}（${dynasties.ming.year}）：茶马古道繁荣发展，形成以川藏、滇藏为主线的网络`,
-              'qing': `${dynasties.qing.name}（${dynasties.qing.year}）：茶马古道鼎盛时期，贸易规模扩大，沿线村落繁荣`
+              'qing': `${dynasties.qing.name}（${dynasties.qing.year}）：茶马古道鼎盛时期，贸易规模扩大，沿线居民点繁荣`
           };
           
           // 标记和路线图层组
@@ -2077,7 +2077,7 @@
         }
       }
 
-      // 存储加载的村落数据
+      // 存储加载的居民点数据
       let ancientVillagesData = [];
       let modernVillagesData = [];
 
@@ -2087,11 +2087,11 @@
         // 使用保存的路线数据
         option.series[0].data = routeData;
         if (type === "ancient") {
-          // 只显示古代村落和主线
+          // 只显示古代居民点和主线
           option.series[1].data = ancientVillagesData;
           option.series[2].data = [];
         } else if (type === "modern") {
-          // 只显示现代村落和主线
+          // 只显示现代居民点和主线
           option.series[1].data = [];
           option.series[2].data = modernVillagesData;
         } else if (type === "road") {
