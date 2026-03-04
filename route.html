@@ -991,9 +991,9 @@
                     }
                     
                     htmlContent += `
-                        <li class="${typeClass}">
-                            <strong>${name}</strong> (${typeText})
-                            <span class="coordinates">经度: ${coordinates[0].toFixed(4)}, 纬度: ${coordinates[1].toFixed(4)}</span>
+                        <li class="city-item ${typeClass}" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}])">
+                            <div class="city-name">${name}</div>
+                            <div class="city-coordinates">经度: ${coordinates[0].toFixed(4)}, 纬度: ${coordinates[1].toFixed(4)}</div>
                         </li>
                     `;
                 } catch (error) {
@@ -1754,9 +1754,9 @@
                     }
                     
                     htmlContent += `
-                        <li class="${typeClass}">
-                            <strong>${name}</strong> (${typeText}) - 宋代
-                            <span class="coordinates">经度: ${coordinates[0].toFixed(4)}, 纬度: ${coordinates[1].toFixed(4)}</span>
+                        <li class="city-item ${typeClass}" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}])">
+                            <div class="city-name">${name} (${typeText}) - 宋代</div>
+                            <div class="city-coordinates">经度: ${coordinates[0].toFixed(4)}, 纬度: ${coordinates[1].toFixed(4)}</div>
                         </li>
                     `;
                 } catch (error) {
