@@ -130,17 +130,17 @@
 }
 
 .dropdown-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: #8B4513;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
-    display: none;
-    min-width: 120px;
-    z-index: 1001;
-    margin-top: 5px;
-}
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: #8B4513;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+        display: none;
+        min-width: 120px;
+        z-index: 9999;
+        margin-top: 5px;
+    }
 
 .dropdown-item {
     display: block;
