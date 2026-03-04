@@ -1954,7 +1954,7 @@
                     }
                     
                     // 添加到城市列表
-                    htmlContent += `<li class="city-item ${(name === '西安' || name === '雅安' || name === '普洱') ? 'city-start' : (name === '拉萨' ? 'city-end' : 'city-node')}" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}], ${JSON.stringify(attributes).replace(/'/g, "&apos;")})">
+                    htmlContent += `<li class="city-item ${(name === '西安' || name === '雅安' || name === '普洱') ? 'city-start' : (name === '拉萨' ? 'city-end' : 'city-node')}" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}])">
                         <div class="city-name">${name}</div>
                         <div class="city-coordinates">(${coordinates[0].toFixed(4)}, ${coordinates[1].toFixed(4)})</div>
                     </li>`;
@@ -2156,7 +2156,7 @@
                     }
                     
                     // 添加到城市列表
-                    htmlContent += `<li class="city-item ${(name === '西安' || name === '武夷山' || name === '雅安' || name === '普洱') ? 'city-start' : ((name === '拉萨' || name === '密支那' || name === '乌兰察布') ? 'city-end' : 'city-node')}" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}], ${JSON.stringify(attributes).replace(/'/g, "&apos;")})">
+                    htmlContent += `<li class="city-item ${(name === '西安' || name === '武夷山' || name === '雅安' || name === '普洱') ? 'city-start' : ((name === '拉萨' || name === '密支那' || name === '乌兰察布') ? 'city-end' : 'city-node')}" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}])">
                         <div class="city-name">${name}</div>
                         <div class="city-coordinates">(${coordinates[0].toFixed(4)}, ${coordinates[1].toFixed(4)})</div>
                     </li>`;
@@ -2325,7 +2325,7 @@
                     }
                     
                     // 添加到节点列表
-                    htmlContent += `<li class="city-item city-spread" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}], ${JSON.stringify(attributes).replace(/'/g, "&apos;")})">
+                    htmlContent += `<li class="city-item city-spread" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}])">
                         <div class="city-name">${name}</div>
                         <div class="city-coordinates">(${coordinates[0].toFixed(4)}, ${coordinates[1].toFixed(4)})</div>
                     </li>`;
