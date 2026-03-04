@@ -1642,6 +1642,9 @@
                     }
                 });
                 
+                // 更新城市数据
+                citiesData = songCities.features;
+                
                 // 显示宋代城市
                 displaySongCities(songCities.features);
                 
@@ -1849,6 +1852,9 @@
                     }
                 });
                 
+                // 更新城市数据
+                citiesData = mingCities.features;
+                
                 // 显示明代城市
                 displayMingCities(mingCities.features);
                 
@@ -2051,6 +2057,9 @@
                     }
                 });
                 
+                // 更新城市数据
+                citiesData = qingCities.features;
+                
                 // 显示清代城市
                 displayQingCities(qingCities.features);
                 
@@ -2239,6 +2248,9 @@
                 if (!spreadNodes || !spreadNodes.features || spreadNodes.features.length === 0) {
                     throw new Error('无法加载茶叶传播节点数据或数据为空');
                 }
+                
+                // 更新城市数据
+                citiesData = spreadNodes.features;
                 
                 // 显示茶叶传播节点
                 displaySpreadNodes(spreadNodes.features);
