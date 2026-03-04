@@ -814,29 +814,16 @@
             console.log(`显示城市信息: ${name}，坐标: ${coordinates}`);
 
             // 获取城市的作用和节点角信息
-            // 这里我们需要根据实际数据结构调整，以下为示例实现
             var cityRole = '暂无信息';
             var nodeAngle = '暂无信息';
             
-            // 尝试根据城市名称推断一些基本信息
-            if (name === '西安') {
-                cityRole = '起点城市，中原文化中心';
-                nodeAngle = '重要交通枢纽';
-            } else if (name === '雅安' || name === '普洱') {
-                cityRole = '茶叶产地，贸易起点';
-                nodeAngle = '商品供应节点';
-            } else if (name === '拉萨') {
-                cityRole = '终点城市，文化交流中心';
-                nodeAngle = '文化传播节点';
-            } else if (name === '乌兰察布') {
-                cityRole = '草原贸易中心';
-                nodeAngle = '北方贸易节点';
-            } else if (name === '密支那') {
-                cityRole = '边境贸易城市';
-                nodeAngle = '国际商贸节点';
-            } else if (name === '武夷山') {
-                cityRole = '重要茶产区';
-                nodeAngle = '茶叶供应节点';
+            // 从城市数据中查找对应城市的信息
+            if (citiesData && citiesData.length > 0) {
+                var city = citiesData.find(c => c.attributes.城市 === name || c.attributes.城市名 === name);
+                if (city && city.attributes) {
+                    cityRole = city.attributes.作用 || '暂无信息';
+                    nodeAngle = city.attributes.节点角 || '暂无信息';
+                }
             }
 
             // 创建信息窗口，使用复古棕色配色方案
