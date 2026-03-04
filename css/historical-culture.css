@@ -438,21 +438,127 @@ body {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+    .header {
+        padding: 10px 15px;
+    }
+    
+    .header h1 {
+        font-size: 24px;
+    }
+    
+    .back-button {
+        padding: 6px 12px;
+        font-size: 14px;
+        left: 10px;
+    }
+    
     .toolbar {
         top: auto;
-        bottom: 20px;
+        bottom: 80px;
         left: 50%;
         transform: translateX(-50%);
         max-width: 90%;
+        padding: 10px;
+    }
+    
+    .toolbar h2 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    
+    .toolbar-section h3 {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .btn-group button {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .dynasties-switch button {
+        min-width: 70px;
+        padding: 6px 10px;
+        font-size: 11px;
     }
     
     .info-panel {
         width: 90%;
         right: 50%;
         transform: translateX(50%);
+        padding: 15px;
+        max-height: 300px;
+    }
+    
+    .info-panel h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
     }
     
     .timeline {
         width: 90%;
+        padding: 10px 15px;
+        gap: 10px;
+    }
+    
+    .timeline-label {
+        min-width: 60px;
+        font-size: 14px;
+    }
+    
+    .timeline-slider {
+        height: 5px;
+    }
+    
+    .timeline-slider::-webkit-slider-thumb {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .timeline-slider::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .photo-upload {
+        padding: 10px;
+    }
+    
+    .photo-comparison {
+        flex-direction: column;
+    }
+    
+    .photo-comparison img {
+        max-height: 120px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .toolbar {
+        max-width: 220px;
+        padding: 12px;
+    }
+    
+    .info-panel {
+        width: 280px;
+        padding: 15px;
+    }
+    
+    .timeline {
+        width: 80%;
+    }
+}
+
+@media (min-width: 1025px) {
+    .toolbar {
+        max-width: 250px;
+    }
+    
+    .info-panel {
+        width: 320px;
+    }
+    
+    .timeline {
+        width: 70%;
     }
 }

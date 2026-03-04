@@ -145,6 +145,113 @@
         padding: 10px 20px;
         font-size: 14px;
     }
+    
+    /* 调整面板位置和大小 */
+    .events-modal {
+        top: 100px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+    }
+    
+    .events-modal-content {
+        width: 100%;
+        max-height: 300px;
+    }
+    
+    .stats {
+        top: 420px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-height: 250px;
+    }
+    
+    .cities-container {
+        top: 100px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-height: 300px;
+    }
+    
+    .info-panel {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-width: 200px;
+    }
+    
+    /* 调整统计信息网格 */
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* 调整标题栏 */
+    .header {
+        padding: 15px;
+        margin-top: 70px;
+    }
+    
+    .header h1 {
+        font-size: 20px;
+    }
+    
+    .header p {
+        font-size: 14px;
+    }
+    
+    /* 调整导航按钮 */
+    .header-nav-buttons {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-top: 15px;
+        justify-content: center;
+    }
+    
+    /* 调整搜索容器 */
+    .search-container {
+        margin-bottom: 15px;
+    }
+    
+    #city-search {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+        display: block;
+    }
+}
+
+/* 适配平板设备 */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .events-modal-content {
+        width: clamp(250px, 30vw, 350px);
+    }
+    
+    .stats {
+        width: clamp(250px, 30vw, 350px);
+    }
+    
+    .cities-container {
+        width: clamp(250px, 30vw, 350px);
+    }
+}
+
+/* 适配大屏设备 */
+@media (min-width: 1025px) {
+    .events-modal-content {
+        width: clamp(300px, 25vw, 400px);
+    }
+    
+    .stats {
+        width: clamp(300px, 25vw, 400px);
+    }
+    
+    .cities-container {
+        width: clamp(300px, 25vw, 400px);
+    }
 }
 
 /* 底部时间轴容器样式 */
