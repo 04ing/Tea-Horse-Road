@@ -2,9 +2,11 @@
 .navbar {
     background: linear-gradient(90deg, #8B4513 0%, #A0522D 100%);
     box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 1000;
+    left: 0;
+    right: 0;
+    z-index: 9999;
     font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', serif;
 }
 
