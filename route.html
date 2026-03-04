@@ -1718,12 +1718,10 @@
                         zIndex: 101,
                         extData: {
                             name: name,
-                            type: (name === '西安' || name === '雅安' || name === '普洱') ? 'start' : (name === '拉萨' ? 'end' : 'normal')
+                            type: (name === '西安' || name === '雅安' || name === '普洱') ? 'start' : (name === '拉萨' ? 'end' : 'normal'),
+                            attributes: attributes
                         }
                     });
-                    
-                    // 存储城市信息
-                    marker.setExtData({ name: name });
                     
                     // 添加标记到地图
                     marker.setMap(map);
@@ -1731,7 +1729,7 @@
                     
                     // 添加点击事件
                     marker.on('click', function() {
-                        showCityInfo(name, coordinates);
+                        showCityInfo(name, coordinates, attributes);
                     });
                     
                     // 添加标签
@@ -1936,12 +1934,10 @@
                         zIndex: 101,
                         extData: {
                             name: name,
-                            type: (name === '西安' || name === '武夷山' || name === '雅安' || name === '普洱') ? 'start' : ((name === '拉萨' || name === '密支那' || name === '乌兰察布') ? 'end' : 'normal')
+                            type: (name === '西安' || name === '武夷山' || name === '雅安' || name === '普洱') ? 'start' : ((name === '拉萨' || name === '密支那' || name === '乌兰察布') ? 'end' : 'normal'),
+                            attributes: attributes
                         }
                     });
-                    
-                    // 存储城市信息
-                    marker.setExtData({ name: name });
                     
                     // 添加标记到地图
                     marker.setMap(map);
@@ -1949,7 +1945,7 @@
                     
                     // 添加点击事件
                     marker.on('click', function() {
-                        showCityInfo(name, coordinates);
+                        showCityInfo(name, coordinates, attributes);
                     });
                     
                     // 添加标签
@@ -1958,7 +1954,7 @@
                     }
                     
                     // 添加到城市列表
-                    htmlContent += `<li class="city-item ${(name === '西安' || name === '雅安' || name === '普洱') ? 'city-start' : (name === '拉萨' ? 'city-end' : 'city-node')}" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}])">
+                    htmlContent += `<li class="city-item ${(name === '西安' || name === '雅安' || name === '普洱') ? 'city-start' : (name === '拉萨' ? 'city-end' : 'city-node')}" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}], ${JSON.stringify(attributes).replace(/'/g, "&apos;")})">
                         <div class="city-name">${name}</div>
                         <div class="city-coordinates">(${coordinates[0].toFixed(4)}, ${coordinates[1].toFixed(4)})</div>
                     </li>`;
@@ -2140,12 +2136,10 @@
                         zIndex: 101,
                         extData: {
                             name: name,
-                            type: (index === 0 || name === '紫阳' || name === '雅安') ? 'start' : (name === '拉萨' ? 'end' : 'normal')
+                            type: (index === 0 || name === '紫阳' || name === '雅安') ? 'start' : (name === '拉萨' ? 'end' : 'normal'),
+                            attributes: attributes
                         }
                     });
-                    
-                    // 存储城市信息
-                    marker.setExtData({ name: name });
                     
                     // 添加标记到地图
                     marker.setMap(map);
@@ -2153,7 +2147,7 @@
                     
                     // 添加点击事件
                     marker.on('click', function() {
-                        showCityInfo(name, coordinates);
+                        showCityInfo(name, coordinates, attributes);
                     });
                     
                     // 添加标签
@@ -2162,7 +2156,7 @@
                     }
                     
                     // 添加到城市列表
-                    htmlContent += `<li class="city-item ${(name === '西安' || name === '武夷山' || name === '雅安' || name === '普洱') ? 'city-start' : ((name === '拉萨' || name === '密支那' || name === '乌兰察布') ? 'city-end' : 'city-node')}" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}])">
+                    htmlContent += `<li class="city-item ${(name === '西安' || name === '武夷山' || name === '雅安' || name === '普洱') ? 'city-start' : ((name === '拉萨' || name === '密支那' || name === '乌兰察布') ? 'city-end' : 'city-node')}" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}], ${JSON.stringify(attributes).replace(/'/g, "&apos;")})">
                         <div class="city-name">${name}</div>
                         <div class="city-coordinates">(${coordinates[0].toFixed(4)}, ${coordinates[1].toFixed(4)})</div>
                     </li>`;
@@ -2311,12 +2305,10 @@
                         zIndex: 101,
                         extData: {
                             name: name,
-                            type: 'spread'
+                            type: 'spread',
+                            attributes: attributes
                         }
                     });
-                    
-                    // 存储节点信息
-                    marker.setExtData({ name: name });
                     
                     // 添加标记到地图
                     marker.setMap(map);
@@ -2324,7 +2316,7 @@
                     
                     // 添加点击事件
                     marker.on('click', function() {
-                        showCityInfo(name, coordinates);
+                        showCityInfo(name, coordinates, attributes);
                     });
                     
                     // 添加标签
@@ -2333,7 +2325,7 @@
                     }
                     
                     // 添加到节点列表
-                    htmlContent += `<li class="city-item city-spread" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}])">
+                    htmlContent += `<li class="city-item city-spread" onclick="showCityInfo('${name}', [${coordinates[0]}, ${coordinates[1]}], ${JSON.stringify(attributes).replace(/'/g, "&apos;")})">
                         <div class="city-name">${name}</div>
                         <div class="city-coordinates">(${coordinates[0].toFixed(4)}, ${coordinates[1].toFixed(4)})</div>
                     </li>`;
