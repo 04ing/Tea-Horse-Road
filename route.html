@@ -336,7 +336,7 @@
                     // 收集所有城市数据用于搜索
                     cities.features.forEach(city => {
                         if (city.geometry && city.attributes) {
-                            var name = city.attributes.城市 || `城市`;
+                            var name = city.attributes.城市 || city.attributes.城市名 || `城市`;
                             var coordinates = [city.geometry.x, city.geometry.y];
                             allCities.push({ name, coordinates });
                         }
@@ -569,7 +569,7 @@
                     var x = city.geometry.x;
                     var y = city.geometry.y;
                     var attributes = city.attributes;
-                    var name = attributes.城市 || '';
+                    var name = attributes.城市 || attributes.城市名 || '';
                     var coordinates = [x, y];
                     
                     // 检查坐标是否有效（非NaN且在合理范围内）
@@ -954,7 +954,7 @@
                     var x = city.geometry.x;
                     var y = city.geometry.y;
                     var attributes = city.attributes;
-                    var name = attributes.城市 || '';
+                    var name = attributes.城市 || attributes.城市名 || '';
                     var coordinates = [x, y];
                     
                     // 确定点的类型（是否是起点或终点）
