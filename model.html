@@ -8,7 +8,44 @@
         content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
     <title>茶马古道模型展示</title>
     <link href="./Build/SuperMap3D/Widgets/widgets.css" rel="stylesheet">
-    <link href="./css/pretty.css" rel="stylesheet">
+    <style>
+        .params-setting-container {
+            position: absolute;
+            top: 80px;
+            left: 10px;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .params-setting-anchor {
+            cursor: pointer;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .params-setting {
+            display: block;
+        }
+        
+        .params-setting-hide {
+            display: none;
+        }
+        
+        .param-item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .param-item label {
+            margin-right: 10px;
+            font-size: 14px;
+        }
+    </style>
     <script src="./js/jquery.min.js"></script>
     <script src="./js/config.js"></script>
     <script src="./js/supermap/SuperMap.Include.js"></script>
@@ -20,7 +57,7 @@
     <script src="js/navbar.js"></script>
     
     <div id="Container"></div>
-    <div class="params-setting-container" style="top: 80px; left: 10px;">
+    <div class="params-setting-container">
         <div class="params-setting-anchor" title="显示/隐藏参数面板"><span class="fui-expand"></span></div>
         <div class="params-setting">
             <div class="param-item">
