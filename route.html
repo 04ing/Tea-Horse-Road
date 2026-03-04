@@ -813,6 +813,7 @@
         // 显示城市信息
         function showCityInfo(name, coordinates, attributes) {
             console.log(`显示城市信息: ${name}，坐标: ${coordinates}`);
+            console.log(`传入的attributes:`, attributes);
 
             // 获取城市的作用和节点角信息
             var cityRole = '暂无信息';
@@ -820,18 +821,30 @@
             
             // 直接使用传入的attributes
             if (attributes) {
+                console.log(`使用传入的attributes`);
+                console.log(`attributes.作用:`, attributes.作用);
+                console.log(`attributes.节点角:`, attributes.节点角);
+                console.log(`attributes.结点:`, attributes.结点);
                 cityRole = attributes.作用 || '暂无信息';
                 nodeAngle = attributes.节点角 || attributes.结点 || '暂无信息';
             } else {
                 // 如果没有传入attributes，尝试从城市数据中查找
+                console.log(`没有传入attributes，尝试从citiesData中查找`);
                 if (citiesData && citiesData.length > 0) {
+                    console.log(`citiesData长度: ${citiesData.length}`);
                     var city = citiesData.find(c => c.attributes.城市 === name || c.attributes.城市名 === name);
+                    console.log(`找到的city:`, city);
                     if (city && city.attributes) {
+                        console.log(`city.attributes.作用:`, city.attributes.作用);
+                        console.log(`city.attributes.节点角:`, city.attributes.节点角);
+                        console.log(`city.attributes.结点:`, city.attributes.结点);
                         cityRole = city.attributes.作用 || '暂无信息';
                         nodeAngle = city.attributes.节点角 || city.attributes.结点 || '暂无信息';
                     }
                 }
             }
+            console.log(`最终显示的cityRole: ${cityRole}`);
+            console.log(`最终显示的nodeAngle: ${nodeAngle}`);
 
             // 创建信息窗口，使用复古棕色配色方案
             var infoWindow = new AMap.InfoWindow({
