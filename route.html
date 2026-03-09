@@ -117,6 +117,8 @@
         </div>
     </div>
 
+
+
     <div class="footer">
         <p>茶马古道历史文化研究 | © 2025 历史地理信息系统</p>
     </div>
@@ -2580,6 +2582,24 @@
             var closeNoteBtn = document.getElementById('closeNote');
             if (closeNoteBtn) closeNoteBtn.addEventListener('click', hideHistoricalNote);
             
+            // 为分享按钮添加事件监听器
+            var shareButton = document.getElementById('share-button');
+            if (shareButton) shareButton.addEventListener('click', showShareModal);
+            
+            // 为关闭分享模态框按钮添加事件监听器
+            var closeShareModalBtn = document.querySelector('.close-share-modal');
+            if (closeShareModalBtn) closeShareModalBtn.addEventListener('click', hideShareModal);
+            
+            // 点击模态框外部关闭
+            var shareModal = document.getElementById('share-modal');
+            if (shareModal) {
+                shareModal.addEventListener('click', function(event) {
+                    if (event.target === this) {
+                        hideShareModal();
+                    }
+                });
+            }
+            
             // 为横向时间轴按钮添加事件监听器
             var timelineItems = document.querySelectorAll('.horizontal-timeline-item');
             var activeDynasty = null;
@@ -3517,6 +3537,58 @@
                 console.error('UTM坐标转换失败:', error);
                 return null;
             }
+        }
+        
+        // 分享功能
+        function showShareModal() {
+            var shareModal = document.getElementById('share-modal');
+            var shareUrlInput = document.getElementById('share-url');
+            
+            // 设置分享链接为当前页面URL
+            var currentUrl = window.location.href;
+            shareUrlInput.value = currentUrl;
+            
+            // 显示分享模态框
+            shareModal.style.display = 'flex';
+        }
+        
+        function hideShareModal() {
+            var shareModal = document.getElementById('share-modal');
+            shareModal.style.display = 'none';
+        }
+        
+        function shareToWechat() {
+            // 微信分享 - 实际项目中需要集成微信JS-SDK
+            showLoadCompleteMessage('请使用微信扫描二维码分享');
+            // 这里可以生成分享二维码或跳转到微信分享界面
+        }
+        
+        function shareToQQ() {
+            // QQ分享
+            var shareUrl = window.location.href;
+            var shareTitle = '茶马古道历史路线信息';
+            var shareDesc = '探索茶马古道的历史文化和地理信息';
+            var qqShareUrl = `https://connect.qq.com/widget/shareqq/index.html?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(shareTitle)}&desc=${encodeURIComponent(shareDesc)}`;
+            window.open(qqShareUrl, '_blank', 'width=600,height=400');
+        }
+        
+        function shareToDouyin() {
+            // 抖音分享 - 实际项目中需要集成抖音SDK
+            showLoadCompleteMessage('请复制链接到抖音分享');
+            // 这里可以生成分享链接或跳转到抖音分享界面
+        }
+        
+        function shareToXiaohongshu() {
+            // 小红书分享 - 实际项目中需要集成小红书SDK
+            showLoadCompleteMessage('请复制链接到小红书分享');
+            // 这里可以生成分享链接或跳转到小红书分享界面
+        }
+        
+        function copyShareUrl() {
+            var shareUrlInput = document.getElementById('share-url');
+            shareUrlInput.select();
+            document.execCommand('copy');
+            showLoadCompleteMessage('链接已复制到剪贴板');
         }
     </script>
 
