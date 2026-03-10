@@ -15,6 +15,11 @@ if (!window.navbarScriptLoaded) {
                 return;
             }
             
+            // 显示加载动画
+            if (window.Loading) {
+                window.Loading.show();
+            }
+            
             fetch('navbar.html')
                 .then(response => response.text())
                 .then(data => {
@@ -40,10 +45,19 @@ if (!window.navbarScriptLoaded) {
                         initShareFunctionality();
                     } catch (error) {
                         console.error('处理导航栏内容失败:', error);
+                    } finally {
+                        // 隐藏加载动画
+                        if (window.Loading) {
+                            window.Loading.hide();
+                        }
                     }
                 })
                 .catch(error => {
                     console.error('加载导航栏失败:', error);
+                    // 隐藏加载动画
+                    if (window.Loading) {
+                        window.Loading.hide();
+                    }
                 });
         }
         
@@ -51,24 +65,28 @@ if (!window.navbarScriptLoaded) {
         function initNavbar() {
             const navbarToggle = document.getElementById('navbar-toggle');
             const navbarLinks = document.querySelector('.navbar-links');
+            const navbar = document.querySelector('.navbar');
             
             if (navbarToggle && navbarLinks) {
                 navbarToggle.addEventListener('click', function() {
                     navbarLinks.classList.toggle('active');
+                    navbarToggle.classList.toggle('active');
                 });
             }
             
             // 页面滚动时导航栏样式变化
             window.addEventListener('scroll', function() {
-                const navbar = document.querySelector('.navbar');
                 if (navbar) {
                     if (window.scrollY > 50) {
-                        navbar.style.boxShadow = '0 4px 12px rgba(139, 69, 19, 0.5)';
+                        navbar.classList.add('scrolled');
                     } else {
-                        navbar.style.boxShadow = '0 4px 12px rgba(139, 69, 19, 0.3)';
+                        navbar.classList.remove('scrolled');
                     }
                 }
             });
+            
+            // 初始化当前页面高亮
+            initActiveLink();
             
             // 登录/注册功能
             
@@ -136,7 +154,9 @@ if (!window.navbarScriptLoaded) {
                         border-radius: 5px;
                         font-size: 16px;
                         color: #8B4513;
+                        transition: all 0.3s ease;
                     ">
+                    <div id="login-email-error" style="color: red; font-size: 12px; margin-top: 5px; display: none;"></div>
                 `;
                 loginForm.appendChild(emailInput);
                 
@@ -151,7 +171,9 @@ if (!window.navbarScriptLoaded) {
                         border-radius: 5px;
                         font-size: 16px;
                         color: #8B4513;
+                        transition: all 0.3s ease;
                     ">
+                    <div id="login-password-error" style="color: red; font-size: 12px; margin-top: 5px; display: none;"></div>
                 `;
                 loginForm.appendChild(passwordInput);
                 
@@ -164,6 +186,53 @@ if (!window.navbarScriptLoaded) {
                     font-size: 14px;
                 `;
                 loginForm.appendChild(errorMessage);
+                
+                // 添加实时验证
+                const loginEmail = document.getElementById('login-email');
+                const loginEmailError = document.getElementById('login-email-error');
+                const loginPassword = document.getElementById('login-password');
+                const loginPasswordError = document.getElementById('login-password-error');
+                
+                if (loginEmail) {
+                    loginEmail.addEventListener('input', function() {
+                        const email = this.value;
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        
+                        if (email) {
+                            if (!emailRegex.test(email)) {
+                                loginEmailError.textContent = '请输入有效的邮箱地址';
+                                loginEmailError.style.display = 'block';
+                                this.style.borderColor = 'red';
+                            } else {
+                                loginEmailError.style.display = 'none';
+                                this.style.borderColor = '#F5D020';
+                            }
+                        } else {
+                            loginEmailError.style.display = 'none';
+                            this.style.borderColor = '#ddd';
+                        }
+                    });
+                }
+                
+                if (loginPassword) {
+                    loginPassword.addEventListener('input', function() {
+                        const password = this.value;
+                        
+                        if (password) {
+                            if (password.length < 6) {
+                                loginPasswordError.textContent = '密码长度至少为6位';
+                                loginPasswordError.style.display = 'block';
+                                this.style.borderColor = 'red';
+                            } else {
+                                loginPasswordError.style.display = 'none';
+                                this.style.borderColor = '#F5D020';
+                            }
+                        } else {
+                            loginPasswordError.style.display = 'none';
+                            this.style.borderColor = '#ddd';
+                        }
+                    });
+                }
                 
                 // 添加提交按钮
                 const submitButton = document.createElement('button');
@@ -289,7 +358,9 @@ if (!window.navbarScriptLoaded) {
                         border-radius: 5px;
                         font-size: 16px;
                         color: #8B4513;
+                        transition: all 0.3s ease;
                     ">
+                    <div id="register-username-error" style="color: red; font-size: 12px; margin-top: 5px; display: none;"></div>
                 `;
                 registerForm.appendChild(usernameInput);
                 
@@ -304,7 +375,9 @@ if (!window.navbarScriptLoaded) {
                         border-radius: 5px;
                         font-size: 16px;
                         color: #8B4513;
+                        transition: all 0.3s ease;
                     ">
+                    <div id="register-email-error" style="color: red; font-size: 12px; margin-top: 5px; display: none;"></div>
                 `;
                 registerForm.appendChild(emailInput);
                 
@@ -319,7 +392,9 @@ if (!window.navbarScriptLoaded) {
                         border-radius: 5px;
                         font-size: 16px;
                         color: #8B4513;
+                        transition: all 0.3s ease;
                     ">
+                    <div id="register-password-error" style="color: red; font-size: 12px; margin-top: 5px; display: none;"></div>
                 `;
                 registerForm.appendChild(passwordInput);
                 
@@ -334,7 +409,9 @@ if (!window.navbarScriptLoaded) {
                         border-radius: 5px;
                         font-size: 16px;
                         color: #8B4513;
+                        transition: all 0.3s ease;
                     ">
+                    <div id="register-confirm-password-error" style="color: red; font-size: 12px; margin-top: 5px; display: none;"></div>
                 `;
                 registerForm.appendChild(confirmPasswordInput);
                 
@@ -347,6 +424,117 @@ if (!window.navbarScriptLoaded) {
                     font-size: 14px;
                 `;
                 registerForm.appendChild(errorMessage);
+                
+                // 添加实时验证
+                const registerUsername = document.getElementById('register-username');
+                const registerUsernameError = document.getElementById('register-username-error');
+                const registerEmail = document.getElementById('register-email');
+                const registerEmailError = document.getElementById('register-email-error');
+                const registerPassword = document.getElementById('register-password');
+                const registerPasswordError = document.getElementById('register-password-error');
+                const registerConfirmPassword = document.getElementById('register-confirm-password');
+                const registerConfirmPasswordError = document.getElementById('register-confirm-password-error');
+                
+                if (registerUsername) {
+                    registerUsername.addEventListener('input', function() {
+                        const username = this.value;
+                        
+                        if (username) {
+                            if (username.length < 3) {
+                                registerUsernameError.textContent = '用户名长度至少为3位';
+                                registerUsernameError.style.display = 'block';
+                                this.style.borderColor = 'red';
+                            } else {
+                                registerUsernameError.style.display = 'none';
+                                this.style.borderColor = '#F5D020';
+                            }
+                        } else {
+                            registerUsernameError.style.display = 'none';
+                            this.style.borderColor = '#ddd';
+                        }
+                    });
+                }
+                
+                if (registerEmail) {
+                    registerEmail.addEventListener('input', function() {
+                        const email = this.value;
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        
+                        if (email) {
+                            if (!emailRegex.test(email)) {
+                                registerEmailError.textContent = '请输入有效的邮箱地址';
+                                registerEmailError.style.display = 'block';
+                                this.style.borderColor = 'red';
+                            } else {
+                                registerEmailError.style.display = 'none';
+                                this.style.borderColor = '#F5D020';
+                            }
+                        } else {
+                            registerEmailError.style.display = 'none';
+                            this.style.borderColor = '#ddd';
+                        }
+                    });
+                }
+                
+                if (registerPassword) {
+                    registerPassword.addEventListener('input', function() {
+                        const password = this.value;
+                        
+                        if (password) {
+                            if (password.length < 6) {
+                                registerPasswordError.textContent = '密码长度至少为6位';
+                                registerPasswordError.style.display = 'block';
+                                this.style.borderColor = 'red';
+                            } else {
+                                registerPasswordError.style.display = 'none';
+                                this.style.borderColor = '#F5D020';
+                            }
+                        } else {
+                            registerPasswordError.style.display = 'none';
+                            this.style.borderColor = '#ddd';
+                        }
+                    });
+                }
+                
+                if (registerConfirmPassword) {
+                    registerConfirmPassword.addEventListener('input', function() {
+                        const confirmPassword = this.value;
+                        const password = registerPassword ? registerPassword.value : '';
+                        
+                        if (confirmPassword) {
+                            if (confirmPassword !== password) {
+                                registerConfirmPasswordError.textContent = '两次输入的密码不一致';
+                                registerConfirmPasswordError.style.display = 'block';
+                                this.style.borderColor = 'red';
+                            } else {
+                                registerConfirmPasswordError.style.display = 'none';
+                                this.style.borderColor = '#F5D020';
+                            }
+                        } else {
+                            registerConfirmPasswordError.style.display = 'none';
+                            this.style.borderColor = '#ddd';
+                        }
+                    });
+                }
+                
+                // 当密码输入变化时，也检查确认密码
+                if (registerPassword && registerConfirmPassword) {
+                    registerPassword.addEventListener('input', function() {
+                        const password = this.value;
+                        const confirmPassword = registerConfirmPassword.value;
+                        
+                        if (confirmPassword) {
+                            if (confirmPassword !== password) {
+                                registerConfirmPasswordError.textContent = '两次输入的密码不一致';
+                                registerConfirmPasswordError.style.display = 'block';
+                                registerConfirmPassword.style.borderColor = 'red';
+                            } else {
+                                registerConfirmPasswordError.style.display = 'none';
+                                registerConfirmPassword.style.borderColor = '#F5D020';
+                            }
+                        }
+                    });
+                }
                 
                 // 添加提交按钮
                 const submitButton = document.createElement('button');
@@ -413,6 +601,7 @@ if (!window.navbarScriptLoaded) {
                 const email = document.getElementById('login-email').value;
                 const password = document.getElementById('login-password').value;
                 const errorElement = document.getElementById('login-error');
+                const submitButton = document.querySelector('#login-form button[type="submit"]');
                 
                 try {
                     // 验证表单数据
@@ -428,43 +617,65 @@ if (!window.navbarScriptLoaded) {
                         return;
                     }
                     
-                    // 从localStorage获取用户数据
-                    const users = JSON.parse(localStorage.getItem('users')) || [];
-                    
-                    // 查找用户
-                    const user = users.find(user => user.email === email);
-                    if (!user) {
-                        errorElement.textContent = '邮箱或密码错误';
-                        return;
+                    // 添加按钮加载状态
+                    if (window.Loading) {
+                        window.Loading.addButtonLoading(submitButton);
                     }
                     
-                    // 验证密码
-                    if (user.password !== password) {
-                        errorElement.textContent = '邮箱或密码错误';
-                        return;
-                    }
-                    
-                    // 生成模拟token
-                    const token = 'mock-token-' + Date.now();
-                    
-                    // 登录成功，保存token和用户信息
-                    localStorage.setItem('token', token);
-                    localStorage.setItem('user', JSON.stringify(user));
-                    
-                    // 更新UI
-                    updateUserUI(user);
-                    
-                    // 关闭登录模态框
-                    const loginContainer = document.getElementById('login-container');
-                    if (loginContainer) {
-                        document.body.removeChild(loginContainer);
-                    }
-                    
-                    // 显示成功消息
-                    alert('登录成功！');
+                    // 模拟网络请求延迟
+                    setTimeout(() => {
+                        try {
+                            // 从localStorage获取用户数据
+                            const users = JSON.parse(localStorage.getItem('users')) || [];
+                            
+                            // 查找用户
+                            const user = users.find(user => user.email === email);
+                            if (!user) {
+                                errorElement.textContent = '邮箱或密码错误';
+                                return;
+                            }
+                            
+                            // 验证密码
+                            if (user.password !== password) {
+                                errorElement.textContent = '邮箱或密码错误';
+                                return;
+                            }
+                            
+                            // 生成模拟token
+                            const token = 'mock-token-' + Date.now();
+                            
+                            // 登录成功，保存token和用户信息
+                            localStorage.setItem('token', token);
+                            localStorage.setItem('user', JSON.stringify(user));
+                            
+                            // 更新UI
+                            updateUserUI(user);
+                            
+                            // 关闭登录模态框
+                            const loginContainer = document.getElementById('login-container');
+                            if (loginContainer) {
+                                document.body.removeChild(loginContainer);
+                            }
+                            
+                            // 显示成功消息
+                            alert('登录成功！');
+                        } catch (error) {
+                            console.error('登录错误:', error);
+                            errorElement.textContent = '登录失败，请稍后重试';
+                        } finally {
+                            // 移除按钮加载状态
+                            if (window.Loading) {
+                                window.Loading.removeButtonLoading(submitButton);
+                            }
+                        }
+                    }, 1000);
                 } catch (error) {
                     console.error('登录错误:', error);
                     errorElement.textContent = '登录失败，请稍后重试';
+                    // 移除按钮加载状态
+                    if (window.Loading) {
+                        window.Loading.removeButtonLoading(submitButton);
+                    }
                 }
             }
             
@@ -475,6 +686,7 @@ if (!window.navbarScriptLoaded) {
                 const password = document.getElementById('register-password').value;
                 const confirmPassword = document.getElementById('register-confirm-password').value;
                 const errorElement = document.getElementById('register-error');
+                const submitButton = document.querySelector('#register-form button[type="submit"]');
                 
                 try {
                     // 验证表单数据
@@ -502,50 +714,72 @@ if (!window.navbarScriptLoaded) {
                         return;
                     }
                     
-                    // 从localStorage获取用户数据
-                    const users = JSON.parse(localStorage.getItem('users')) || [];
-                    
-                    // 检查邮箱是否已存在
-                    const existingUser = users.find(user => user.email === email);
-                    if (existingUser) {
-                        errorElement.textContent = '邮箱已存在';
-                        return;
+                    // 添加按钮加载状态
+                    if (window.Loading) {
+                        window.Loading.addButtonLoading(submitButton);
                     }
                     
-                    // 创建新用户
-                    const newUser = {
-                        id: 'user-' + Date.now(),
-                        username: username,
-                        email: email,
-                        password: password,
-                        role: 'user'
-                    };
-                    
-                    // 保存用户到localStorage
-                    users.push(newUser);
-                    localStorage.setItem('users', JSON.stringify(users));
-                    
-                    // 生成模拟token
-                    const token = 'mock-token-' + Date.now();
-                    
-                    // 注册成功，保存token和用户信息
-                    localStorage.setItem('token', token);
-                    localStorage.setItem('user', JSON.stringify(newUser));
-                    
-                    // 更新UI
-                    updateUserUI(newUser);
-                    
-                    // 关闭注册模态框
-                    const registerContainer = document.getElementById('register-container');
-                    if (registerContainer) {
-                        document.body.removeChild(registerContainer);
-                    }
-                    
-                    // 显示成功消息
-                    alert('注册成功！');
+                    // 模拟网络请求延迟
+                    setTimeout(() => {
+                        try {
+                            // 从localStorage获取用户数据
+                            const users = JSON.parse(localStorage.getItem('users')) || [];
+                            
+                            // 检查邮箱是否已存在
+                            const existingUser = users.find(user => user.email === email);
+                            if (existingUser) {
+                                errorElement.textContent = '邮箱已存在';
+                                return;
+                            }
+                            
+                            // 创建新用户
+                            const newUser = {
+                                id: 'user-' + Date.now(),
+                                username: username,
+                                email: email,
+                                password: password,
+                                role: 'user'
+                            };
+                            
+                            // 保存用户到localStorage
+                            users.push(newUser);
+                            localStorage.setItem('users', JSON.stringify(users));
+                            
+                            // 生成模拟token
+                            const token = 'mock-token-' + Date.now();
+                            
+                            // 注册成功，保存token和用户信息
+                            localStorage.setItem('token', token);
+                            localStorage.setItem('user', JSON.stringify(newUser));
+                            
+                            // 更新UI
+                            updateUserUI(newUser);
+                            
+                            // 关闭注册模态框
+                            const registerContainer = document.getElementById('register-container');
+                            if (registerContainer) {
+                                document.body.removeChild(registerContainer);
+                            }
+                            
+                            // 显示成功消息
+                            alert('注册成功！');
+                        } catch (error) {
+                            console.error('注册错误:', error);
+                            errorElement.textContent = '注册失败，请稍后重试';
+                        } finally {
+                            // 移除按钮加载状态
+                            if (window.Loading) {
+                                window.Loading.removeButtonLoading(submitButton);
+                            }
+                        }
+                    }, 1000);
                 } catch (error) {
                     console.error('注册错误:', error);
                     errorElement.textContent = '注册失败，请稍后重试';
+                    // 移除按钮加载状态
+                    if (window.Loading) {
+                        window.Loading.removeButtonLoading(submitButton);
+                    }
                 }
             }
             
@@ -670,6 +904,35 @@ if (!window.navbarScriptLoaded) {
             
             // 初始化用户认证功能
             initUserAuth();
+        }
+        
+        // 初始化当前页面高亮链接
+        function initActiveLink() {
+            const currentPath = window.location.pathname;
+            const navbarLinks = document.querySelectorAll('.navbar-link');
+            
+            navbarLinks.forEach(link => {
+                const linkPath = link.getAttribute('href');
+                if (currentPath.endsWith(linkPath)) {
+                    link.classList.add('active');
+                }
+                
+                // 添加平滑页面过渡效果
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetUrl = this.getAttribute('href');
+                    
+                    // 显示加载动画
+                    if (window.Loading) {
+                        window.Loading.show();
+                    }
+                    
+                    // 延迟跳转，让加载动画有时间显示
+                    setTimeout(() => {
+                        window.location.href = targetUrl;
+                    }, 300);
+                });
+            });
         }
         
         // 初始化分享功能

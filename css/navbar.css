@@ -8,6 +8,18 @@
     right: 0;
     z-index: 9999;
     font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', serif;
+    transition: all 0.3s ease;
+}
+
+/* 页面滚动时的导航栏样式 */
+.navbar.scrolled {
+    background: linear-gradient(90deg, #7A380F 0%, #8B4513 100%);
+    box-shadow: 0 6px 16px rgba(139, 69, 19, 0.6);
+    height: 70px;
+}
+
+.navbar.scrolled .navbar-container {
+    height: 70px;
 }
 
 .navbar-container {
@@ -18,6 +30,7 @@
     margin: 0 auto;
     padding: 0 20px;
     height: 80px;
+    transition: all 0.3s ease;
 }
 
 .navbar-brand {
@@ -26,11 +39,17 @@
     text-decoration: none;
     color: #F5D020;
     font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05);
 }
 
 .navbar-logo {
     font-size: 24px;
     letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .navbar-subtitle {
@@ -49,16 +68,18 @@
     text-decoration: none;
     font-size: 16px;
     font-weight: 500;
-    padding: 8px 12px;
-    border-radius: 4px;
+    padding: 10px 15px;
+    border-radius: 20px;
     transition: all 0.3s ease;
     position: relative;
+    overflow: hidden;
 }
 
 .navbar-link:hover {
     color: #F5D020;
-    background-color: rgba(245, 208, 32, 0.1);
-    transform: translateY(-2px);
+    background-color: rgba(245, 208, 32, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(245, 208, 32, 0.3);
 }
 
 .navbar-link::after {
@@ -67,12 +88,24 @@
     bottom: 0;
     left: 0;
     width: 0;
-    height: 2px;
+    height: 3px;
     background-color: #F5D020;
     transition: width 0.3s ease;
+    border-radius: 2px;
 }
 
 .navbar-link:hover::after {
+    width: 100%;
+}
+
+/* 当前页面高亮状态 */
+.navbar-link.active {
+    color: #F5D020;
+    background-color: rgba(245, 208, 32, 0.2);
+    box-shadow: 0 2px 8px rgba(245, 208, 32, 0.4);
+}
+
+.navbar-link.active::after {
     width: 100%;
 }
 
@@ -87,6 +120,11 @@
     cursor: pointer;
     padding: 0;
     z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.navbar-toggle:hover {
+    transform: scale(1.1);
 }
 
 .navbar-toggle-icon {
@@ -95,6 +133,19 @@
     background-color: #F5D020;
     border-radius: 1px;
     transition: all 0.3s ease;
+}
+
+/* 汉堡菜单动画 */
+.navbar-toggle.active .navbar-toggle-icon:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 6px);
+}
+
+.navbar-toggle.active .navbar-toggle-icon:nth-child(2) {
+    opacity: 0;
+}
+
+.navbar-toggle.active .navbar-toggle-icon:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -6px);
 }
 
 /* 登录/注册按钮样式 */
@@ -114,16 +165,19 @@
     color: #8B4513;
     border: none;
     padding: 8px 16px;
-    border-radius: 4px;
+    border-radius: 20px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', serif;
+    position: relative;
+    overflow: hidden;
 }
 
 .navbar-auth-button:hover {
     background-color: #F5F5DC;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(245, 208, 32, 0.4);
 }
 
 /* 下拉菜单样式 */
@@ -132,22 +186,35 @@
 }
 
 .dropdown-menu {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background-color: #8B4513;
-        border-radius: 4px;
-        box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
-        display: none;
-        min-width: 120px;
-        z-index: 9999;
-        margin-top: 5px;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #8B4513;
+    border-radius: 8px;
+    box-shadow: 0 6px 16px rgba(139, 69, 19, 0.4);
+    display: none;
+    min-width: 140px;
+    z-index: 9999;
+    margin-top: 8px;
+    overflow: hidden;
+    animation: dropdownFadeIn 0.3s ease;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
     }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 .dropdown-item {
     display: block;
     width: 100%;
-    padding: 10px 15px;
+    padding: 12px 20px;
     text-align: left;
     background: none;
     border: none;
@@ -155,11 +222,13 @@
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', serif;
+    position: relative;
 }
 
 .dropdown-item:hover {
-    background-color: rgba(245, 208, 32, 0.1);
+    background-color: rgba(245, 208, 32, 0.2);
     color: #F5D020;
+    transform: translateX(5px);
 }
 
 /* 分享功能样式 */
@@ -168,23 +237,26 @@
 }
 
 .navbar-share-button {
-    background-color: #8B4513;
-    color: #fff7e6;
+    background-color: #F5D020;
+    color: #8B4513;
     border: none;
-    padding: 8px 12px;
+    padding: 8px 16px;
     border-radius: 20px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     cursor: pointer;
     font-size: 14px;
+    font-weight: bold;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .navbar-share-button:hover {
-    background-color: #c8b08b;
-    color: #4b3f2f;
-    transform: translateY(-2px);
+    background-color: #F5F5DC;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(245, 208, 32, 0.4);
 }
 
 .share-modal {
@@ -199,6 +271,16 @@
     justify-content: center;
     z-index: 2000;
     display: none;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .share-modal-content {
@@ -208,6 +290,18 @@
     width: 90%;
     max-width: 400px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .share-modal-header {
@@ -230,6 +324,12 @@
     font-size: 24px;
     cursor: pointer;
     color: #8B4513;
+    transition: all 0.3s ease;
+}
+
+.close-share-modal:hover {
+    transform: rotate(90deg);
+    color: #A0522D;
 }
 
 .share-options {
@@ -250,12 +350,14 @@
     gap: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .share-option:hover {
     background-color: #fff7e6;
     transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(139, 69, 19, 0.2);
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.2);
 }
 
 .share-option.wechat {
@@ -285,6 +387,13 @@
     border: 1px solid #c8b08b;
     border-radius: 4px;
     font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.share-url input:focus {
+    outline: none;
+    border-color: #F5D020;
+    box-shadow: 0 0 0 2px rgba(245, 208, 32, 0.2);
 }
 
 .share-url button {
@@ -300,6 +409,7 @@
 .share-url button:hover {
     background-color: #c8b08b;
     color: #4b3f2f;
+    transform: translateY(-2px);
 }
 
 /* 响应式设计 */
@@ -318,11 +428,11 @@
         align-items: center;
         padding: 20px 0;
         gap: 15px;
-        box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+        box-shadow: 0 8px 20px rgba(139, 69, 19, 0.4);
         transform: translateY(-100%);
         opacity: 0;
         pointer-events: none;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     
     .navbar-links.active {
@@ -332,9 +442,10 @@
     }
     
     .navbar-link {
-        width: 100%;
+        width: 90%;
         text-align: center;
-        padding: 10px;
+        padding: 12px;
+        border-radius: 25px;
     }
     
     .navbar-auth {
@@ -349,18 +460,24 @@
     }
     
     .navbar-auth-button {
-        padding: 5px 10px;
+        padding: 6px 12px;
         font-size: 14px;
+        border-radius: 15px;
     }
     
     .navbar-share {
         margin-left: 0;
-        margin-top: 10px;
+        margin-top: 15px;
     }
     
     .navbar-share-button {
-        width: 100%;
+        width: 90%;
         justify-content: center;
+        padding: 10px;
+    }
+    
+    .navbar.scrolled .navbar-auth {
+        top: 15px;
     }
     
     .share-modal-content {
