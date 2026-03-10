@@ -497,7 +497,7 @@ body {
     }
     
     .timeline {
-        width: 90%;
+        width: 60%;
         padding: 10px 15px;
         gap: 10px;
     }
@@ -546,7 +546,7 @@ body {
     }
     
     .timeline {
-        width: 80%;
+        width: 55%;
     }
 }
 
@@ -560,6 +560,6 @@ body {
     }
     
     .timeline {
-        width: 70%;
+        width: 50%;
     }
 }
