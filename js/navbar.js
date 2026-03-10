@@ -25,7 +25,7 @@ if (!window.navbarScriptLoaded) {
                 .then(data => {
                     try {
                         // 分离HTML和脚本内容
-                        const htmlPart = data.split('<!-- 导航栏JavaScript -->')[0];
+                        const htmlPart = data.split('<!-- 导航栏JavaScript -->')[0].trim();
                         
                         // 创建导航栏容器并添加HTML内容
                         const navbarContainer = document.createElement('div');
@@ -622,34 +622,36 @@ if (!window.navbarScriptLoaded) {
                         window.Loading.addButtonLoading(submitButton);
                     }
                     
-                    // 模拟网络请求延迟
-                    setTimeout(() => {
-                        try {
-                            // 从localStorage获取用户数据
-                            const users = JSON.parse(localStorage.getItem('users')) || [];
-                            
-                            // 查找用户
-                            const user = users.find(user => user.email === email);
-                            if (!user) {
-                                errorElement.textContent = '邮箱或密码错误';
-                                return;
+                    // 发送登录请求到后端API
+                    fetch('http://localhost:3000/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, password })
+                    })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        console.log('Response headers:', response.headers);
+                        return response.text().then(text => {
+                            console.log('Response text:', text);
+                            try {
+                                return JSON.parse(text);
+                            } catch (e) {
+                                console.error('Failed to parse JSON:', e);
+                                throw new Error('Invalid JSON response');
                             }
-                            
-                            // 验证密码
-                            if (user.password !== password) {
-                                errorElement.textContent = '邮箱或密码错误';
-                                return;
-                            }
-                            
-                            // 生成模拟token
-                            const token = 'mock-token-' + Date.now();
-                            
+                        });
+                    })
+                    .then(data => {
+                        console.log('Response data:', data);
+                        if (data.success) {
                             // 登录成功，保存token和用户信息
-                            localStorage.setItem('token', token);
-                            localStorage.setItem('user', JSON.stringify(user));
+                            localStorage.setItem('token', data.token);
+                            localStorage.setItem('user', JSON.stringify(data.user));
                             
                             // 更新UI
-                            updateUserUI(user);
+                            updateUserUI(data.user);
                             
                             // 关闭登录模态框
                             const loginContainer = document.getElementById('login-container');
@@ -659,16 +661,21 @@ if (!window.navbarScriptLoaded) {
                             
                             // 显示成功消息
                             alert('登录成功！');
-                        } catch (error) {
-                            console.error('登录错误:', error);
-                            errorElement.textContent = '登录失败，请稍后重试';
-                        } finally {
-                            // 移除按钮加载状态
-                            if (window.Loading) {
-                                window.Loading.removeButtonLoading(submitButton);
-                            }
+                        } else {
+                            // 显示错误消息
+                            errorElement.textContent = data.error || '登录失败，请稍后重试';
                         }
-                    }, 1000);
+                    })
+                    .catch(error => {
+                        console.error('登录错误:', error);
+                        errorElement.textContent = '登录失败，请稍后重试';
+                    })
+                    .finally(() => {
+                        // 移除按钮加载状态
+                        if (window.Loading) {
+                            window.Loading.removeButtonLoading(submitButton);
+                        }
+                    });
                 } catch (error) {
                     console.error('登录错误:', error);
                     errorElement.textContent = '登录失败，请稍后重试';
@@ -719,41 +726,36 @@ if (!window.navbarScriptLoaded) {
                         window.Loading.addButtonLoading(submitButton);
                     }
                     
-                    // 模拟网络请求延迟
-                    setTimeout(() => {
-                        try {
-                            // 从localStorage获取用户数据
-                            const users = JSON.parse(localStorage.getItem('users')) || [];
-                            
-                            // 检查邮箱是否已存在
-                            const existingUser = users.find(user => user.email === email);
-                            if (existingUser) {
-                                errorElement.textContent = '邮箱已存在';
-                                return;
+                    // 发送注册请求到后端API
+                    fetch('http://localhost:3000/api/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username, email, password })
+                    })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        console.log('Response headers:', response.headers);
+                        return response.text().then(text => {
+                            console.log('Response text:', text);
+                            try {
+                                return JSON.parse(text);
+                            } catch (e) {
+                                console.error('Failed to parse JSON:', e);
+                                throw new Error('Invalid JSON response');
                             }
-                            
-                            // 创建新用户
-                            const newUser = {
-                                id: 'user-' + Date.now(),
-                                username: username,
-                                email: email,
-                                password: password,
-                                role: 'user'
-                            };
-                            
-                            // 保存用户到localStorage
-                            users.push(newUser);
-                            localStorage.setItem('users', JSON.stringify(users));
-                            
-                            // 生成模拟token
-                            const token = 'mock-token-' + Date.now();
-                            
+                        });
+                    })
+                    .then(data => {
+                        console.log('Response data:', data);
+                        if (data.success) {
                             // 注册成功，保存token和用户信息
-                            localStorage.setItem('token', token);
-                            localStorage.setItem('user', JSON.stringify(newUser));
+                            localStorage.setItem('token', data.token);
+                            localStorage.setItem('user', JSON.stringify(data.user));
                             
                             // 更新UI
-                            updateUserUI(newUser);
+                            updateUserUI(data.user);
                             
                             // 关闭注册模态框
                             const registerContainer = document.getElementById('register-container');
@@ -763,16 +765,21 @@ if (!window.navbarScriptLoaded) {
                             
                             // 显示成功消息
                             alert('注册成功！');
-                        } catch (error) {
-                            console.error('注册错误:', error);
-                            errorElement.textContent = '注册失败，请稍后重试';
-                        } finally {
-                            // 移除按钮加载状态
-                            if (window.Loading) {
-                                window.Loading.removeButtonLoading(submitButton);
-                            }
+                        } else {
+                            // 显示错误消息
+                            errorElement.textContent = data.error || '注册失败，请稍后重试';
                         }
-                    }, 1000);
+                    })
+                    .catch(error => {
+                        console.error('注册错误:', error);
+                        errorElement.textContent = '注册失败，请稍后重试';
+                    })
+                    .finally(() => {
+                        // 移除按钮加载状态
+                        if (window.Loading) {
+                            window.Loading.removeButtonLoading(submitButton);
+                        }
+                    });
                 } catch (error) {
                     console.error('注册错误:', error);
                     errorElement.textContent = '注册失败，请稍后重试';
@@ -797,7 +804,7 @@ if (!window.navbarScriptLoaded) {
             }
             
             // 更新用户UI
-            function updateUserUI(user) {
+            window.updateUserUI = function(user) {
                 const loginButtons = document.getElementById('login-buttons');
                 const userMenu = document.getElementById('user-menu');
                 const usernameDisplay = document.getElementById('username-display');
@@ -815,7 +822,7 @@ if (!window.navbarScriptLoaded) {
             }
             
             // 检查用户登录状态
-            function checkLoginStatus() {
+            window.checkLoginStatus = function() {
                 const userStr = localStorage.getItem('user');
                 if (userStr) {
                     try {
@@ -825,7 +832,11 @@ if (!window.navbarScriptLoaded) {
                         console.error('解析用户信息失败:', error);
                         localStorage.removeItem('user');
                         localStorage.removeItem('token');
+                        updateUserUI(null);
                     }
+                } else {
+                    // 即使没有用户信息，也需要更新UI，确保显示登录/注册按钮
+                    updateUserUI(null);
                 }
             }
             
@@ -904,6 +915,13 @@ if (!window.navbarScriptLoaded) {
             
             // 初始化用户认证功能
             initUserAuth();
+            
+            // 导航栏加载完成后检查登录状态
+            setTimeout(function() {
+                if (window.checkLoginStatus) {
+                    window.checkLoginStatus();
+                }
+            }, 100);
         }
         
         // 初始化当前页面高亮链接
