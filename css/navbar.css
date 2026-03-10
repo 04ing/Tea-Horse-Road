@@ -211,7 +211,7 @@
     }
 }
 
-.dropdown-item {
+.dropdown-item, .dropdown-item a {
     display: block;
     width: 100%;
     padding: 12px 20px;
@@ -223,9 +223,10 @@
     transition: all 0.3s ease;
     font-family: 'STKaiti', 'KaiTi', 'Microsoft YaHei', serif;
     position: relative;
+    text-decoration: none;
 }
 
-.dropdown-item:hover {
+.dropdown-item:hover, .dropdown-item a:hover {
     background-color: rgba(245, 208, 32, 0.2);
     color: #F5D020;
     transform: translateX(5px);

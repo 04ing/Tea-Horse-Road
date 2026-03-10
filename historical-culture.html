@@ -46,6 +46,7 @@
                 <button id="mode-cities" class="active">城市详情</button>
                 <button id="mode-people">历史人物</button>
                 <button id="mode-heritage">文化遗产</button>
+                <button id="mode-spacetime">时空分析</button>
             </div>
         </div>
         
@@ -91,6 +92,7 @@
         let pathsData = [];
         let currentDynasty = 'Tang'; // 默认唐朝
         let currentMode = 'cities'; // 默认城市模式
+        let spacetimeLayers = [];
         
         let cityMarkers = [];
         let personMarkers = [];
@@ -651,6 +653,186 @@
             showInfoPanel(`${personData.name} - 历史人物`, content);
         }
         
+        // 显示时空分析
+        function displaySpacetimeAnalysis() {
+            console.log('开始显示时空分析...');
+            
+            // 加载所有朝代的数据
+            const dynasties = ['Tang', 'Song', 'Ming', 'Qing'];
+            const colors = ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0'];
+            
+            // 为每个朝代创建不同颜色的路径
+            dynasties.forEach((dynasty, index) => {
+                // 加载该朝代的路径数据
+                loadJSONFile(`json/CostPath_${dynasty}.json`)
+                    .then(paths => {
+                        if (paths && paths.features && paths.features.length > 0) {
+                            // 检查坐标系
+                            const spatialReference = paths.spatialReference;
+                            
+                            // 为每个路径创建图层
+                            paths.features.forEach((feature, featureIndex) => {
+                                try {
+                                    // 提取路径坐标
+                                    let coordinates = feature.geometry.paths[0];
+                                    
+                                    // 转换坐标（如果需要）
+                                    if (spatialReference && spatialReference.wkid === 32648) {
+                                        // UTM 坐标系 (32648)，需要转换为经纬度
+                                        console.log(`检测到 UTM 坐标系 (Wkid: ${spatialReference.wkid})，开始转换坐标`);
+                                        coordinates = coordinates.map(coord => {
+                                            try {
+                                                // 使用与 map.html 相同的转换逻辑
+                                                const converted = utmToLatLon(coord[0], coord[1], 48, true);
+                                                if (converted) {
+                                                    console.log(`坐标转换成功: [${coord[0]}, ${coord[1]}] -> [${converted[0]}, ${converted[1]}]`);
+                                                    return converted;
+                                                } else {
+                                                    console.warn(`坐标转换返回 null，使用原始坐标: [${coord[0]}, ${coord[1]}]`);
+                                                    return coord;
+                                                }
+                                            } catch (error) {
+                                                console.error('坐标转换失败:', error);
+                                                return coord;
+                                            }
+                                        });
+                                    } else {
+                                        // 标准经纬度坐标系，直接使用
+                                        console.log(`使用标准经纬度坐标系 (Wkid: ${spatialReference ? spatialReference.wkid : '未知'})`);
+                                        coordinates = coordinates.map(coord => [coord[0], coord[1]]);
+                                    }
+                                    
+                                    // 过滤无效坐标
+                                    coordinates = coordinates.filter(coord => {
+                                        const lng = coord[0];
+                                        const lat = coord[1];
+                                        return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+                                    });
+                                    
+                                    // 创建路径图层
+                                    const polyline = new AMap.Polyline({
+                                        path: coordinates,
+                                        strokeColor: colors[index],
+                                        strokeWeight: 5,
+                                        strokeOpacity: 0.8,
+                                        strokeStyle: 'solid',
+                                        zIndex: 50 + index,
+                                        extData: {
+                                            dynasty: dynasty,
+                                            name: `${getDynastyName(dynasty)}茶马古道`
+                                        }
+                                    });
+                                    
+                                    // 添加到地图
+                                    polyline.setMap(map);
+                                    spacetimeLayers.push(polyline);
+                                    
+                                    // 添加点击事件
+                                    polyline.on('click', function() {
+                                        showSpacetimeInfo(polyline.getExtData());
+                                    });
+                                    
+                                } catch (error) {
+                                    console.error(`处理时空分析数据时出错: ${error}`);
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`加载时空分析数据失败: ${error}`);
+                    });
+            });
+            
+            // 显示时空分析信息
+            setTimeout(() => {
+                showSpacetimeAnalysisInfo();
+            }, 1000);
+        }
+        
+        // 显示时空分析信息
+        function showSpacetimeAnalysisInfo() {
+            const content = `
+                <h4>茶马古道时空分析</h4>
+                <p>茶马古道的时空演变反映了中国西南地区与周边地区的经济文化交流历史。</p>
+                
+                <h5 style="margin-top: 15px; border-top: 1px solid #D2B48C; padding-top: 10px;">朝代变化</h5>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="width: 20px; height: 20px; background-color: #4CAF50;"></span>
+                        <span><strong>唐朝：</strong>茶马古道初步形成，主要连接中原与吐蕃地区。</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="width: 20px; height: 20px; background-color: #2196F3;"></span>
+                        <span><strong>宋朝：</strong>茶马贸易制度化，设立茶马司，古道进一步发展。</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="width: 20px; height: 20px; background-color: #FF9800;"></span>
+                        <span><strong>明朝：</strong>茶马古道繁荣，形成多条支线，连接更多地区。</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="width: 20px; height: 20px; background-color: #9C27B0;"></span>
+                        <span><strong>清朝：</strong>茶马古道达到鼎盛，成为连接西南与内地的重要通道。</span>
+                    </div>
+                </div>
+                
+                <h5 style="margin-top: 15px; border-top: 1px solid #D2B48C; padding-top: 10px;">时空特征</h5>
+                <p><strong>空间扩张：</strong>从唐朝的主要线路到明清时期的网络状分布，茶马古道的空间范围不断扩大。</p>
+                <p><strong>时间演变：</strong>随着朝代更替，茶马古道的功能从单纯的贸易通道逐渐演变为文化交流的重要载体。</p>
+                <p><strong>影响因素：</strong>政治局势、经济需求、民族关系等因素共同影响了茶马古道的时空演变。</p>
+            `;
+            
+            showInfoPanel('茶马古道时空分析', content);
+        }
+        
+        // 显示时空分析详情
+        function showSpacetimeInfo(data) {
+            const content = `
+                <h4>${data.name}</h4>
+                <p><strong>朝代：</strong>${getDynastyName(data.dynasty)}</p>
+                <p><strong>历史背景：</strong>${getDynastySpacetimeBackground(data.dynasty)}</p>
+                <p><strong>路线特征：</strong>${getDynastyRouteFeatures(data.dynasty)}</p>
+                <p><strong>历史意义：</strong>${getDynastyHistoricalSignificance(data.dynasty)}</p>
+            `;
+            
+            showInfoPanel(`${data.name} - 时空分析`, content);
+        }
+        
+        // 获取朝代时空背景
+        function getDynastySpacetimeBackground(dynasty) {
+            const backgrounds = {
+                'Tang': '唐朝时期，随着唐蕃和亲，中原与吐蕃之间的联系加强，茶马古道初步形成。',
+                'Song': '宋朝时期，政府设立茶马司，制度化茶马贸易，古道进一步发展。',
+                'Ming': '明朝时期，茶马古道进入繁荣期，形成多条支线，连接更多地区。',
+                'Qing': '清朝时期，茶马古道达到鼎盛，成为连接西南与内地的重要通道。'
+            };
+            
+            return backgrounds[dynasty] || `${getDynastyName(dynasty)}时期的茶马古道有着独特的历史背景。`;
+        }
+        
+        // 获取朝代路线特征
+        function getDynastyRouteFeatures(dynasty) {
+            const features = {
+                'Tang': '唐朝茶马古道主要连接长安与拉萨，路线相对单一，以政治和文化交流为主。',
+                'Song': '宋朝茶马古道开始形成网络，增加了更多支线，贸易功能增强。',
+                'Ming': '明朝茶马古道形成完整的网络体系，连接了更多城市和地区，贸易活动频繁。',
+                'Qing': '清朝茶马古道达到鼎盛，路线更加密集，成为西南地区的重要交通网络。'
+            };
+            
+            return features[dynasty] || `${getDynastyName(dynasty)}时期的茶马古道有着独特的路线特征。`;
+        }
+        
+        // 获取朝代历史意义
+        function getDynastyHistoricalSignificance(dynasty) {
+            const significances = {
+                'Tang': '唐朝茶马古道开启了中原与吐蕃之间的官方交流，为后续的茶马贸易奠定了基础。',
+                'Song': '宋朝茶马古道制度化，促进了汉藏经济文化交流，加强了中央对边疆的控制。',
+                'Ming': '明朝茶马古道的繁荣推动了西南地区的经济发展，促进了民族融合。',
+                'Qing': '清朝茶马古道成为连接内地与西南的重要通道，对维护国家统一和促进民族交流发挥了重要作用。'
+            };
+            
+            return significances[dynasty] || `${getDynastyName(dynasty)}时期的茶马古道具有重要的历史意义。`;
+        }
+        
         // 显示文化遗产信息
         function showHeritageInfo(heritageData) {
             console.log(`显示文化遗产信息: ${heritageData.name}`);
@@ -711,7 +893,7 @@
         
         // 函数已被移除：加载茶马古道路线功能已删除
         
-        // UTM坐标转换为经纬度坐标（简化版）
+        // UTM坐标转换为经纬度坐标（改进版）
         function utmToLatLon(utmX, utmY, zoneNumber = 48, northernHemisphere = true) {
             try {
                 // 简化的UTM转经纬度算法
@@ -724,6 +906,8 @@
                 
                 let x = utmX - 500000.0; // 调整东偏移
                 let y = northernHemisphere ? utmY : utmY - 10000000.0;
+                
+                console.log(`UTM坐标输入: [${utmX}, ${utmY}]，调整后: [${x}, ${y}]`);
                 
                 const M = y / k0;
                 const mu = M / (a * (1 - eSquared / 4 - 3 * eSquared * eSquared / 64 - 5 * Math.pow(eSquared, 3) / 256));
@@ -747,6 +931,8 @@
                 const longitude = lon * 180 / Math.PI;
                 const latitude = lat * 180 / Math.PI;
                 
+                console.log(`转换结果: [${longitude}, ${latitude}]`);
+                
                 return [longitude, latitude];
             } catch (error) {
                 console.error('UTM坐标转换错误:', error);
@@ -756,8 +942,8 @@
         
         // 判断坐标是否需要UTM转换
         function needsUTMConversion(coordinates) {
-            // 简单判断：如果坐标值很大（UTM坐标通常以米为单位，数值较大）
-            return coordinates[0] > 100000 || coordinates[1] > 100000;
+            // 判断：如果坐标值很大（UTM坐标通常以米为单位，数值较大，可能为负数）
+            return Math.abs(coordinates[0]) > 100000 || Math.abs(coordinates[1]) > 100000;
         }
         
         // 清除所有标记
@@ -779,6 +965,10 @@
             
             // 清除路径
             clearPaths();
+            
+            // 清除时空分析图层
+            spacetimeLayers.forEach(layer => layer.setMap(null));
+            spacetimeLayers = [];
         }
         
         // 清除路径
@@ -827,6 +1017,7 @@
             document.getElementById('mode-cities').addEventListener('click', () => switchMode('cities'));
             document.getElementById('mode-people').addEventListener('click', () => switchMode('people'));
             document.getElementById('mode-heritage').addEventListener('click', () => switchMode('heritage'));
+            document.getElementById('mode-spacetime').addEventListener('click', () => switchMode('spacetime'));
             
             // 功能按钮
             document.getElementById('btn-clear-all').addEventListener('click', clearAllMarkers);
@@ -883,6 +1074,8 @@
                 displayPeopleOnMap();
             } else if (mode === 'heritage') {
                 displayHeritageOnMap();
+            } else if (mode === 'spacetime') {
+                displaySpacetimeAnalysis();
             }
         }
         
