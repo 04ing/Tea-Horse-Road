@@ -148,6 +148,9 @@
 - **前端更新**：更新了js/navbar.js中的登录和注册逻辑，使用后端API而不是localStorage
 - **CORS支持**：添加了CORS中间件，允许跨域请求
 - **目录结构**：创建了data目录和users.json文件用于存储用户数据
+- **坐标转换修复**：修复了historical-culture.html中时空分析的坐标转换问题，确保唐朝路径数据正确显示
+- **样式优化**：将user-center.html的内联样式提取到单独的CSS文件(css/user-center.css)并引用
+- **页面创建**：创建了user-center.html用户中心页面，提供用户个人信息和活动管理功能
 
 ### 2026-03-09
 - **导航栏修复**：修复了导航栏重复加载导致的表单字段ID重复错误
