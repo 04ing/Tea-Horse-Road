@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- 引入外部CSS文件 -->
     <link rel="stylesheet" href="style.css" />
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- 引入ECharts库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
@@ -61,6 +62,46 @@
         <div id="trade-volume-chart" class="bar-chart-item"></div>
         <div id="population-chart" class="bar-chart-item"></div>
     </div>
+    
+    <!-- 贸易图表按钮 -->
+    <div class="chart-buttons-container">
+        <button class="chart-button" id="sankey-button">查看茶马贸易流线图</button>
+        <button class="chart-button" id="network-button">查看贸易网络关系图</button>
+    </div>
+
+    <!-- 贸易流线图模态框 -->
+    <div class="chart-modal" id="sankey-modal">
+        <div class="chart-modal-content">
+            <div class="chart-modal-header">
+                <h3 class="chart-modal-title">茶马贸易流线图</h3>
+                <button class="close-modal-btn" id="close-sankey-modal">&times;</button>
+            </div>
+            <div class="chart-modal-body">
+                <div class="year-selector-container">
+                    <label for="sankey-year-select">选择年份：</label>
+                    <select id="sankey-year-select" class="year-select"></select>
+                </div>
+                <div id="sankey-chart" class="modal-chart-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 贸易网络关系图模态框 -->
+    <div class="chart-modal" id="network-modal">
+        <div class="chart-modal-content">
+            <div class="chart-modal-header">
+                <h3 class="chart-modal-title">贸易网络关系图</h3>
+                <button class="close-modal-btn" id="close-network-modal">&times;</button>
+            </div>
+            <div class="chart-modal-body">
+                <div class="year-selector-container">
+                    <label for="network-year-select">选择年份：</label>
+                    <select id="network-year-select" class="year-select"></select>
+                </div>
+                <div id="network-chart" class="modal-chart-container"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- 朝代对比弹窗 -->
     <div class="comparison-modal" id="comparison-modal">
@@ -112,6 +153,8 @@
         var songRoutesLayer, mingRoutesLayer, qingRoutesLayer;
         var songChart, mingChart, qingChart;
         var cityCountChart, routeLengthChart, tradeVolumeChart, populationChart;
+        var sankeyChart, networkChart;
+        var tradeData = [];
         
         // 历史地图瓦片图层
         var songHistoricalLayer, mingHistoricalLayer, qingHistoricalLayer;
@@ -932,6 +975,333 @@
             qingRussiaTeaTradeChart.setOption(option);
         }
 
+        // 初始化物资流动图表
+        function initFlowCharts() {
+            // 初始化流线图/Sankey图
+            sankeyChart = echarts.init(document.getElementById('sankey-chart'));
+            // 初始化网络图
+            networkChart = echarts.init(document.getElementById('network-chart'));
+            
+            // 加载贸易数据
+            loadTradeData();
+        }
+        
+        // 加载贸易数据
+        function loadTradeData() {
+            console.log('加载贸易数据...');
+            fetch('json/Trade_CR.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP错误! 状态码: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('贸易数据加载成功:', data.length, '条记录');
+                    // 存储完整数据到全局变量
+                    tradeData = data;
+                    // 填充年份选择器
+                    populateYearSelectors(data);
+                    // 处理数据并更新图表（默认显示最新年份）
+                    updateFlowCharts(data);
+                })
+                .catch(error => {
+                    console.error('加载贸易数据失败:', error);
+                    showGlobalError('加载贸易数据失败: ' + error.message);
+                });
+        }
+        
+        // 填充年份选择器
+        function populateYearSelectors(data) {
+            const sankeyYearSelect = document.getElementById('sankey-year-select');
+            const networkYearSelect = document.getElementById('network-year-select');
+            
+            if (sankeyYearSelect && networkYearSelect) {
+                // 清空现有选项
+                sankeyYearSelect.innerHTML = '';
+                networkYearSelect.innerHTML = '';
+                
+                // 添加年份选项
+                data.forEach(item => {
+                    const option1 = document.createElement('option');
+                    option1.value = item.年份;
+                    option1.textContent = item.年份;
+                    sankeyYearSelect.appendChild(option1);
+                    
+                    const option2 = document.createElement('option');
+                    option2.value = item.年份;
+                    option2.textContent = item.年份;
+                    networkYearSelect.appendChild(option2);
+                });
+                
+                // 默认选择最新年份
+                if (data.length > 0) {
+                    const latestYear = data[data.length - 1].年份;
+                    sankeyYearSelect.value = latestYear;
+                    networkYearSelect.value = latestYear;
+                }
+                
+                // 添加年份选择事件监听器
+                sankeyYearSelect.addEventListener('change', function() {
+                    updateSankeyChartByYear(this.value);
+                });
+                
+                networkYearSelect.addEventListener('change', function() {
+                    updateNetworkChartByYear(this.value);
+                });
+            }
+        }
+        
+        // 更新物资流动图表
+        function updateFlowCharts(data) {
+            // 获取最新年份
+            const latestYear = data[data.length - 1].年份;
+            // 处理Sankey图数据（默认使用最新年份）
+            const sankeyData = processSankeyData(data, latestYear);
+            // 处理网络图数据（默认使用最新年份）
+            const networkData = processNetworkData(data, latestYear);
+            
+            // 更新Sankey图
+            updateSankeyChart(sankeyData);
+            // 更新网络图
+            updateNetworkChart(networkData);
+        }
+        
+        // 根据年份更新Sankey图
+        function updateSankeyChartByYear(year) {
+            if (tradeData.length > 0) {
+                const sankeyData = processSankeyData(tradeData, year);
+                updateSankeyChart(sankeyData);
+            }
+        }
+        
+        // 根据年份更新网络图
+        function updateNetworkChartByYear(year) {
+            if (tradeData.length > 0) {
+                const networkData = processNetworkData(tradeData, year);
+                updateNetworkChart(networkData);
+            }
+        }
+        
+        // 处理Sankey图数据（根据年份）
+        function processSankeyData(data, year = null) {
+            let targetData;
+            
+            if (year) {
+                // 根据指定年份获取数据
+                targetData = data.filter(item => item.年份 === year);
+                if (targetData.length === 0) {
+                    // 如果找不到指定年份，使用最新年份
+                    targetData = [data[data.length - 1]];
+                }
+            } else {
+                // 提取最近几年的数据（例如最后5年）
+                targetData = data.slice(-5);
+            }
+            
+            const nodes = [];
+            const links = [];
+            
+            // 添加源节点（产地）
+            nodes.push({ name: '中国产地' });
+            
+            // 添加目标节点（销售地）
+            const destinations = ['敖得萨', '恰克图', '满洲黑龙江'];
+            destinations.forEach(dest => {
+                nodes.push({ name: dest });
+            });
+            
+            // 计算各目的地的总贸易量
+            const destTotals = {};
+            destinations.forEach(dest => {
+                destTotals[dest] = targetData.reduce((total, item) => {
+                    return total + (parseInt(item[dest]) || 0);
+                }, 0);
+            });
+            
+            // 创建链接
+            destinations.forEach(dest => {
+                const value = destTotals[dest];
+                links.push({
+                    source: '中国产地',
+                    target: dest,
+                    value: value,
+                    lineStyle: {
+                        width: Math.log(value) / 2 // 根据贸易量调整线宽
+                    }
+                });
+            });
+            
+            return { nodes, links };
+        }
+        
+        // 处理网络图数据（根据年份）
+        function processNetworkData(data, year = null) {
+            let targetData;
+            
+            if (year) {
+                // 根据指定年份获取数据
+                targetData = data.filter(item => item.年份 === year);
+                if (targetData.length === 0) {
+                    // 如果找不到指定年份，使用最新年份
+                    targetData = [data[data.length - 1]];
+                }
+            } else {
+                // 提取最近几年的数据（例如最后5年）
+                targetData = data.slice(-5);
+            }
+            
+            const nodes = [];
+            const links = [];
+            
+            // 添加源节点（产地）
+            nodes.push({
+                id: 'china',
+                name: '中国产地',
+                symbolSize: 50 // 节点大小
+            });
+            
+            // 添加目标节点（销售地）
+            const destinations = [
+                { id: 'odessa', name: '敖得萨' },
+                { id: 'kiakhta', name: '恰克图' },
+                { id: 'manchuria', name: '满洲黑龙江' }
+            ];
+            
+            // 计算各目的地的总贸易量
+            destinations.forEach(dest => {
+                const total = targetData.reduce((sum, item) => {
+                    return sum + (parseInt(item[dest.name]) || 0);
+                }, 0);
+                
+                nodes.push({
+                    id: dest.id,
+                    name: dest.name,
+                    symbolSize: 30 + total / 10000 // 根据贸易量调整节点大小
+                });
+                
+                // 创建链接
+                links.push({
+                    source: 'china',
+                    target: dest.id,
+                    value: total,
+                    lineStyle: {
+                        width: Math.log(total) / 2 // 根据贸易量调整线宽
+                    }
+                });
+            });
+            
+            return { nodes, links };
+        }
+        
+        // 更新流线图（使用关系图实现箭头效果）
+        function updateSankeyChart(data) {
+            // 转换数据格式以适应关系图
+            const graphNodes = data.nodes.map(node => ({
+                id: node.name,
+                name: node.name,
+                symbolSize: 20
+            }));
+            
+            const graphLinks = data.links.map(link => ({
+                source: link.source,
+                target: link.target,
+                value: link.value,
+                lineStyle: {
+                    width: Math.sqrt(link.value) / 50 || 1,
+                    curveness: 0.3,
+                    color: '#8B4513'
+                },
+                symbolSize: [8, 12],
+                label: {
+                    show: false
+                }
+            }));
+            
+            const option = {
+                title: {
+                    text: '茶马贸易流向分析',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params) {
+                        if (params.dataType === 'edge') {
+                            return params.data.source + ' → ' + params.data.target + '<br/>贸易量: ' + params.data.value + ' 吨';
+                        }
+                        return params.data.name;
+                    }
+                },
+                series: [{
+                    type: 'graph',
+                    layout: 'force',
+                    data: graphNodes,
+                    links: graphLinks,
+                    roam: true,
+                    label: {
+                        show: true,
+                        position: 'right',
+                        formatter: '{b}'
+                    },
+                    force: {
+                        repulsion: 1000,
+                        edgeLength: [100, 200]
+                    },
+                    lineStyle: {
+                        color: '#8B4513',
+                        curveness: 0.3,
+                        type: 'solid'
+                    },
+                    emphasis: {
+                        focus: 'adjacency',
+                        lineStyle: {
+                            width: 4
+                        }
+                    }
+                }]
+            };
+            
+            sankeyChart.setOption(option);
+        }
+        
+        // 更新网络图
+        function updateNetworkChart(data) {
+            const option = {
+                title: {
+                    text: '茶马贸易网络关系',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params) {
+                        if (params.dataType === 'node') {
+                            return params.data.name + '<br/>节点大小: ' + params.data.symbolSize;
+                        } else {
+                            return params.data.sourceName + ' → ' + params.data.targetName + '<br/>贸易量: ' + params.data.value + ' 吨';
+                        }
+                    }
+                },
+                series: [{
+                    type: 'graph',
+                    layout: 'force',
+                    data: data.nodes,
+                    links: data.links,
+                    roam: true,
+                    label: {
+                        show: true,
+                        position: 'right',
+                        formatter: '{b}'
+                    },
+                    force: {
+                        repulsion: 1000,
+                        edgeLength: [100, 200]
+                    }
+                }]
+            };
+            
+            networkChart.setOption(option);
+        }
+        
         // 添加响应式调整处理函数
         function addResizeHandler() {
             window.addEventListener('resize', function() {
@@ -943,7 +1313,8 @@
                 if (routeLengthChart) routeLengthChart.resize();
                 if (tradeVolumeChart) tradeVolumeChart.resize();
                 if (populationChart) populationChart.resize();
-                if (qingRussiaTeaTradeChart) qingRussiaTeaTradeChart.resize();
+                if (sankeyChart) sankeyChart.resize();
+                if (networkChart) networkChart.resize();
             });
         }
 
@@ -1172,6 +1543,8 @@
                 initMaps();
                 console.log('初始化图表...');
                 initCharts();
+                console.log('初始化物资流动图表...');
+                initFlowCharts();
                 
                 console.log('检查地图数据文件是否存在...');
                 // 先检查所有需要的JSON文件是否存在
@@ -1181,7 +1554,8 @@
                     checkJsonFileExists('json/City_Ming.json'),
                     checkJsonFileExists('json/CostPath_Ming.json'),
                     checkJsonFileExists('json/City_Qing.json'),
-                    checkJsonFileExists('json/CostPath_Qing.json')
+                    checkJsonFileExists('json/CostPath_Qing.json'),
+                    checkJsonFileExists('json/Trade_CR.json')
                 ]).then(results => {
                     // 只有当所有文件检查都通过时才加载数据
                     if (results.every(result => result === true)) {
@@ -1229,10 +1603,91 @@
                 
                 // 按ESC键关闭弹窗
                 document.addEventListener('keydown', function(event) {
-                    if (event.key === 'Escape' && comparisonModal.style.display === 'flex') {
-                        comparisonModal.style.display = 'none';
+                    if (event.key === 'Escape') {
+                        if (comparisonModal.style.display === 'flex') {
+                            comparisonModal.style.display = 'none';
+                        }
+                        if (sankeyModal) {
+                            sankeyModal.style.display = 'none';
+                        }
+                        if (networkModal) {
+                            networkModal.style.display = 'none';
+                        }
                     }
                 });
+
+                // 贸易图表模态框控制
+                const sankeyModal = document.getElementById('sankey-modal');
+                const networkModal = document.getElementById('network-modal');
+                const sankeyButton = document.getElementById('sankey-button');
+                const networkButton = document.getElementById('network-button');
+                const closeSankeyModal = document.getElementById('close-sankey-modal');
+                const closeNetworkModal = document.getElementById('close-network-modal');
+
+                // 显示贸易流线图模态框
+                if (sankeyButton) {
+                    sankeyButton.addEventListener('click', function() {
+                        if (sankeyModal) {
+                            sankeyModal.style.display = 'flex';
+                            // 调整图表大小
+                            if (sankeyChart) {
+                                setTimeout(function() {
+                                    sankeyChart.resize();
+                                }, 100);
+                            }
+                        }
+                    });
+                }
+
+                // 显示贸易网络关系图模态框
+                if (networkButton) {
+                    networkButton.addEventListener('click', function() {
+                        if (networkModal) {
+                            networkModal.style.display = 'flex';
+                            // 调整图表大小
+                            if (networkChart) {
+                                setTimeout(function() {
+                                    networkChart.resize();
+                                }, 100);
+                            }
+                        }
+                    });
+                }
+
+                // 关闭贸易流线图模态框
+                if (closeSankeyModal) {
+                    closeSankeyModal.addEventListener('click', function() {
+                        if (sankeyModal) {
+                            sankeyModal.style.display = 'none';
+                        }
+                    });
+                }
+
+                // 关闭贸易网络关系图模态框
+                if (closeNetworkModal) {
+                    closeNetworkModal.addEventListener('click', function() {
+                        if (networkModal) {
+                            networkModal.style.display = 'none';
+                        }
+                    });
+                }
+
+                // 点击模态框外部关闭弹窗
+                if (sankeyModal) {
+                    sankeyModal.addEventListener('click', function(event) {
+                        if (event.target === sankeyModal) {
+                            sankeyModal.style.display = 'none';
+                        }
+                    });
+                }
+
+                if (networkModal) {
+                    networkModal.addEventListener('click', function(event) {
+                        if (event.target === networkModal) {
+                            networkModal.style.display = 'none';
+                        }
+                    });
+                }
             } catch (error) {
                 console.error('地图初始化失败:', error);
                 showGlobalError('地图初始化失败，请刷新页面重试。错误信息：' + error.message);
