@@ -77,10 +77,6 @@
                 <button class="close-modal-btn" id="close-sankey-modal">&times;</button>
             </div>
             <div class="chart-modal-body">
-                <div class="year-selector-container">
-                    <label for="sankey-year-select">选择年份：</label>
-                    <select id="sankey-year-select" class="year-select"></select>
-                </div>
                 <div id="sankey-chart" class="modal-chart-container"></div>
             </div>
         </div>
@@ -1013,39 +1009,27 @@
         
         // 填充年份选择器
         function populateYearSelectors(data) {
-            const sankeyYearSelect = document.getElementById('sankey-year-select');
             const networkYearSelect = document.getElementById('network-year-select');
             
-            if (sankeyYearSelect && networkYearSelect) {
+            if (networkYearSelect) {
                 // 清空现有选项
-                sankeyYearSelect.innerHTML = '';
                 networkYearSelect.innerHTML = '';
                 
                 // 添加年份选项
                 data.forEach(item => {
-                    const option1 = document.createElement('option');
-                    option1.value = item.年份;
-                    option1.textContent = item.年份;
-                    sankeyYearSelect.appendChild(option1);
-                    
-                    const option2 = document.createElement('option');
-                    option2.value = item.年份;
-                    option2.textContent = item.年份;
-                    networkYearSelect.appendChild(option2);
+                    const option = document.createElement('option');
+                    option.value = item.年份;
+                    option.textContent = item.年份;
+                    networkYearSelect.appendChild(option);
                 });
                 
                 // 默认选择最新年份
                 if (data.length > 0) {
                     const latestYear = data[data.length - 1].年份;
-                    sankeyYearSelect.value = latestYear;
                     networkYearSelect.value = latestYear;
                 }
                 
                 // 添加年份选择事件监听器
-                sankeyYearSelect.addEventListener('change', function() {
-                    updateSankeyChartByYear(this.value);
-                });
-                
                 networkYearSelect.addEventListener('change', function() {
                     updateNetworkChartByYear(this.value);
                 });
@@ -1056,22 +1040,21 @@
         function updateFlowCharts(data) {
             // 获取最新年份
             const latestYear = data[data.length - 1].年份;
-            // 处理Sankey图数据（默认使用最新年份）
-            const sankeyData = processSankeyData(data, latestYear);
             // 处理网络图数据（默认使用最新年份）
             const networkData = processNetworkData(data, latestYear);
             
-            // 更新Sankey图
-            updateSankeyChart(sankeyData);
+            // 更新Sankey图（现在显示所有年份的横向柱状图）
+            updateSankeyChart(data);
             // 更新网络图
             updateNetworkChart(networkData);
         }
         
-        // 根据年份更新Sankey图
+        // 根据年份更新Sankey图（现在显示所有年份数据）
         function updateSankeyChartByYear(year) {
+            // 由于改为显示所有年份的横向柱状图，此函数不再需要根据年份更新
+            // 直接调用更新函数即可
             if (tradeData.length > 0) {
-                const sankeyData = processSankeyData(tradeData, year);
-                updateSankeyChart(sankeyData);
+                updateSankeyChart(tradeData);
             }
         }
         
@@ -1105,8 +1088,18 @@
             // 添加源节点（产地）
             nodes.push({ name: '中国产地' });
             
-            // 添加目标节点（销售地）
-            const destinations = ['敖得萨', '恰克图', '满洲黑龙江'];
+            // 从数据中提取所有城市节点（排除年份、总计、砖茶量字段）
+            const allCities = new Set();
+            data.forEach(item => {
+                Object.keys(item).forEach(key => {
+                    if (key !== '年份' && key !== '总计' && key !== '砖茶量') {
+                        allCities.add(key);
+                    }
+                });
+            });
+            
+            // 添加目标节点（所有城市）
+            const destinations = Array.from(allCities);
             destinations.forEach(dest => {
                 nodes.push({ name: dest });
             });
@@ -1122,14 +1115,16 @@
             // 创建链接
             destinations.forEach(dest => {
                 const value = destTotals[dest];
-                links.push({
-                    source: '中国产地',
-                    target: dest,
-                    value: value,
-                    lineStyle: {
-                        width: Math.log(value) / 2 // 根据贸易量调整线宽
-                    }
-                });
+                if (value > 0) { // 只添加有贸易量的链接
+                    links.push({
+                        source: '中国产地',
+                        target: dest,
+                        value: value,
+                        lineStyle: {
+                            width: Math.sqrt(value) / 50 || 1 // 根据贸易量调整线宽，使差异更明显
+                        }
+                    });
+                }
             });
             
             return { nodes, links };
@@ -1158,107 +1153,163 @@
             nodes.push({
                 id: 'china',
                 name: '中国产地',
-                symbolSize: 50 // 节点大小
+                symbol: 'star',
+                symbolSize: 50,
+                itemStyle: {
+                    color: '#ff0000'
+                }
             });
             
-            // 添加目标节点（销售地）
-            const destinations = [
-                { id: 'odessa', name: '敖得萨' },
-                { id: 'kiakhta', name: '恰克图' },
-                { id: 'manchuria', name: '满洲黑龙江' }
-            ];
+            // 从数据中提取所有城市节点（排除年份、总计、砖茶量字段）
+            const allCities = new Set();
+            data.forEach(item => {
+                Object.keys(item).forEach(key => {
+                    if (key !== '年份' && key !== '总计' && key !== '砖茶量') {
+                        allCities.add(key);
+                    }
+                });
+            });
+            
+            // 添加目标节点（所有城市）
+            const destinations = Array.from(allCities);
             
             // 计算各目的地的总贸易量
             destinations.forEach(dest => {
                 const total = targetData.reduce((sum, item) => {
-                    return sum + (parseInt(item[dest.name]) || 0);
+                    return sum + (parseInt(item[dest]) || 0);
                 }, 0);
                 
-                nodes.push({
-                    id: dest.id,
-                    name: dest.name,
-                    symbolSize: 30 + total / 10000 // 根据贸易量调整节点大小
-                });
-                
-                // 创建链接
-                links.push({
-                    source: 'china',
-                    target: dest.id,
-                    value: total,
-                    lineStyle: {
-                        width: Math.log(total) / 2 // 根据贸易量调整线宽
-                    }
-                });
+                if (total > 0) { // 只添加有贸易量的节点
+                    // 计算近30年的贸易平均值
+                    const average = total / data.length;
+                    nodes.push({
+                        id: dest.toLowerCase().replace(/\s+/g, '_'),
+                        name: dest,
+                        symbolSize: 15 + Math.sqrt(average) / 5 // 根据近30年贸易平均值调整节点大小
+                    });
+                    
+                    // 创建链接
+                    links.push({
+                        source: 'china',
+                        target: dest.toLowerCase().replace(/\s+/g, '_'),
+                        sourceName: '中国产地',
+                        targetName: dest,
+                        value: average,
+                        lineStyle: {
+                            width: Math.sqrt(average) / 5 || 3 // 根据近30年贸易平均值调整线宽，使差异更明显
+                        }
+                    });
+                }
             });
             
             return { nodes, links };
         }
         
-        // 更新流线图（使用关系图实现箭头效果）
+        // 更新流线图（改为横向柱状图）
         function updateSankeyChart(data) {
-            // 转换数据格式以适应关系图
-            const graphNodes = data.nodes.map(node => ({
-                id: node.name,
-                name: node.name,
-                symbolSize: 20
-            }));
-            
-            const graphLinks = data.links.map(link => ({
-                source: link.source,
-                target: link.target,
-                value: link.value,
-                lineStyle: {
-                    width: Math.sqrt(link.value) / 50 || 1,
-                    curveness: 0.3,
-                    color: '#8B4513'
-                },
-                symbolSize: [8, 12],
-                label: {
-                    show: false
-                }
-            }));
+            // 提取所有年份数据
+            const years = tradeData.map(item => item.年份);
+            const totalValues = tradeData.map(item => parseInt(item.总计) || 0);
+            const brickTeaValues = tradeData.map(item => parseInt(item.砖茶量) || 0);
             
             const option = {
                 title: {
-                    text: '茶马贸易流向分析',
+                    text: '茶马贸易总量与砖茶量年度变化',
                     left: 'center'
                 },
                 tooltip: {
-                    trigger: 'item',
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    },
                     formatter: function(params) {
-                        if (params.dataType === 'edge') {
-                            return params.data.source + ' → ' + params.data.target + '<br/>贸易量: ' + params.data.value + ' 吨';
-                        }
-                        return params.data.name;
+                        let result = params[0].name + '年<br/>';
+                        params.forEach(param => {
+                            result += param.seriesName + ': ' + param.value + ' 吨<br/>';
+                        });
+                        return result;
                     }
                 },
-                series: [{
-                    type: 'graph',
-                    layout: 'force',
-                    data: graphNodes,
-                    links: graphLinks,
-                    roam: true,
-                    label: {
-                        show: true,
-                        position: 'right',
-                        formatter: '{b}'
-                    },
-                    force: {
-                        repulsion: 1000,
-                        edgeLength: [100, 200]
-                    },
-                    lineStyle: {
-                        color: '#8B4513',
-                        curveness: 0.3,
-                        type: 'solid'
-                    },
-                    emphasis: {
-                        focus: 'adjacency',
-                        lineStyle: {
-                            width: 4
+                legend: {
+                    data: ['总计贸易量', '砖茶量'],
+                    top: 30
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'value',
+                    name: '贸易量(吨)',
+                    axisLabel: {
+                        formatter: function(value) {
+                            if (value >= 10000) {
+                                return (value / 10000) + '万';
+                            }
+                            return value;
                         }
                     }
-                }]
+                },
+                yAxis: {
+                    type: 'category',
+                    data: years,
+                    axisLabel: {
+                        interval: 0,
+                        rotate: 0
+                    }
+                },
+                series: [
+                    {
+                        name: '总计贸易量',
+                        type: 'bar',
+                        data: totalValues,
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(1, 0, 0, 0, [
+                                {offset: 0, color: '#8dd1e1'},
+                                {offset: 1, color: '#005588'}
+                            ])
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                color: new echarts.graphic.LinearGradient(1, 0, 0, 0, [
+                                    {offset: 0, color: '#aed1e1'},
+                                    {offset: 1, color: '#0066aa'}
+                                ])
+                            }
+                        },
+                        animationDelay: function(idx) {
+                            return idx * 100;
+                        }
+                    },
+                    {
+                        name: '砖茶量',
+                        type: 'bar',
+                        data: brickTeaValues,
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(1, 0, 0, 0, [
+                                {offset: 0, color: '#ffc658'},
+                                {offset: 1, color: '#ff8c00'}
+                            ])
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                color: new echarts.graphic.LinearGradient(1, 0, 0, 0, [
+                                    {offset: 0, color: '#ffd688'},
+                                    {offset: 1, color: '#ff9c33'}
+                                ])
+                            }
+                        },
+                        animationDelay: function(idx) {
+                            return idx * 100 + 100;
+                        }
+                    }
+                ],
+                animationEasing: 'elasticOut',
+                animationDelayUpdate: function(idx) {
+                    return idx * 5;
+                }
             };
             
             sankeyChart.setOption(option);
@@ -1275,9 +1326,13 @@
                     trigger: 'item',
                     formatter: function(params) {
                         if (params.dataType === 'node') {
-                            return params.data.name + '<br/>节点大小: ' + params.data.symbolSize;
+                            if (params.data.id === 'china') {
+                                return params.data.name + '<br/>类型: 原产地';
+                            } else {
+                                return params.data.name + '<br/>节点大小: ' + params.data.symbolSize;
+                            }
                         } else {
-                            return params.data.sourceName + ' → ' + params.data.targetName + '<br/>贸易量: ' + params.data.value + ' 吨';
+                            return '目的地: ' + params.data.targetName + '<br/>贸易量: ' + params.data.value + ' 吨';
                         }
                     }
                 },
@@ -1285,7 +1340,11 @@
                     type: 'graph',
                     layout: 'force',
                     data: data.nodes,
-                    links: data.links,
+                    links: data.links.map(link => ({
+                        ...link,
+                        symbol: ['none', 'arrow'],
+                        symbolSize: [8, 12]
+                    })),
                     roam: true,
                     label: {
                         show: true,
@@ -1293,8 +1352,19 @@
                         formatter: '{b}'
                     },
                     force: {
-                        repulsion: 1000,
-                        edgeLength: [100, 200]
+                        repulsion: 1500,
+                        edgeLength: [100, 250]
+                    },
+                    lineStyle: {
+                        color: '#8B4513',
+                        curveness: 0.3,
+                        type: 'solid'
+                    },
+                    emphasis: {
+                        focus: 'adjacency',
+                        lineStyle: {
+                            width: 6
+                        }
                     }
                 }]
             };
