@@ -85,13 +85,10 @@
                 </div>
             </div>
             
-            <!-- 朝代信息弹窗 -->
-            <div id="timeline-modal" class="modal">
-                <div class="modal-content">
-                    <span class="close-modal">&times;</span>
-                    <h3 id="modal-title"></h3>
-                    <p id="modal-description"></p>
-                </div>
+            <!-- 朝代信息显示区域 -->
+            <div class="timeline-info" style="margin-top: 30px; padding: 20px; background-color: rgba(139, 69, 19, 0.1); border-radius: 10px; text-align: center;">
+                <h3 id="timeline-title" style="color: white; margin-bottom: 15px; font-size: 1.8rem;">唐代 茶马古道初步形成</h3>
+                <p id="timeline-description" style="font-size: 1.4rem; line-height: 1.6; color: white; text-align: center;">随着唐蕃古道的开通，汉藏之间的贸易往来日益频繁，茶马贸易开始兴起。</p>
             </div>
             
             <script>
@@ -121,37 +118,49 @@
                 
                 // 获取DOM元素
                 const timelineDots = document.querySelectorAll('.timeline-dot');
-                const modal = document.getElementById('timeline-modal');
-                const modalTitle = document.getElementById('modal-title');
-                const modalDescription = document.getElementById('modal-description');
-                const timelineCloseModal = document.querySelector('.close-modal');
+                const timelineTitle = document.getElementById('timeline-title');
+                const timelineDescription = document.getElementById('timeline-description');
                 
-                // 点击朝代显示信息窗口
-                timelineDots.forEach(dot => {
-                    dot.addEventListener('click', () => {
-                        const dynasty = dot.getAttribute('data-dynasty');
-                        modalTitle.textContent = dynastyData[dynasty].title;
-                        modalDescription.textContent = dynastyData[dynasty].description;
-                        modal.style.display = 'block';
-                        
-                        // 添加点击动画效果
-                        dot.classList.add('active');
-                        setTimeout(() => {
+                // 当前显示的朝代索引
+                let currentIndex = 0;
+                const dynasties = ['唐代', '宋代', '明代', '清代', '近现代'];
+                
+                // 更新时间轴显示
+                function updateTimeline(index) {
+                    const dynasty = dynasties[index];
+                    
+                    // 更新信息显示
+                    timelineTitle.textContent = dynastyData[dynasty].title;
+                    timelineDescription.textContent = dynastyData[dynasty].description;
+                    
+                    // 更新时间轴点的状态
+                    timelineDots.forEach((dot, i) => {
+                        if (i === index) {
+                            dot.classList.add('active');
+                        } else {
                             dot.classList.remove('active');
-                        }, 300);
+                        }
                     });
-                });
+                }
                 
-                // 关闭信息窗口
-                timelineCloseModal.addEventListener('click', () => {
-                    modal.style.display = 'none';
-                });
+                // 自动轮播
+                function startAutoPlay() {
+                    setInterval(() => {
+                        currentIndex = (currentIndex + 1) % dynasties.length;
+                        updateTimeline(currentIndex);
+                    }, 3000); // 每3秒切换一次
+                }
                 
-                // 点击窗口外部关闭
-                window.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        modal.style.display = 'none';
-                    }
+                // 初始化
+                updateTimeline(currentIndex);
+                startAutoPlay();
+                
+                // 点击时间轴点切换
+                timelineDots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        currentIndex = index;
+                        updateTimeline(currentIndex);
+                    });
                 });
             </script>
         </section>
