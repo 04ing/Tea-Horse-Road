@@ -210,12 +210,12 @@
             </div>
             
             <!-- 旅游指南按钮 -->
-            <div class="guide-buttons" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 30px;">
-                <button class="guide-button" onclick="openModal('routes-modal')" style="background-color: #8B4513; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 16px;">经典路线推荐</button>
-                <button class="guide-button" onclick="openModal('attractions-modal')" style="background-color: #8B4513; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 16px;">景点介绍</button>
-                <button class="guide-button" onclick="openModal('transportation-modal')" style="background-color: #8B4513; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 16px;">交通信息</button>
-                <button class="guide-button" onclick="openModal('accommodation-modal')" style="background-color: #8B4513; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 16px;">住宿推荐</button>
-                <button class="guide-button" onclick="openModal('tips-modal')" style="background-color: #8B4513; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 16px;">旅游贴士</button>
+            <div class="guide-buttons" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px;">
+                <button class="guide-button" onclick="openModal('routes-modal')" style="background-color: #FF9800; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 16px;">🗺️ 经典路线推荐</button>
+                <button class="guide-button" onclick="openModal('attractions-modal')" style="background-color: #FF9800; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 16px;">🏛️ 景点介绍</button>
+                <button class="guide-button" onclick="openModal('transportation-modal')" style="background-color: #FF9800; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 16px;">🚗 交通信息</button>
+                <button class="guide-button" onclick="openModal('accommodation-modal')" style="background-color: #FF9800; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 16px;">🏨 住宿推荐</button>
+                <button class="guide-button" onclick="openModal('tips-modal')" style="background-color: #FF9800; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 16px;">💡 旅游贴士</button>
                 <button class="guide-button" onclick="openStoryModal()" style="background-color: #FF9800; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 16px;">📝 旅行故事</button>
             </div>
         </section>
@@ -225,7 +225,7 @@
             <div class="modal-content" style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 1000px; border-radius: 10px;">
                 <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="color: #8B4513; margin: 0;">经典路线推荐</h2>
-                    <button onclick="closeModal('routes-modal')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; background: none; border: none; cursor: pointer;">&times;</button>
+                    <button onclick="closeModal('routes-modal')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; background: none; border: none; cursor: pointer; z-index: 1001;">&times;</button>
                 </div>
                 <div class="route-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                     <div class="route-card" style="background-color: rgba(139, 69, 19, 0.8); border-radius: 10px; overflow: hidden;">
@@ -291,7 +291,7 @@
             <div class="modal-content" style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 1000px; border-radius: 10px;">
                 <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="color: #8B4513; margin: 0;">景点介绍</h2>
-                    <button onclick="closeModal('attractions-modal')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; background: none; border: none; cursor: pointer;">&times;</button>
+                    <button onclick="closeModal('attractions-modal')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; background: none; border: none; cursor: pointer; z-index: 1001;">&times;</button>
                 </div>
                 <div class="attractions-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                     <div class="attraction-item" style="background-color: rgba(139, 69, 19, 0.8); padding: 20px; border-radius: 10px; color: white;">
@@ -362,7 +362,7 @@
             <div class="modal-content" style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 1000px; border-radius: 10px;">
                 <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="color: #8B4513; margin: 0;">交通信息</h2>
-                    <button onclick="closeModal('transportation-modal')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; background: none; border: none; cursor: pointer;">&times;</button>
+                    <button onclick="closeModal('transportation-modal')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; background: none; border: none; cursor: pointer; z-index: 1001;">&times;</button>
                 </div>
                 <div class="transportation-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                     <div class="transportation-item" style="background-color: rgba(139, 69, 19, 0.8); padding: 20px; border-radius: 10px; color: white;">
@@ -424,7 +424,7 @@
             <div class="modal-content" style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 1000px; border-radius: 10px;">
                 <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="color: #8B4513; margin: 0;">住宿推荐</h2>
-                    <button onclick="closeModal('accommodation-modal')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; background: none; border: none; cursor: pointer;">&times;</button>
+                    <button onclick="closeModal('accommodation-modal')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; background: none; border: none; cursor: pointer; z-index: 1001;">&times;</button>
                 </div>
                 <div class="accommodation-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                     <div class="accommodation-item" style="background-color: rgba(139, 69, 19, 0.8); padding: 20px; border-radius: 10px; color: white;">
@@ -477,7 +477,7 @@
             <div class="modal-content" style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 1000px; border-radius: 10px;">
                 <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="color: #8B4513; margin: 0;">旅游贴士</h2>
-                    <button onclick="closeModal('tips-modal')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; background: none; border: none; cursor: pointer;">&times;</button>
+                    <button onclick="closeModal('tips-modal')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; background: none; border: none; cursor: pointer; z-index: 1001;">&times;</button>
                 </div>
                 <div class="tips-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                     <div class="tip-item" style="background-color: rgba(139, 69, 19, 0.8); padding: 20px; border-radius: 10px; color: white;">
