@@ -450,37 +450,34 @@
                     return;
                 }
                 
-                // 从localStorage获取用户数据
-                const users = JSON.parse(localStorage.getItem('users')) || [];
-                
-                // 查找用户
-                const user = users.find(user => user.email === email);
-                if (!user) {
-                    errorElement.textContent = '邮箱或密码错误';
-                    return;
-                }
-                
-                // 验证密码
-                if (user.password !== password) {
-                    errorElement.textContent = '邮箱或密码错误';
-                    return;
-                }
-                
-                // 生成模拟token
-                const token = 'mock-token-' + Date.now();
-                
-                // 登录成功，保存token和用户信息
-                localStorage.setItem('token', token);
-                localStorage.setItem('user', JSON.stringify(user));
-                
-                // 更新UI
-                updateUserUI(user);
-                
-                // 关闭登录模态框
-                document.body.removeChild(document.getElementById('login-container'));
-                
-                // 显示成功消息
-                alert('登录成功！');
+                // 模拟登录 - 使用localStorage
+                setTimeout(() => {
+                    // 从localStorage获取用户数据
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    const user = users.find(u => u.email === email && u.password === password);
+                    
+                    if (user) {
+                        // 登录成功，保存token和用户信息
+                        const token = 'mock-token-' + Date.now();
+                        localStorage.setItem('token', token);
+                        localStorage.setItem('user', JSON.stringify(user));
+                        
+                        // 更新UI
+                        updateUserUI(user);
+                        
+                        // 关闭登录模态框
+                        const loginContainer = document.getElementById('login-container');
+                        if (loginContainer) {
+                            document.body.removeChild(loginContainer);
+                        }
+                        
+                        // 显示成功消息
+                        alert('登录成功！');
+                    } else {
+                        // 显示错误消息
+                        errorElement.textContent = '邮箱或密码错误';
+                    }
+                }, 1000);
             } catch (error) {
                 console.error('登录错误:', error);
                 errorElement.textContent = '登录失败，请稍后重试';
@@ -521,44 +518,46 @@
                     return;
                 }
                 
-                // 从localStorage获取用户数据
-                const users = JSON.parse(localStorage.getItem('users')) || [];
-                
-                // 检查邮箱是否已存在
-                const existingUser = users.find(user => user.email === email);
-                if (existingUser) {
-                    errorElement.textContent = '邮箱已存在';
-                    return;
-                }
-                
-                // 创建新用户
-                const newUser = {
-                    id: 'user-' + Date.now(),
-                    username: username,
-                    email: email,
-                    password: password,
-                    role: 'user'
-                };
-                
-                // 保存用户到localStorage
-                users.push(newUser);
-                localStorage.setItem('users', JSON.stringify(users));
-                
-                // 生成模拟token
-                const token = 'mock-token-' + Date.now();
-                
-                // 注册成功，保存token和用户信息
-                localStorage.setItem('token', token);
-                localStorage.setItem('user', JSON.stringify(newUser));
-                
-                // 更新UI
-                updateUserUI(newUser);
-                
-                // 关闭注册模态框
-                document.body.removeChild(document.getElementById('register-container'));
-                
-                // 显示成功消息
-                alert('注册成功！');
+                // 模拟注册 - 使用localStorage
+                setTimeout(() => {
+                    // 从localStorage获取用户数据
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    
+                    // 检查邮箱是否已存在
+                    if (users.some(u => u.email === email)) {
+                        errorElement.textContent = '该邮箱已被注册';
+                        return;
+                    }
+                    
+                    // 创建新用户
+                    const newUser = {
+                        id: Date.now(),
+                        username: username,
+                        email: email,
+                        password: password // 实际项目中应该加密存储
+                    };
+                    
+                    // 保存用户数据
+                    users.push(newUser);
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    // 保存token和用户信息
+                    const token = 'mock-token-' + Date.now();
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('user', JSON.stringify(newUser));
+                    
+                    // 更新UI
+                    updateUserUI(newUser);
+                    
+                    // 关闭注册模态框
+                    const registerContainer = document.getElementById('register-container');
+                    if (registerContainer) {
+                        document.body.removeChild(registerContainer);
+                    }
+                    
+                    // 显示成功消息
+                    alert('注册成功！');
+                }, 1000);
             } catch (error) {
                 console.error('注册错误:', error);
                 errorElement.textContent = '注册失败，请稍后重试';
