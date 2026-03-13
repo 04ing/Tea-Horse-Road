@@ -622,36 +622,20 @@ if (!window.navbarScriptLoaded) {
                         window.Loading.addButtonLoading(submitButton);
                     }
                     
-                    // 发送登录请求到后端API
-                    fetch('http://localhost:3000/api/login', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ email, password })
-                    })
-                    .then(response => {
-                        console.log('Response status:', response.status);
-                        console.log('Response headers:', response.headers);
-                        return response.text().then(text => {
-                            console.log('Response text:', text);
-                            try {
-                                return JSON.parse(text);
-                            } catch (e) {
-                                console.error('Failed to parse JSON:', e);
-                                throw new Error('Invalid JSON response');
-                            }
-                        });
-                    })
-                    .then(data => {
-                        console.log('Response data:', data);
-                        if (data.success) {
+                    // 模拟登录 - 使用localStorage
+                    setTimeout(() => {
+                        // 从localStorage获取用户数据
+                        const users = JSON.parse(localStorage.getItem('users') || '[]');
+                        const user = users.find(u => u.email === email && u.password === password);
+                        
+                        if (user) {
                             // 登录成功，保存token和用户信息
-                            localStorage.setItem('token', data.token);
-                            localStorage.setItem('user', JSON.stringify(data.user));
+                            const token = 'mock-token-' + Date.now();
+                            localStorage.setItem('token', token);
+                            localStorage.setItem('user', JSON.stringify(user));
                             
                             // 更新UI
-                            updateUserUI(data.user);
+                            updateUserUI(user);
                             
                             // 关闭登录模态框
                             const loginContainer = document.getElementById('login-container');
@@ -663,19 +647,14 @@ if (!window.navbarScriptLoaded) {
                             alert('登录成功！');
                         } else {
                             // 显示错误消息
-                            errorElement.textContent = data.error || '登录失败，请稍后重试';
+                            errorElement.textContent = '邮箱或密码错误';
                         }
-                    })
-                    .catch(error => {
-                        console.error('登录错误:', error);
-                        errorElement.textContent = '登录失败，请稍后重试';
-                    })
-                    .finally(() => {
+                        
                         // 移除按钮加载状态
                         if (window.Loading) {
                             window.Loading.removeButtonLoading(submitButton);
                         }
-                    });
+                    }, 1000);
                 } catch (error) {
                     console.error('登录错误:', error);
                     errorElement.textContent = '登录失败，请稍后重试';
@@ -726,60 +705,55 @@ if (!window.navbarScriptLoaded) {
                         window.Loading.addButtonLoading(submitButton);
                     }
                     
-                    // 发送注册请求到后端API
-                    fetch('http://localhost:3000/api/register', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ username, email, password })
-                    })
-                    .then(response => {
-                        console.log('Response status:', response.status);
-                        console.log('Response headers:', response.headers);
-                        return response.text().then(text => {
-                            console.log('Response text:', text);
-                            try {
-                                return JSON.parse(text);
-                            } catch (e) {
-                                console.error('Failed to parse JSON:', e);
-                                throw new Error('Invalid JSON response');
+                    // 模拟注册 - 使用localStorage
+                    setTimeout(() => {
+                        // 从localStorage获取用户数据
+                        const users = JSON.parse(localStorage.getItem('users') || '[]');
+                        
+                        // 检查邮箱是否已存在
+                        if (users.some(u => u.email === email)) {
+                            errorElement.textContent = '该邮箱已被注册';
+                            // 移除按钮加载状态
+                            if (window.Loading) {
+                                window.Loading.removeButtonLoading(submitButton);
                             }
-                        });
-                    })
-                    .then(data => {
-                        console.log('Response data:', data);
-                        if (data.success) {
-                            // 注册成功，保存token和用户信息
-                            localStorage.setItem('token', data.token);
-                            localStorage.setItem('user', JSON.stringify(data.user));
-                            
-                            // 更新UI
-                            updateUserUI(data.user);
-                            
-                            // 关闭注册模态框
-                            const registerContainer = document.getElementById('register-container');
-                            if (registerContainer) {
-                                document.body.removeChild(registerContainer);
-                            }
-                            
-                            // 显示成功消息
-                            alert('注册成功！');
-                        } else {
-                            // 显示错误消息
-                            errorElement.textContent = data.error || '注册失败，请稍后重试';
+                            return;
                         }
-                    })
-                    .catch(error => {
-                        console.error('注册错误:', error);
-                        errorElement.textContent = '注册失败，请稍后重试';
-                    })
-                    .finally(() => {
+                        
+                        // 创建新用户
+                        const newUser = {
+                            id: Date.now(),
+                            username: username,
+                            email: email,
+                            password: password // 实际项目中应该加密存储
+                        };
+                        
+                        // 保存用户数据
+                        users.push(newUser);
+                        localStorage.setItem('users', JSON.stringify(users));
+                        
+                        // 保存token和用户信息
+                        const token = 'mock-token-' + Date.now();
+                        localStorage.setItem('token', token);
+                        localStorage.setItem('user', JSON.stringify(newUser));
+                        
+                        // 更新UI
+                        updateUserUI(newUser);
+                        
+                        // 关闭注册模态框
+                        const registerContainer = document.getElementById('register-container');
+                        if (registerContainer) {
+                            document.body.removeChild(registerContainer);
+                        }
+                        
+                        // 显示成功消息
+                        alert('注册成功！');
+                        
                         // 移除按钮加载状态
                         if (window.Loading) {
                             window.Loading.removeButtonLoading(submitButton);
                         }
-                    });
+                    }, 1000);
                 } catch (error) {
                     console.error('注册错误:', error);
                     errorElement.textContent = '注册失败，请稍后重试';
