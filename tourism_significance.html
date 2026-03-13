@@ -847,23 +847,23 @@
                     <h3 style="color: #8B4513; margin-top: 0;">生成你的茶马古道旅行故事</h3>
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; margin-bottom: 10px; color: #333;">选择起点城市：</label>
-                        <select id="startCity" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                            ${window.mingDynastyCities.map(node => `<option value="${node.name}">${node.name}</option>`).join('')}
+                        <select id="startCity" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: transparent; color: black;">
+                            ${window.mingDynastyCities.map(node => `<option value="${node.name}" style="color: black;">${node.name}</option>`).join('')}
                         </select>
                     </div>
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; margin-bottom: 10px; color: #333;">选择终点城市：</label>
-                        <select id="endCity" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                            ${window.mingDynastyCities.map(node => `<option value="${node.name}">${node.name}</option>`).join('')}
+                        <select id="endCity" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: transparent; color: black;">
+                            ${window.mingDynastyCities.map(node => `<option value="${node.name}" style="color: black;">${node.name}</option>`).join('')}
                         </select>
                     </div>
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; margin-bottom: 10px; color: #333;">旅行主题：</label>
-                        <select id="travelTheme" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                            <option value="文化探索">文化探索</option>
-                            <option value="自然风光">自然风光</option>
-                            <option value="美食之旅">美食之旅</option>
-                            <option value="户外探险">户外探险</option>
+                        <select id="travelTheme" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: transparent; color: black;">
+                            <option value="文化探索" style="color: black;">文化探索</option>
+                            <option value="自然风光" style="color: black;">自然风光</option>
+                            <option value="美食之旅" style="color: black;">美食之旅</option>
+                            <option value="户外探险" style="color: black;">户外探险</option>
                         </select>
                     </div>
                     <div style="text-align: center;">

@@ -137,18 +137,19 @@
 /* 适配移动端 */
 @media (max-width: 768px) {
     .horizontal-timeline {
-        gap: 20px;
+        gap: 15px;
         flex-wrap: wrap;
+        padding: 0 10px;
     }
     
     .horizontal-timeline-item {
-        padding: 10px 20px;
-        font-size: 14px;
+        padding: 8px 16px;
+        font-size: 12px;
     }
     
     /* 调整面板位置和大小 */
     .events-modal {
-        top: 100px;
+        top: 80px;
         left: 10px;
         right: 10px;
         width: auto;
@@ -156,23 +157,23 @@
     
     .events-modal-content {
         width: 100%;
-        max-height: 300px;
-    }
-    
-    .stats {
-        top: 420px;
-        left: 10px;
-        right: 10px;
-        width: auto;
         max-height: 250px;
     }
     
+    .stats {
+        top: 350px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-height: 200px;
+    }
+    
     .cities-container {
-        top: 100px;
+        top: 80px;
         right: 10px;
         left: 10px;
         width: auto;
-        max-height: 300px;
+        max-height: 250px;
     }
     
     .info-panel {
@@ -180,26 +181,44 @@
         right: 10px;
         left: 10px;
         width: auto;
-        max-width: 200px;
+        max-width: 180px;
+        padding: 10px;
+    }
+    
+    .info-panel h3 {
+        font-size: 12px;
+    }
+    
+    .legend-item {
+        font-size: 10px;
     }
     
     /* 调整统计信息网格 */
     .stats-grid {
         grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .stat-value {
+        font-size: 14px;
+    }
+    
+    .stat-label {
+        font-size: 10px;
     }
     
     /* 调整标题栏 */
     .header {
         padding: 15px;
-        margin-top: 70px;
+        margin-top: 60px;
     }
     
     .header h1 {
-        font-size: 20px;
+        font-size: 18px;
     }
     
     .header p {
-        font-size: 14px;
+        font-size: 13px;
     }
     
     /* 调整导航按钮 */
@@ -209,6 +228,12 @@
         right: auto;
         margin-top: 15px;
         justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .header-nav-btn {
+        padding: 6px 12px;
+        font-size: 12px;
     }
     
     /* 调整搜索容器 */
@@ -221,6 +246,84 @@
         max-width: 300px;
         margin: 0 auto;
         display: block;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    /* 调整城市列表 */
+    .cities-list {
+        padding: 10px;
+        max-height: 200px;
+    }
+    
+    .cities-container h2 {
+        font-size: 16px;
+        padding: 10px;
+    }
+    
+    /* 调整历史事件弹窗 */
+    .events-modal-header {
+        padding: 15px;
+    }
+    
+    .events-modal-title {
+        font-size: 16px;
+    }
+    
+    .events-modal-body {
+        padding: 15px;
+    }
+    
+    .event-item {
+        padding: 10px;
+    }
+    
+    .event-year {
+        font-size: 14px;
+    }
+    
+    .event-content {
+        font-size: 12px;
+    }
+    
+    /* 调整城市信息窗口 */
+    .city-info-window {
+        padding: 10px;
+        max-width: 280px;
+    }
+    
+    .city-info-window h3 {
+        font-size: 16px;
+    }
+    
+    .city-info-window p {
+        font-size: 13px;
+    }
+    
+    /* 调整关闭按钮 */
+    .close-btn {
+        width: 25px;
+        height: 25px;
+        font-size: 20px;
+    }
+    
+    .close-events-modal-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 20px;
+    }
+    
+    /* 调整地图控件 */
+    .amap-toolbar {
+        position: absolute;
+        bottom: 60px !important;
+        left: 10px !important;
+    }
+    
+    .amap-scale {
+        position: absolute;
+        bottom: 20px !important;
+        left: 10px !important;
     }
 }
 

@@ -1,14 +1,36 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const multer = require('multer');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// 创建上传目录
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// 配置 multer 存储
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
 
 // 静态文件服务
 app.use(express.static(path.join(__dirname)));
 // 解析JSON请求体
 app.use(express.json());
+// 解析URL编码的请求体
+app.use(express.urlencoded({ extended: true }));
 
 // 添加CORS中间件
 app.use((req, res, next) => {
@@ -138,6 +160,60 @@ app.get('/api/users', (req, res) => {
   } catch (error) {
     console.error('获取用户列表错误:', error);
     res.status(500).json({ error: '获取用户列表失败' });
+  }
+});
+
+// 文件上传API
+app.post('/api/upload', upload.single('fileUpload'), (req, res) => {
+  try {
+    const { fileType, fileTitle, fileDescription, uploaderName, uploaderEmail } = req.body;
+    const file = req.file;
+    
+    // 验证请求数据
+    if (!fileType || !fileTitle || !fileDescription || !file) {
+      return res.status(400).json({ error: '请填写所有必填字段并上传文件' });
+    }
+    
+    // 创建上传记录
+    const uploadRecord = {
+      id: 'upload-' + Date.now(),
+      fileType: fileType,
+      fileTitle: fileTitle,
+      fileDescription: fileDescription,
+      fileName: file.filename,
+      filePath: file.path,
+      uploaderName: uploaderName || '',
+      uploaderEmail: uploaderEmail || '',
+      uploadDate: new Date().toISOString()
+    };
+    
+    // 读取现有上传记录
+    let uploadsData = [];
+    const uploadsFile = path.join(__dirname, 'data', 'uploads.json');
+    
+    if (fs.existsSync(uploadsFile)) {
+      try {
+        uploadsData = JSON.parse(fs.readFileSync(uploadsFile, 'utf8'));
+      } catch (error) {
+        console.error('读取上传记录文件错误:', error);
+        uploadsData = [];
+      }
+    }
+    
+    // 添加新上传记录
+    uploadsData.push(uploadRecord);
+    
+    // 保存上传记录
+    fs.writeFileSync(uploadsFile, JSON.stringify(uploadsData, null, 2));
+    
+    res.status(200).json({
+      success: true,
+      message: '上传成功！您的资料将在审核后添加到数据集中',
+      data: uploadRecord
+    });
+  } catch (error) {
+    console.error('上传错误:', error);
+    res.status(500).json({ error: '上传失败，请稍后重试' });
   }
 });
 

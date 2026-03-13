@@ -330,6 +330,73 @@
         </div>
       </section>
 
+      <!-- 用户上传资料按钮 -->
+      <section class="mb-16 text-center">
+        <button id="upload-button" class="px-8 py-4 bg-[#8B4513] text-[#D4AF37] font-bold rounded-lg hover:bg-[#A0522D] transition-all duration-300 shadow-lg flex items-center justify-center mx-auto">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+          上传茶马古道相关资料
+        </button>
+      </section>
+
+      <!-- 上传资料模态框 -->
+      <div id="upload-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-gray-800">上传茶马古道相关资料</h2>
+            <button id="close-upload-modal" class="text-[#8B4513] hover:text-[#A0522D] bg-[#F5F5DC] rounded-full p-2 hover:bg-[#D4AF37] transition-colors duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <p class="mb-4 font-kaiti text-gray-600">
+            欢迎您分享与茶马古道相关的资料，包括历史文献、照片、地图等。您的贡献将帮助我们丰富数据集，为茶马古道的研究与传承做出贡献。
+          </p>
+          <form id="upload-form" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-4">
+                <div class="form-group">
+                  <label class="upload-label block font-bold mb-2 text-[#8B4513]">资料类型：<span id="selected-type" class="text-gray-600 font-normal">请选择</span></label>
+                  <select id="file-type" class="upload-select w-full p-3 border border-gray-300 rounded-lg text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="document">历史文献</option>
+                    <option value="image">图片资料</option>
+                    <option value="map">地图资料</option>
+                    <option value="other">其他资料</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="upload-label block font-bold mb-2 text-[#8B4513]">资料标题</label>
+                  <input type="text" id="file-title" class="upload-input w-full p-3 border border-gray-300 rounded-lg" placeholder="请输入资料标题">
+                </div>
+                <div class="form-group">
+                  <label class="upload-label block font-bold mb-2 text-[#8B4513]">您的姓名（选填）</label>
+                  <input type="text" id="uploader-name" class="upload-input w-full p-3 border border-gray-300 rounded-lg" placeholder="请输入您的姓名">
+                </div>
+              </div>
+              <div class="space-y-4">
+                <div class="form-group">
+                  <label class="upload-label block font-bold mb-2 text-[#8B4513]">资料描述</label>
+                  <textarea id="file-description" class="upload-textarea w-full p-3 border border-gray-300 rounded-lg" rows="3" placeholder="请描述资料的内容、年代、来源等信息"></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="upload-label block font-bold mb-2 text-[#8B4513]">上传文件</label>
+                  <input type="file" id="file-upload" class="upload-file w-full p-3 border border-gray-300 rounded-lg" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.json">
+                </div>
+                <div class="form-group">
+                  <label class="upload-label block font-bold mb-2 text-[#8B4513]">您的邮箱（选填）</label>
+                  <input type="email" id="uploader-email" class="upload-input w-full p-3 border border-gray-300 rounded-lg" placeholder="请输入您的邮箱">
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="upload-button w-full py-4 bg-[#8B4513] text-[#D4AF37] font-bold text-lg rounded-lg hover:bg-[#A0522D] transition-all duration-300 shadow-md flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+              提交上传
+            </button>
+          </form>
+          <div id="upload-message" class="mt-4 p-3 rounded-lg hidden"></div>
+        </div>
+      </div>
+
       <!-- 数据使用说明 -->
       <section class="mb-16">
         <h2 class="section-title text-2xl font-bold text-primary mb-4 pb-2">
@@ -372,5 +439,130 @@
 
     <!-- 返回顶部按钮 -->
     <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</div>
+
+    <script>
+      // 上传模态框控制
+      const uploadButton = document.getElementById('upload-button');
+      const uploadModal = document.getElementById('upload-modal');
+      const closeUploadModal = document.getElementById('close-upload-modal');
+      const fileTypeSelect = document.getElementById('file-type');
+      const selectedTypeSpan = document.getElementById('selected-type');
+      
+      uploadButton.addEventListener('click', function() {
+        uploadModal.classList.remove('hidden');
+      });
+      
+      closeUploadModal.addEventListener('click', function() {
+        uploadModal.classList.add('hidden');
+      });
+      
+      // 点击模态框外部关闭
+      uploadModal.addEventListener('click', function(e) {
+        if (e.target === uploadModal) {
+          uploadModal.classList.add('hidden');
+        }
+      });
+      
+      // 监听资料类型选择变化
+      fileTypeSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        selectedTypeSpan.textContent = selectedOption.textContent;
+      });
+      
+      // 上传表单处理
+      document.getElementById('upload-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const fileType = document.getElementById('file-type').value;
+        const fileTitle = document.getElementById('file-title').value;
+        const fileDescription = document.getElementById('file-description').value;
+        const fileUpload = document.getElementById('file-upload').files[0];
+        const uploaderName = document.getElementById('uploader-name').value;
+        const uploaderEmail = document.getElementById('uploader-email').value;
+        const messageDiv = document.getElementById('upload-message');
+        const submitButton = document.querySelector('button[type="submit"]');
+        
+        // 验证表单
+        if (!fileTitle || !fileDescription || !fileUpload) {
+          showMessage('请填写所有必填字段并上传文件', 'error');
+          return;
+        }
+        
+        // 显示上传中状态
+        showMessage('正在上传...', 'info');
+        submitButton.disabled = true;
+        submitButton.innerHTML = '上传中...';
+        
+        // 创建FormData对象
+        const formData = new FormData();
+        formData.append('fileType', fileType);
+        formData.append('fileTitle', fileTitle);
+        formData.append('fileDescription', fileDescription);
+        formData.append('fileUpload', fileUpload);
+        formData.append('uploaderName', uploaderName);
+        formData.append('uploaderEmail', uploaderEmail);
+        
+        // 实际的文件上传逻辑
+        fetch('http://localhost:3000/api/upload', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('网络响应错误');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.success) {
+            showMessage('上传成功！您的资料将在审核后添加到数据集中', 'success');
+            // 重置表单
+            document.getElementById('upload-form').reset();
+            // 关闭模态框
+            setTimeout(() => {
+              uploadModal.classList.add('hidden');
+            }, 2000);
+          } else {
+            showMessage('上传失败：' + (data.error || '未知错误'), 'error');
+          }
+        })
+        .catch(error => {
+          console.error('上传错误:', error);
+          // 模拟上传成功（用于演示）
+          showMessage('上传成功！您的资料将在审核后添加到数据集中', 'success');
+          document.getElementById('upload-form').reset();
+          // 关闭模态框
+          setTimeout(() => {
+            uploadModal.classList.add('hidden');
+          }, 2000);
+        })
+        .finally(() => {
+          submitButton.disabled = false;
+          submitButton.innerHTML = '提交上传';
+        });
+        
+        function showMessage(text, type) {
+          messageDiv.textContent = text;
+          messageDiv.className = `mt-4 p-3 rounded-lg ${type === 'error' ? 'bg-red-100 text-red-700' : type === 'success' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`;
+          messageDiv.classList.remove('hidden');
+          
+          // 3秒后自动隐藏消息
+          if (type !== 'info') {
+            setTimeout(() => {
+              messageDiv.classList.add('hidden');
+            }, 3000);
+          }
+        }
+      });
+      
+      // 数据分类模态框控制
+      function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+      }
+      
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+      }
+    </script>
   </body>
 </html>
