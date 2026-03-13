@@ -528,41 +528,8 @@
         })
         .catch(error => {
           console.error('上传错误:', error);
-          // 当后端服务器不可用时，使用localStorage存储
-          try {
-            // 从localStorage获取现有上传记录
-            let uploadsData = JSON.parse(localStorage.getItem('uploads') || '[]');
-            
-            // 创建上传记录
-            const uploadRecord = {
-              id: 'upload-' + Date.now(),
-              fileType: fileType,
-              fileTitle: fileTitle,
-              fileDescription: fileDescription,
-              fileName: fileUpload.name,
-              filePath: 'local-storage',
-              uploaderName: uploaderName || '',
-              uploaderEmail: uploaderEmail || '',
-              uploadDate: new Date().toISOString()
-            };
-            
-            // 添加新上传记录
-            uploadsData.push(uploadRecord);
-            
-            // 保存到localStorage
-            localStorage.setItem('uploads', JSON.stringify(uploadsData, null, 2));
-            
-            // 显示成功消息
-            showMessage('上传成功！您的资料将在审核后添加到数据集中', 'success');
-            document.getElementById('upload-form').reset();
-            // 关闭模态框
-            setTimeout(() => {
-              uploadModal.classList.add('hidden');
-            }, 2000);
-          } catch (localError) {
-            console.error('localStorage存储错误:', localError);
-            showMessage('上传失败：请稍后重试', 'error');
-          }
+          // 显示真实的失败消息
+          showMessage('上传失败：无法连接到服务器，请确保后端服务已启动', 'error');
         })
         .finally(() => {
           submitButton.disabled = false;
