@@ -503,7 +503,7 @@
         formData.append('uploaderEmail', uploaderEmail);
         
         // 实际的文件上传逻辑
-        fetch('http://localhost:3000/api/upload', {
+        fetch('./api/upload', {
           method: 'POST',
           body: formData
         })
