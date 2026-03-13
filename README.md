@@ -192,6 +192,9 @@
 - **UI优化**：改进了上传模态框的布局，将内容分成两列，提高用户体验
 - **样式调整**：修改了上传按钮和表单元素的样式，确保颜色正确显示
 - **功能完善**：添加了上传记录的保存功能，将上传信息存储在data/uploads.json文件中
+- **部署配置**：修改了.railway/config.json文件，添加了NODE_ENV=production环境变量
+- **API路径优化**：更新了dataset.html和navbar.js中的API调用路径，将硬编码的localhost URL改为相对路径
+- **依赖验证**：运行了npm install命令，确保所有依赖都能正确安装
 
 ### 2026-03-12
 - **时间轴优化**：修改了tourism_significance.html中的“前世板块”时间轴，实现自动轮播功能

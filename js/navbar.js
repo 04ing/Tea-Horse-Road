@@ -623,7 +623,7 @@ if (!window.navbarScriptLoaded) {
                     }
                     
                     // 发送登录请求到后端API
-                    fetch('http://localhost:3000/api/login', {
+                    fetch('/api/login', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -727,7 +727,7 @@ if (!window.navbarScriptLoaded) {
                     }
                     
                     // 发送注册请求到后端API
-                    fetch('http://localhost:3000/api/register', {
+                    fetch('/api/register', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
