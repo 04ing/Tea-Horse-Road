@@ -623,7 +623,7 @@ if (!window.navbarScriptLoaded) {
                     }
                     
                     // 发送登录请求到后端API
-                    fetch('/api/login', {
+                    fetch('http://localhost:3000/api/login', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -635,15 +635,11 @@ if (!window.navbarScriptLoaded) {
                         console.log('Response headers:', response.headers);
                         return response.text().then(text => {
                             console.log('Response text:', text);
-                            if (!text) {
-                                throw new Error('Empty response');
-                            }
                             try {
                                 return JSON.parse(text);
                             } catch (e) {
                                 console.error('Failed to parse JSON:', e);
-                                console.error('Response text:', text);
-                                throw new Error('Invalid JSON response: ' + text);
+                                throw new Error('Invalid JSON response');
                             }
                         });
                     })
@@ -673,8 +669,6 @@ if (!window.navbarScriptLoaded) {
                     .catch(error => {
                         console.error('登录错误:', error);
                         errorElement.textContent = '登录失败，请稍后重试';
-                        // 显示详细错误信息
-                        console.error('详细错误:', error.message);
                     })
                     .finally(() => {
                         // 移除按钮加载状态
@@ -733,7 +727,7 @@ if (!window.navbarScriptLoaded) {
                     }
                     
                     // 发送注册请求到后端API
-                    fetch('/api/register', {
+                    fetch('http://localhost:3000/api/register', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -745,15 +739,11 @@ if (!window.navbarScriptLoaded) {
                         console.log('Response headers:', response.headers);
                         return response.text().then(text => {
                             console.log('Response text:', text);
-                            if (!text) {
-                                throw new Error('Empty response');
-                            }
                             try {
                                 return JSON.parse(text);
                             } catch (e) {
                                 console.error('Failed to parse JSON:', e);
-                                console.error('Response text:', text);
-                                throw new Error('Invalid JSON response: ' + text);
+                                throw new Error('Invalid JSON response');
                             }
                         });
                     })
@@ -783,8 +773,6 @@ if (!window.navbarScriptLoaded) {
                     .catch(error => {
                         console.error('注册错误:', error);
                         errorElement.textContent = '注册失败，请稍后重试';
-                        // 显示详细错误信息
-                        console.error('详细错误:', error.message);
                     })
                     .finally(() => {
                         // 移除按钮加载状态
