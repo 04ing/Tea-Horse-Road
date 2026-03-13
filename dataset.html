@@ -508,12 +508,24 @@
           body: formData
         })
         .then(response => {
-          if (!response.ok) {
-            throw new Error('网络响应错误');
-          }
-          return response.json();
+          console.log('Response status:', response.status);
+          console.log('Response headers:', response.headers);
+          return response.text().then(text => {
+            console.log('Response text:', text);
+            if (!text) {
+              throw new Error('Empty response');
+            }
+            try {
+              return JSON.parse(text);
+            } catch (e) {
+              console.error('Failed to parse JSON:', e);
+              console.error('Response text:', text);
+              throw new Error('Invalid JSON response: ' + text);
+            }
+          });
         })
         .then(data => {
+          console.log('Response data:', data);
           if (data.success) {
             showMessage('上传成功！您的资料将在审核后添加到数据集中', 'success');
             // 重置表单
@@ -528,13 +540,8 @@
         })
         .catch(error => {
           console.error('上传错误:', error);
-          // 模拟上传成功（用于演示）
-          showMessage('上传成功！您的资料将在审核后添加到数据集中', 'success');
-          document.getElementById('upload-form').reset();
-          // 关闭模态框
-          setTimeout(() => {
-            uploadModal.classList.add('hidden');
-          }, 2000);
+          console.error('详细错误:', error.message);
+          showMessage('上传失败，请稍后重试', 'error');
         })
         .finally(() => {
           submitButton.disabled = false;

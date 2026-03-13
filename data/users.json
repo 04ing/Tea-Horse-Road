@@ -6,6 +6,13 @@
       "email": "2243208053@qq.com",
       "password": "skfing11040922",
       "role": "user"
+    },
+    {
+      "id": "user-1773371860372",
+      "username": "testuser",
+      "email": "test@example.com",
+      "password": "password123",
+      "role": "user"
     }
   ]
 }
