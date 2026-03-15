@@ -79,14 +79,14 @@
     <script>
         // 页面加载时检查登录状态
         window.addEventListener('load', function() {
-            checkLoginStatus();
+            checkUserStatus();
             // 加载用户活动和收藏数据
             loadUserActivities();
             loadUserFavorites();
         });
         
         // 检查登录状态
-        function checkLoginStatus() {
+        function checkUserStatus() {
             const userStr = localStorage.getItem('user');
             if (userStr) {
                 try {
@@ -94,12 +94,12 @@
                     updateUserProfile(user);
                 } catch (error) {
                     console.error('解析用户信息失败:', error);
-                    // 未登录，跳转到登录页面
-                    window.location.href = 'route.html';
+                    // 解析失败，不显示警告，显示默认内容
+                    updateUserProfile({ username: '用户', email: 'user@example.com' });
                 }
             } else {
-                // 未登录，跳转到登录页面
-                window.location.href = 'route.html';
+                // 未登录，不显示警告，显示默认内容
+                updateUserProfile({ username: '用户', email: 'user@example.com' });
             }
         }
         
