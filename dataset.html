@@ -332,10 +332,16 @@
 
       <!-- 用户上传资料按钮 -->
       <section class="mb-16 text-center">
-        <button id="upload-button" class="px-8 py-4 bg-[#8B4513] text-[#D4AF37] font-bold rounded-lg hover:bg-[#A0522D] transition-all duration-300 shadow-lg flex items-center justify-center mx-auto">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
-          上传茶马古道相关资料
-        </button>
+        <div class="flex flex-col md:flex-row justify-center gap-4">
+          <button id="upload-button" class="px-8 py-4 bg-[#8B4513] text-[#D4AF37] font-bold rounded-lg hover:bg-[#A0522D] transition-all duration-300 shadow-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+            上传茶马古道相关资料
+          </button>
+          <button id="view-uploads-button" class="px-8 py-4 bg-[#8B4513] text-[#D4AF37] font-bold rounded-lg hover:bg-[#A0522D] transition-all duration-300 shadow-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            查看已上传文件
+          </button>
+        </div>
       </section>
 
       <!-- 上传资料模态框 -->
@@ -394,6 +400,43 @@
             </button>
           </form>
           <div id="upload-message" class="mt-4 p-3 rounded-lg hidden"></div>
+        </div>
+      </div>
+
+      <!-- 查看上传文件模态框 -->
+      <div id="uploads-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl p-6 max-h-[70vh] overflow-y-auto">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-gray-800">已上传文件</h2>
+            <button id="close-uploads-modal" class="text-[#8B4513] hover:text-[#A0522D] bg-[#F5F5DC] rounded-full p-2 hover:bg-[#D4AF37] transition-colors duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <p class="mb-4 font-kaiti text-gray-600">
+            以下是用户上传的茶马古道相关资料，点击文件可查看预览。
+          </p>
+          <div id="uploads-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- 上传文件列表将通过JavaScript动态生成 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 文件预览模态框 -->
+      <div id="file-preview-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-5xl p-6 max-h-[70vh] overflow-y-auto">
+          <div class="flex justify-between items-center mb-4">
+            <h2 id="preview-title" class="text-2xl font-bold text-gray-800">文件预览</h2>
+            <button id="close-preview-modal" class="text-[#8B4513] hover:text-[#A0522D] bg-[#F5F5DC] rounded-full p-2 hover:bg-[#D4AF37] transition-colors duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div id="preview-content" class="mt-4">
+            <!-- 文件预览内容将通过JavaScript动态生成 -->
+          </div>
         </div>
       </div>
 
@@ -557,6 +600,192 @@
       
       function closeModal(modalId) {
         document.getElementById(modalId).classList.add('hidden');
+      }
+
+      // 查看上传文件模态框控制
+      const viewUploadsButton = document.getElementById('view-uploads-button');
+      const uploadsModal = document.getElementById('uploads-modal');
+      const closeUploadsModal = document.getElementById('close-uploads-modal');
+      const uploadsList = document.getElementById('uploads-list');
+      const filePreviewModal = document.getElementById('file-preview-modal');
+      const closePreviewModal = document.getElementById('close-preview-modal');
+      const previewTitle = document.getElementById('preview-title');
+      const previewContent = document.getElementById('preview-content');
+      
+      viewUploadsButton.addEventListener('click', function() {
+        uploadsModal.classList.remove('hidden');
+        loadUploadedFiles();
+      });
+      
+      closeUploadsModal.addEventListener('click', function() {
+        uploadsModal.classList.add('hidden');
+      });
+      
+      // 点击模态框外部关闭
+      uploadsModal.addEventListener('click', function(e) {
+        if (e.target === uploadsModal) {
+          uploadsModal.classList.add('hidden');
+        }
+      });
+
+      closePreviewModal.addEventListener('click', function() {
+        filePreviewModal.classList.add('hidden');
+      });
+      
+      // 点击预览模态框外部关闭
+      filePreviewModal.addEventListener('click', function(e) {
+        if (e.target === filePreviewModal) {
+          filePreviewModal.classList.add('hidden');
+        }
+      });
+
+      // 加载上传的文件列表
+      function loadUploadedFiles() {
+        // 模拟从uploads目录加载文件
+        const files = [
+          'fileUpload-1773367853564-390847330.jpg',
+          'fileUpload-1773372234602-869488589.json',
+          'fileUpload-1773380485522-593945505.pdf'
+        ];
+
+        uploadsList.innerHTML = '';
+
+        files.forEach(file => {
+          const fileItem = document.createElement('div');
+          fileItem.className = 'bg-gray-50 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer';
+          
+          // 根据文件扩展名确定图标和类型
+          const extension = file.split('.').pop().toLowerCase();
+          let icon = '';
+          let type = '';
+          
+          switch(extension) {
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+              icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>';
+              type = '图片';
+              break;
+            case 'pdf':
+              icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>';
+              type = 'PDF文档';
+              break;
+            case 'json':
+              icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>';
+              type = 'JSON文件';
+              break;
+            default:
+              icon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>';
+              type = '其他文件';
+          }
+
+          fileItem.innerHTML = `
+            <div class="flex items-center">
+              <div class="mr-4 text-[#8B4513]">
+                ${icon}
+              </div>
+              <div class="flex-1">
+                <h4 class="font-bold mb-1">${file}</h4>
+                <p class="text-sm text-gray-600">${type}</p>
+              </div>
+            </div>
+          `;
+
+          // 添加点击事件，打开预览模态框
+          fileItem.addEventListener('click', function() {
+            previewFile(file);
+          });
+
+          uploadsList.appendChild(fileItem);
+        });
+      }
+
+      // 预览文件
+      function previewFile(file) {
+        filePreviewModal.classList.remove('hidden');
+        previewTitle.textContent = `文件预览: ${file}`;
+
+        const extension = file.split('.').pop().toLowerCase();
+        let previewHTML = '';
+
+        switch(extension) {
+          case 'jpg':
+          case 'jpeg':
+          case 'png':
+            previewHTML = `
+              <div class="flex justify-center">
+                <img src="uploads/${file}" alt="${file}" class="max-w-[80%] max-h-[40vh] object-contain">
+              </div>
+              <div class="mt-4 text-center">
+                <a href="uploads/${file}" download="${file}" class="inline-flex items-center px-4 py-2 bg-[#8B4513] text-[#D4AF37] font-bold rounded-lg hover:bg-[#A0522D] transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载图片
+                </a>
+              </div>
+            `;
+            break;
+          case 'pdf':
+            previewHTML = `
+              <div class="flex justify-center">
+                <iframe src="uploads/${file}" width="100%" height="400px" frameborder="0"></iframe>
+              </div>
+              <div class="mt-4 text-center">
+                <a href="uploads/${file}" download="${file}" class="inline-flex items-center px-4 py-2 bg-[#8B4513] text-[#D4AF37] font-bold rounded-lg hover:bg-[#A0522D] transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载PDF
+                </a>
+              </div>
+            `;
+            break;
+          case 'json':
+            previewHTML = `
+              <div class="bg-gray-100 p-4 rounded-lg overflow-auto max-h-[400px]">
+                <pre class="text-sm text-gray-800" id="json-content"></pre>
+              </div>
+              <div class="mt-4 text-center">
+                <a href="uploads/${file}" download="${file}" class="inline-flex items-center px-4 py-2 bg-[#8B4513] text-[#D4AF37] font-bold rounded-lg hover:bg-[#A0522D] transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载JSON
+                </a>
+              </div>
+            `;
+            // 加载JSON内容
+            fetch(`uploads/${file}`)
+              .then(response => response.json())
+              .then(data => {
+                document.getElementById('json-content').textContent = JSON.stringify(data, null, 2);
+              })
+              .catch(error => {
+                document.getElementById('json-content').textContent = '无法加载JSON文件';
+                console.error('加载JSON文件错误:', error);
+              });
+            break;
+          default:
+            previewHTML = `
+              <div class="text-center py-12">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <p class="text-gray-600">无法预览此类型的文件</p>
+                <div class="mt-4">
+                  <a href="uploads/${file}" download="${file}" class="inline-flex items-center px-4 py-2 bg-[#8B4513] text-[#D4AF37] font-bold rounded-lg hover:bg-[#A0522D] transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    下载文件
+                  </a>
+                </div>
+              </div>
+            `;
+        }
+
+        previewContent.innerHTML = previewHTML;
       }
     </script>
   </body>
