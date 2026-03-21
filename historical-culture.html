@@ -657,9 +657,9 @@
         function displaySpacetimeAnalysis() {
             console.log('开始显示时空分析...');
             
-            // 加载所有朝代的数据
-            const dynasties = ['Tang', 'Song', 'Ming', 'Qing'];
-            const colors = ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0'];
+            // 加载所有朝代的数据（移除唐朝）
+            const dynasties = ['Song', 'Ming', 'Qing'];
+            const colors = ['#2196F3', '#FF9800', '#9C27B0'];
             
             // 为每个朝代创建不同颜色的路径
             dynasties.forEach((dynasty, index) => {
@@ -758,10 +758,6 @@
                 <h5 style="margin-top: 15px; border-top: 1px solid #D2B48C; padding-top: 10px;">朝代变化</h5>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="width: 20px; height: 20px; background-color: #4CAF50;"></span>
-                        <span><strong>唐朝：</strong>茶马古道初步形成，主要连接中原与吐蕃地区。</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
                         <span style="width: 20px; height: 20px; background-color: #2196F3;"></span>
                         <span><strong>宋朝：</strong>茶马贸易制度化，设立茶马司，古道进一步发展。</span>
                     </div>
@@ -776,7 +772,7 @@
                 </div>
                 
                 <h5 style="margin-top: 15px; border-top: 1px solid #D2B48C; padding-top: 10px;">时空特征</h5>
-                <p><strong>空间扩张：</strong>从唐朝的主要线路到明清时期的网络状分布，茶马古道的空间范围不断扩大。</p>
+                <p><strong>空间扩张：</strong>从宋朝的制度化贸易到明清时期的网络状分布，茶马古道的空间范围不断扩大。</p>
                 <p><strong>时间演变：</strong>随着朝代更替，茶马古道的功能从单纯的贸易通道逐渐演变为文化交流的重要载体。</p>
                 <p><strong>影响因素：</strong>政治局势、经济需求、民族关系等因素共同影响了茶马古道的时空演变。</p>
             `;
