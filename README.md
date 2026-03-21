@@ -1,4 +1,5 @@
 # 茶马古道
+
 # 茶马古道历史文化项目
 
 ## 项目简介
@@ -49,16 +50,14 @@
    ```bash
    git clone https://github.com/04ing/Tea-Horse-Road.git
    ```
-
 2. **启动本地服务器**
    ```bash
    # 使用Python 3
    python -m http.server 8000
-   
+
    # 或使用Node.js
    npx server
    ```
-
 3. **访问项目**
    打开浏览器，访问 `http://localhost:8000/route.html`
    或直接访问网址：`https://04ing.github.io/Tea-Horse-Road/`
@@ -69,7 +68,7 @@
 - **map.html**：时空分析页面，提供茶马古道的时空分析和历史地图展示
 - **historical-culture.html**：历史文化页面，介绍茶马古道的历史文化
 - **comparison.html**：朝代对比页面，对比不同朝代茶马古道的变化
-- **tourism_significance.html**：旅游意义页面，介绍茶马古道的现代旅游价值
+- **tourism\_significance.html**：旅游意义页面，介绍茶马古道的现代旅游价值
 - **dataset.html**：数据集页面，分类整理茶马古道相关数据并提供下载功能
 
 ## 功能说明
@@ -127,28 +126,28 @@
 
 ### 1. 地图数据（存储在json/目录）
 
-- **City_Tang.json**：唐朝时期的城市数据
-- **City_Song.json**：宋朝时期的城市数据
-- **City_Ming.json**：明朝时期的城市数据
-- **City_Qing.json**：清朝时期的城市数据
-- **CostPath_Tang.json**：唐朝时期的路线成本数据
-- **CostPath_Song.json**：宋朝时期的路线成本数据
-- **CostPath_Ming.json**：明朝时期的路线成本数据
-- **CostPath_Qing.json**：清朝时期的路线成本数据
-- **City_Spread.json**：国内外茶叶传播城市数据
+- **City\_Tang.json**：唐朝时期的城市数据
+- **City\_Song.json**：宋朝时期的城市数据
+- **City\_Ming.json**：明朝时期的城市数据
+- **City\_Qing.json**：清朝时期的城市数据
+- **CostPath\_Tang.json**：唐朝时期的路线成本数据
+- **CostPath\_Song.json**：宋朝时期的路线成本数据
+- **CostPath\_Ming.json**：明朝时期的路线成本数据
+- **CostPath\_Qing.json**：清朝时期的路线成本数据
+- **City\_Spread.json**：国内外茶叶传播城市数据
 
 ### 2. 贸易数据（存储在json/目录）
 
-- **Trade_CR.json**：中俄海外贸易数据，包含1870-1900年的贸易量数据，包括总计贸易量和砖茶量
-- **China_Russia_Oversea.json**：中俄海外贸易相关数据
+- **Trade\_CR.json**：中俄海外贸易数据，包含1870-1900年的贸易量数据，包括总计贸易量和砖茶量
+- **China\_Russia\_Oversea.json**：中俄海外贸易相关数据
 
 ### 3. 文化与遗产数据（存储在json/目录）
 
-- **ancient_villages.json**：古代村落数据
-- **heritage_sites.json**：遗产地数据
-- **historical_people.json**：历史人物数据
-- **modern_villages.json**：现代村落数据
-- **people_relations.json**：人物关系数据
+- **ancient\_villages.json**：古代村落数据
+- **heritage\_sites.json**：遗产地数据
+- **historical\_people.json**：历史人物数据
+- **modern\_villages.json**：现代村落数据
+- **people\_relations.json**：人物关系数据
 
 ### 4. 3D模型
 
@@ -165,17 +164,16 @@
 4. 推送到分支 (`git push origin feature/amazing-feature`)
 5. 打开一个Pull Request
 
-## 许可证
-
-本项目采用MIT许可证 - 详见LICENSE文件
+<br />
 
 ## 联系方式
 
 如果您对项目有任何问题或建议，请通过以下方式联系：
 
 - GitHub: [04ing](https://github.com/04ing)
-- 项目地址: [https://github.com/04ing/Tea-Horse-Road](https://github.com/04ing/Tea-Horse-Road)
-- GitHub Pages: [https://04ing.github.io/Tea-Horse-Road](https://04ing.github.io/Tea-Horse-Road)
+- 项目地址: <https://github.com/04ing/Tea-Horse-Road>
+- GitHub Pages: <https://04ing.github.io/Tea-Horse-Road>
+- 阿里云访问网址：<http://47.103.29.77:3000/>
 
 ## 致谢
 
@@ -187,19 +185,23 @@
 ## 更新日志
 
 ### 2026-03-21
+
 - **文件同步**：将本地uploads文件夹中的文件同步到服务器，确保所有上传的文件都能在服务器端正常访问
 - **路径修复**：修复了dataset.html中文件预览的路径问题，确保文件能正确加载
 - **权限优化**：调整了服务器端uploads目录的权限，确保静态文件服务能正确访问上传的文件
 
 ### 2026-03-15
+
 - **上传文件预览功能**：在dataset.html中添加了显示用户上传文件的模态框，支持查看和预览上传的文件
 - **弹窗尺寸优化**：调整了上传文件模态框和预览模态框的尺寸，确保在屏幕内显示，避免溢出
 - **图片预览优化**：优化了图片预览的大小，确保图片在屏幕内完整显示
 
 ### 2026-03-14
+
 - **用户中心页面优化**：更新了user-center.html页面，修复了文本格式和布局问题，确保与服务器端版本保持一致
 
 ### 2026-03-13
+
 - **文件上传功能**：在dataset.html中添加了用户上传茶马古道相关资料的功能
 - **后端API**：修改了server.js添加了文件上传的API端点，支持文件存储和上传记录管理
 - **UI优化**：改进了上传模态框的布局，将内容分成两列，提高用户体验
@@ -207,10 +209,12 @@
 - **功能完善**：添加了上传记录的保存功能，将上传信息存储在data/uploads.json文件中
 
 ### 2026-03-12
-- **时间轴优化**：修改了tourism_significance.html中的“前世板块”时间轴，实现自动轮播功能
+
+- **时间轴优化**：修改了tourism\_significance.html中的“前世板块”时间轴，实现自动轮播功能
 - **UI改进**：将关于旅游推荐的多而冗杂的信息调整成按钮弹窗放在“旅游指南”板块中，避免占用太多页面，提升用户体验。
 
 ### 2026-03-11
+
 - **贸易图表优化**：改进了贸易流线图和网络关系图的显示效果
 - **模态框实现**：将贸易流线图和贸易网络关系图放入独立的模态框中，避免覆盖其他内容
 - **年份选择功能**：添加了年份选择器，允许用户查看不同年份的贸易数据
@@ -219,10 +223,12 @@
 - **数据计算修复**：修复了贸易量计算的逻辑错误，确保数据正确显示
 - **网络图优化**：将中国产地的图标改为突出的红色，线条粗细差异更明显
 - **节点强度计算**：网络图节点大小根据近30年贸易平均值计算，更准确反映长期贸易强度
-- **数据分散化**：添加了Trade_CR.json中的更多数据。
+- **数据分散化**：添加了Trade\_CR.json中的更多数据。
 
 ### 2026-03-10
+
 **用户数据存储**：添加了用户数据存储功能，使用JSON文件保存用户数据
+
 - **后端API**：修改了server.js添加了用户注册、登录和获取用户列表的API端点
 - **前端更新**：更新了js/navbar.js中的登录和注册逻辑，使用后端API而不是localStorage
 - **CORS支持**：添加了CORS中间件，允许跨域请求
@@ -231,29 +237,35 @@
 - **页面创建**：创建了user-center.html用户中心页面，提供用户个人信息和活动管理功能
 
 ### 2026-03-09
+
 - **导航栏修复**：修复了导航栏重复加载导致的表单字段ID重复错误
 - **代码优化**：优化了导航栏的加载逻辑，确保只加载一次
 - **功能清理**：移除了页面中重复的分享功能代码
 - **模态框优化**：确保模态框在创建前检查是否已经存在，避免重复创建
 
 ### 2026-03-04
+
 - **数据完善**：在City相关的JSON文件中补充了"作用"和"节点角"字段的缺失值
 - **功能修复**：修改了route.html文件，使其能够正确显示城市的"作用"和"节点角"信息
 - **UI优化**：为唐朝和宋朝的城市列表添加了可点击的按钮，使其与明朝和清朝的城市列表保持一致
-- **文件清理**：删除了fix_city_json.ps1和fix_city_json.py文件
+- **文件清理**：删除了fix\_city\_json.ps1和fix\_city\_json.py文件
 - **视觉优化**：将"时空演化进程"的路线颜色改为亮紫色
 
 ### 2026-03-03
+
 - **样式优化**：将 map.html 的内联样式提取到外部 CSS 文件 (css/map.css) 并引用
-- **页面清理**：从 tourism_significance.html 底部删除了不存在的“查看历史时间轴”按钮
+- **页面清理**：从 tourism\_significance.html 底部删除了不存在的“查看历史时间轴”按钮
 - **数据集页面**：创建了 dataset.html 页面，分类整理茶马古道相关数据并提供下载功能
 - **影像资料**：在 dataset.html 页面添加了茶马古道相关的重要影像资料
 - **历史文献**：在 dataset.html 页面添加了茶马古道相关的历史文献书籍
 - **样式文件**：创建了 css/dataset.css 文件，为数据集页面提供样式支持
-- 
+- <br />
+
 ### 2026-03-02
-- **图片更新**：修复了 tourism_significance.html 中的经典路线推荐部分的AI生成的占位图片，更新为对应的实际风景图
+
+- **图片更新**：修复了 tourism\_significance.html 中的经典路线推荐部分的AI生成的占位图片，更新为对应的实际风景图
 - **地图更新**：更新了 map.html 文件，完善了地图功能
 
----
+***
+
 **茶马古道历史文化项目** - 探索千年商贸文化之路
