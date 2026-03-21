@@ -641,16 +641,16 @@
 
       // 加载上传的文件列表
       function loadUploadedFiles() {
-        // 模拟从uploads目录加载文件
-        const files = [
-          'fileUpload-1773367853564-390847330.jpg',
-          'fileUpload-1773372234602-869488589.json',
-          'fileUpload-1773380485522-593945505.pdf'
-        ];
+        uploadsList.innerHTML = '<div class="text-center py-8">加载中...</div>';
 
-        uploadsList.innerHTML = '';
+        // 从data/uploads.json加载实际的上传文件列表
+        fetch('data/uploads.json')
+          .then(response => response.json())
+          .then(data => {
+            uploadsList.innerHTML = '';
 
-        files.forEach(file => {
+            data.forEach(item => {
+              const file = item.fileName;
           const fileItem = document.createElement('div');
           fileItem.className = 'bg-gray-50 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer';
           
@@ -697,7 +697,12 @@
           });
 
           uploadsList.appendChild(fileItem);
-        });
+            });
+          })
+          .catch(error => {
+            console.error('加载上传文件列表错误:', error);
+            uploadsList.innerHTML = '<div class="text-center py-8 text-red-600">无法加载上传文件列表</div>';
+          });
       }
 
       // 预览文件
