@@ -1,0 +1,19 @@
+{
+  "ssh": {
+    "host": "47.103.29.77",
+    "port": 22,
+    "user": "root",
+    "deployPath": "/www/wwwroot/tea-horse-road",
+    "appName": "tea-horse-road"
+  },
+  "git": {
+    "remote": "origin",
+    "branch": "master",
+    "autoCommit": true,
+    "commitMessage": "auto: deploy at {time}"
+  },
+  "server": {
+    "usePm2": true,
+    "installDeps": true
+  }
+}
